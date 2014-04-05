@@ -19,6 +19,12 @@ public:
 	//delete and delete from disc
 	//delete the shader by name (from the scene)
 	void deleteShader(std::string shaderName);
+	//bind shader and set it to currentSahder
+	void bindShader(Shader* mNewShader);
+	//unbind shader and set currentoShader to null
+	void unbindCurrentShader();
+	//current binded Shader
+	Shader* mCurrentShader;
 
 	//Texture
 	//create, etc

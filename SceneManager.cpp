@@ -59,6 +59,20 @@ void SceneManager::deleteShader(std::string shaderName)
 	}
 }
 
+void SceneManager::bindShader(Shader* mNewShader)
+{
+	mNewShader->bind();
+
+	mCurrentShader = mNewShader;
+}
+
+void SceneManager::unbindCurrentShader()
+{
+	mCurrentShader->unBind();
+
+	mCurrentShader = NULL;
+}
+
 Texture* SceneManager::createTexture(std::string textureName, bool mipmap, std::string texturePath)
 {
 	//get ResourceManager singleton pointer

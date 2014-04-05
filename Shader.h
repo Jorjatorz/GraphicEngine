@@ -13,13 +13,16 @@ public:
 
 	void loadShader(std::string filePath);
 
-	void bind(); //bind the shader to use (gl_UsePorgram)
-	void unBind(); //unbind the shader
-
 	GLuint getShaderProgram();
 
 private:
 	GLuint mProgram;
+
+	void bind(); //bind the shader to use (gl_UsePorgram)
+	void unBind(); //unbind the shader
+
+
+	friend class SceneManager;
 };
 
 #endif
