@@ -63,10 +63,12 @@ void Renderer::renderFrame()
 	Entity* mEnt = mSceneManager->createEntity("cube", "NULL");
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 
+	mSceneManager->setCurrentShader(mShader);
+
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	mEnt->setCubeMesh();
-	mEnt->renderEntity(mShader);
+	mEnt->renderEntity();
 	//swap the buffers
 	mWindow->swapBuffers(true);
 }

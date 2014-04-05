@@ -4,19 +4,22 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "ResourceManager.h"
+#include "SceneManager.h"
 
-Entity::Entity(void)
+Entity::Entity(SceneManager* newSceneManager)
 {
 	modelMatrix = glm::mat4(); //identity
 	mMesh = NULL;
 	mMeshName = "unknown";
+	mSceneManager = newSceneManager;
 }
 
-Entity::Entity(std::string meshName)
+Entity::Entity(std::string meshName, SceneManager* newSceneManager)
 {
 	modelMatrix = glm::mat4(); //identity
 	mMesh = NULL;
 	mMeshName = meshName;
+	mSceneManager = newSceneManager;
 }
 
 
@@ -25,10 +28,10 @@ Entity::~Entity(void)
 }
 
 
-void Entity::renderEntity(Shader* currentShader)
+void Entity::renderEntity()
 {
 	//apply shader
-	currentShader->bind();
+	mSceneManager->bindCurrentShader();
 
 	//render
 	mMesh->bindMeshArray();
@@ -39,7 +42,7 @@ void Entity::renderEntity(Shader* currentShader)
 
 	mMesh->unbindMeshArray();
 
-	currentShader->unBind();
+	mSceneManager->unbindCurrentShader();
 }
 
 void Entity::setCubeMesh()

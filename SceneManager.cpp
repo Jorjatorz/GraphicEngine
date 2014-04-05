@@ -59,11 +59,24 @@ void SceneManager::deleteShader(std::string shaderName)
 	}
 }
 
+void SceneManager::setCurrentShader(Shader* newShader)
+{
+	mCurrentShader = newShader;
+}
+
 void SceneManager::bindShader(Shader* mNewShader)
 {
 	mNewShader->bind();
 
 	mCurrentShader = mNewShader;
+}
+
+void SceneManager::bindCurrentShader()
+{
+	//check that mCurrentSahder isnt NULL
+	assert(mCurrentShader);
+
+	bindShader(mCurrentShader);
 }
 
 void SceneManager::unbindCurrentShader()
@@ -131,7 +144,7 @@ Entity* SceneManager::createEntity(std::string entityName, std::string meshPath)
 	//else
 
 	//create the entity 
-	Entity* mEntity = new Entity(meshPath);
+	Entity* mEntity = new Entity(meshPath, this);
 
 	//save it into the texture map
 	mEntityMap.insert(std::pair<std::string, Entity*>(entityName, mEntity));

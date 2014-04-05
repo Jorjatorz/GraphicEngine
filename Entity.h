@@ -4,16 +4,16 @@
 #include <string>
 
 #include "Definitions.h"
+#include "MovableObject.h"
 
-
-class Entity
+class Entity : public MovableObject
 {
 public:
-	Entity(void);
-	Entity(std::string meshName);
+	Entity(SceneManager* newSceneManager);
+	Entity(std::string meshName, SceneManager* newSceneManager);
 	~Entity(void);
 
-	void renderEntity(Shader* currentShader);
+	void renderEntity();
 
 	//types
 	void setCubeMesh(); //set a cube as mesh
