@@ -13,9 +13,28 @@ public:
 	SceneNode(void);
 	~SceneNode(void);
 
+	//sets the new paren to the sceneNode
+	void setParentSceneNode(SceneNode* newParent);
+	//adds a new child to the sceneNode
+	void addChildSceneNode(SceneNode* newChild);
+	//get the new derived traslations and update the scenenodeMatrix
+	void updateFromParent();
+
+	//modify derivedPos. the parent position * mPosition
+	void getDerivedPosition();
+	//modify derivedOri the parent orientation * mOrientation
+	void getDerivedOrientation();
+	//modify derivedScale the parent scale * mScane
+	void getDerivedScale();
+
 private:
-	//scenenode model matrix (not derived from parent)
+	//scenenode model matrix (derived from parent)
 	glm::mat4 mSceneNodeMatrix;
+	//scenenode position, orientation and scale
+	glm::vec3 mPosition, mOrientation, mScale;
+	//derived scenenode position, orientation and scale
+	glm::vec3 mDerivedPosition, mDerivedOrientation, mDerivedScale;
+
 	//true if the node has changed
 	bool hasChanged;
 	//parent

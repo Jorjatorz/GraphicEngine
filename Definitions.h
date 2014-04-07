@@ -6,6 +6,7 @@
 #include <gl\glew.h>
 #include <gl\gl.h>
 #include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 
 //custom type for decimals, default: float
 typedef float decimal;
