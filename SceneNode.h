@@ -3,6 +3,7 @@
 
 #include "Definitions.h"
 
+#include <string>
 #include <map>
 #include <vector>
 
@@ -13,7 +14,7 @@ public:
 	~SceneNode(void);
 
 private:
-	//scenenode model matrix
+	//scenenode model matrix (not derived from parent)
 	glm::mat4 mSceneNodeMatrix;
 	//true if the node has changed
 	bool hasChanged;
@@ -21,7 +22,8 @@ private:
 	SceneNode* mParent;
 
 	//object attachet map
-
+	typedef std::map<std::string, MovableObject*> tObjectsMaps;
+	tObjectsMaps mObjectsMap;
 	//child vector scenenode
 	std::vector<SceneNode*> mChildNodes;
 };

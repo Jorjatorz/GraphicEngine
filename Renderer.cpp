@@ -54,12 +54,14 @@ void Renderer::initOpenGL()
 	//GL STATES AND ENABLES
 }
 
+//delete this
 #include "Shader.h"
 #include "Entity.h"
+//
 
 void Renderer::renderFrame()
 {
-
+	//PRuebas
 	Entity* mEnt = mSceneManager->createEntity("cube", "NULL");
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 
@@ -69,6 +71,8 @@ void Renderer::renderFrame()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	mEnt->setCubeMesh();
 	mEnt->renderEntity();
+	//no pruebas
+
 	//swap the buffers
 	mWindow->swapBuffers(true);
 }

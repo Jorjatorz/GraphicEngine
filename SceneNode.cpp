@@ -3,6 +3,7 @@
 
 SceneNode::SceneNode(void)
 {
+	mParent = NULL;
 }
 
 
