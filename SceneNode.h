@@ -16,9 +16,11 @@ public:
 	//sets the new paren to the sceneNode
 	void setParentSceneNode(SceneNode* newParent);
 	//adds a new child to the sceneNode
-	void addChildSceneNode(SceneNode* newChild);
+	void addChildSceneNode(std::string name, SceneNode* newChild);
 	//get the new derived traslations and update the scenenodeMatrix
 	void updateFromParent();
+	//update the childrens using the current derived position
+	void updateChildrens();
 
 	//modify derivedPos. the parent position * mPosition
 	void getDerivedPosition();
@@ -44,7 +46,8 @@ private:
 	typedef std::map<std::string, MovableObject*> tObjectsMaps;
 	tObjectsMaps mObjectsMap;
 	//child vector scenenode
-	std::vector<SceneNode*> mChildNodes;
+	typedef std::map<std::string, SceneNode*> tChildsNodesMap;
+	tChildsNodesMap mChildNodes;
 };
 
 #endif

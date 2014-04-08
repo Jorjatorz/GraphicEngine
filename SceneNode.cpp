@@ -12,6 +12,8 @@ SceneNode::SceneNode(void)
 
 SceneNode::~SceneNode(void)
 {
+	//delete all childs
+	//remove node from parent
 }
 
 void SceneNode::setParentSceneNode(SceneNode* newParent)
@@ -19,9 +21,9 @@ void SceneNode::setParentSceneNode(SceneNode* newParent)
 	mParent = newParent;
 }
 
-void SceneNode::addChildSceneNode(SceneNode* newChild)
+void SceneNode::addChildSceneNode(std::string name, SceneNode* newChild)
 {
-	mChildNodes.push_back(newChild); //add the new child
+	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newChild));
 }
 
 void SceneNode::updateFromParent()
@@ -30,8 +32,12 @@ void SceneNode::updateFromParent()
 	getDerivedOrientation();
 	getDerivedScale();
 
+	//if the node position has changed or the derived positon (thus the parent) has changed modify the sceneNodeMatrix
 	if(hasChanged)
 	{
+		//update childs
+		updateChildrens();
+		//update matrix
 		mSceneNodeMatrix = glm::translate(mSceneNodeMatrix, mDerivedPosition);
 		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.x, glm::vec3(1.0, 0.0, 0.0));
 		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.y, glm::vec3(0.0, 1.0, 0.0));
@@ -39,6 +45,16 @@ void SceneNode::updateFromParent()
 		mSceneNodeMatrix = glm::scale(mSceneNodeMatrix, mDerivedScale);
 	}
 
+}
+
+void SceneNode::updateChildrens()
+{
+	tChildsNodesMap::iterator it;
+
+	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	{
+		it->second->updateFromParent();
+	}
 }
 
 void SceneNode::getDerivedPosition()
