@@ -11,12 +11,19 @@ class SceneNode
 {
 public:
 	SceneNode(void);
+	SceneNode(std::string sceneNodeName);
+	SceneNode(std::string sceneNodeName, SceneNode* nodeParent);
 	~SceneNode(void);
 
 	//sets the new paren to the sceneNode
 	void setParentSceneNode(SceneNode* newParent);
 	//adds a new child to the sceneNode
+	void addChildSceneNode(std::string name);
 	void addChildSceneNode(std::string name, SceneNode* newChild);
+	//deletes childrens
+	void deleteChildrenNode(SceneNode* mNode);
+	void deleteChildrenNode(std::string childName);
+	void deleteAllChilds();
 	//get the new derived traslations and update the scenenodeMatrix
 	void updateFromParent();
 	//update the childrens using the current derived position
@@ -48,6 +55,9 @@ private:
 	//child vector scenenode
 	typedef std::map<std::string, SceneNode*> tChildsNodesMap;
 	tChildsNodesMap mChildNodes;
+
+	//scenenode name
+	std::string mName;
 };
 
 #endif
