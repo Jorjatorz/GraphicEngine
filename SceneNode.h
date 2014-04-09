@@ -18,8 +18,8 @@ public:
 	//sets the new paren to the sceneNode
 	void setParentSceneNode(SceneNode* newParent);
 	//adds a new child to the sceneNode
-	void addChildSceneNode(std::string name);
-	void addChildSceneNode(std::string name, SceneNode* newChild);
+	SceneNode* addChildSceneNode(std::string name);
+	SceneNode* addChildSceneNode(std::string name, SceneNode* newChild);
 	//deletes childrens
 	void deleteChildrenNode(SceneNode* mNode);
 	void deleteChildrenNode(std::string childName);

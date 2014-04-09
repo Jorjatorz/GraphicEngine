@@ -43,16 +43,20 @@ void SceneNode::setParentSceneNode(SceneNode* newParent)
 	mParent = newParent;
 }
 
-void SceneNode::addChildSceneNode(std::string name)
+SceneNode* SceneNode::addChildSceneNode(std::string name)
 {
 	SceneNode* newSceneNode = new SceneNode(name, this);
 
 	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newSceneNode));
+
+	return newSceneNode;
 }
 
-void SceneNode::addChildSceneNode(std::string name, SceneNode* newChild)
+SceneNode* SceneNode::addChildSceneNode(std::string name, SceneNode* newChild)
 {
 	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newChild));
+
+	return newChild;
 }
 
 void SceneNode::deleteChildrenNode(SceneNode* mNode)
