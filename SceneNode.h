@@ -3,6 +3,7 @@
 
 #include "Definitions.h"
 
+#include <iostream>
 #include <string>
 #include <map>
 #include <vector>
@@ -24,6 +25,12 @@ public:
 	void deleteChildrenNode(SceneNode* mNode);
 	void deleteChildrenNode(std::string childName);
 	void deleteAllChilds();
+	//attach a movableobjecto to the scenenode
+	void attachObject(MovableObject* mNewObject);
+	//deatach an object or all objects
+	void detachObject(std::string objName);
+	void detachObject(MovableObject* obj);
+	void detachAllObjects();
 	//get the new derived traslations and update the scenenodeMatrix
 	void updateFromParent();
 	//update the childrens using the current derived position

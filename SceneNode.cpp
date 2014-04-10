@@ -1,5 +1,6 @@
 #include "SceneNode.h"
 
+#include "MovableObject.h"
 
 SceneNode::SceneNode(void)
 {
@@ -35,7 +36,10 @@ SceneNode::~SceneNode(void)
 {
 	//delete all childs
 	deleteAllChilds();
+	//detach all objects
+	detachAllObjects();
 	//remove node from parent
+	mParent->deleteChildrenNode(this);
 }
 
 void SceneNode::setParentSceneNode(SceneNode* newParent)
@@ -89,6 +93,45 @@ void SceneNode::deleteAllChilds()
 	}
 
 	mChildNodes.clear();
+}
+
+void SceneNode::attachObject(MovableObject* mNewObject)
+{
+	//if the object is also attached
+	if(mNewObject->isAttached())
+	{
+		std::cout << mNewObject->getName() << " already attached" << std::endl;
+	}
+	else
+	{
+		mObjectsMap.insert(std::pair<std::string, MovableObject*>(mNewObject->getName(), mNewObject));
+		mNewObject->setAttached(true, this);
+	}
+}
+
+void SceneNode::detachObject(std::string objName)
+{
+	tObjectsMaps::iterator it;
+
+	for(it = mObjectsMap.begin(); it != mObjectsMap.end(); ++it)
+	{
+		if(it->second->getName() == objName)
+		{
+			it->second->setAttached(false, NULL);
+			mObjectsMap.erase(it);
+			break;
+		}
+	}
+}
+void SceneNode::detachObject(MovableObject* obj)
+{
+	std::string objName = obj->getName();
+
+	detachObject(objName);
+}
+void SceneNode::detachAllObjects()
+{
+	mObjectsMap.clear();
 }
 
 void SceneNode::updateFromParent()

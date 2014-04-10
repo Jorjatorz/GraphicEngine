@@ -6,16 +6,19 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 
-Entity::Entity(SceneManager* newSceneManager)
+Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 {
+	//apart from movableobject constructor
+	mName = mNewName;
 	modelMatrix = glm::mat4(); //identity
 	mMesh = NULL;
 	mMeshName = "unknown";
 	mSceneManager = newSceneManager;
 }
 
-Entity::Entity(std::string meshName, SceneManager* newSceneManager)
+Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager)
 {
+	mName = mNewName;
 	modelMatrix = glm::mat4(); //identity
 	mMesh = NULL;
 	mMeshName = meshName;

@@ -9,8 +9,8 @@
 class Entity : public MovableObject
 {
 public:
-	Entity(SceneManager* newSceneManager);
-	Entity(std::string meshName, SceneManager* newSceneManager);
+	Entity(std::string mNewName, SceneManager* newSceneManager);
+	Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager);
 	~Entity(void);
 
 	void renderEntity();
