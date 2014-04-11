@@ -12,9 +12,12 @@ class SceneNode
 {
 public:
 	SceneNode(void);
-	SceneNode(std::string sceneNodeName);
-	SceneNode(std::string sceneNodeName, SceneNode* nodeParent);
+	SceneNode(std::string sceneNodeName, SceneManager* newSceneManager);
+	SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneManager* newSceneManager);
 	~SceneNode(void);
+
+	//process all attached movableobjects to the scenenode (just for the root scenenode)
+	void processRootSceneNode();
 
 	//sets the new paren to the sceneNode
 	void setParentSceneNode(SceneNode* newParent);
@@ -65,6 +68,12 @@ private:
 
 	//scenenode name
 	std::string mName;
+	//pointer to the current sceneManager
+	SceneManager* mSceneManager;
+
+	//Functions
+	void processChilds(glm::mat4 perspectiveViewM);
+	void processObjects(glm::mat4 perspectiveViewM);
 };
 
 #endif

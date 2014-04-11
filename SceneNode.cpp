@@ -10,9 +10,10 @@ SceneNode::SceneNode(void)
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
 	mName = "Unknown";
+	mSceneManager = NULL;
 }
 
-SceneNode::SceneNode(std::string sceneNodeName)
+SceneNode::SceneNode(std::string sceneNodeName, SceneManager* newSceneManager)
 {
 	mParent = NULL;
 	mPosition = mOrientation = glm::vec3(0.0);
@@ -20,9 +21,10 @@ SceneNode::SceneNode(std::string sceneNodeName)
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
 	mName = sceneNodeName;
+	mSceneManager = newSceneManager;
 }
 
-SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent)
+SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneManager* newSceneManager)
 {
 	mParent = nodeParent;
 	mPosition = mOrientation = glm::vec3(0.0);
@@ -30,6 +32,7 @@ SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent)
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
 	mName = sceneNodeName;
+	mSceneManager = newSceneManager;
 }
 
 SceneNode::~SceneNode(void)
@@ -49,7 +52,7 @@ void SceneNode::setParentSceneNode(SceneNode* newParent)
 
 SceneNode* SceneNode::addChildSceneNode(std::string name)
 {
-	SceneNode* newSceneNode = new SceneNode(name, this);
+	SceneNode* newSceneNode = new SceneNode(name, this, mSceneManager);
 
 	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newSceneNode));
 
@@ -209,4 +212,36 @@ void SceneNode::getDerivedScale()
 	}
 
 	mDerivedScale = mDerivedScale;
+}
+
+void SceneNode::processRootSceneNode()
+{
+	//calculate perspective and viewmatrix multiplyed matrix
+
+	//go through all the childs
+	//processChilds...
+}
+
+void SceneNode::processChilds(glm::mat4 perspectiveViewM)
+{
+	//process all objects
+	tChildsNodesMap::iterator it;
+
+	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	{
+		//process the objects attached to this node
+		it->second->processObjects(perspectiveViewM);
+		//process the childs attached to this node
+		it->second->processChilds(perspectiveViewM);
+	}
+}
+
+void SceneNode::processObjects(glm::mat4 perspectiveViewM)
+{
+	tObjectsMaps::iterator it;
+
+	for(it = mObjectsMap.begin(); it != mObjectsMap.end(); ++it)
+	{
+		it->second->render(perspectiveViewM);
+	}
 }

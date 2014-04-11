@@ -110,7 +110,9 @@ void Shader::loadShader(std::string filePath)
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragmentShader);
-	glBindFragDataLocation(program, 0, "outColor");
+
+	glBindFragDataLocation(program, 0, "outColor"); //output color to the buffer number 0
+
 	glLinkProgram(program);
 	
 	//we finished so delete the sahder

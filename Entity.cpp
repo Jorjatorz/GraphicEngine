@@ -31,7 +31,7 @@ Entity::~Entity(void)
 }
 
 
-void Entity::renderEntity()
+void Entity::render(glm::mat4 perspectiveViewM)
 {
 	//apply shader
 	mSceneManager->bindCurrentShader();

@@ -24,6 +24,8 @@ public:
 	void setAttached(bool att);
 	void setAttached(bool att, SceneNode* newNode);
 
+	virtual void render(glm::mat4 perspectiveViewM) = 0;
+
 protected:
 	std::string mName;
 	SceneManager* mSceneManager;

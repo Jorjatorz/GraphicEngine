@@ -70,7 +70,7 @@ void Renderer::renderFrame()
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	mEnt->setCubeMesh();
-	mEnt->renderEntity();
+	mEnt->render(glm::mat4(1.0));
 	//no pruebas
 
 	//swap the buffers

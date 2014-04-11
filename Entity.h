@@ -13,7 +13,7 @@ public:
 	Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager);
 	~Entity(void);
 
-	void renderEntity();
+	void render(glm::mat4 perspectiveViewM);
 
 	//types
 	void setCubeMesh(); //set a cube as mesh
