@@ -55,7 +55,7 @@ Shader* ResourceManager::loadShader(std::string shaderName, std::string shaderPa
 
 	//if the resource doesnt exists
 	//create Shader (will be deleted by the resource)
-	Shader* mShader = new Shader();
+	Shader* mShader = new Shader(shaderName);
 	//create a new resource(will be deleted by the resourceManager)
 	GameResource<Shader*>* mResource = new GameResource<Shader*>(shaderPath, mShader);
 

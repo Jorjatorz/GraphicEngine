@@ -8,7 +8,7 @@
 class Shader
 {
 public:
-	Shader(void);
+	Shader(std::string shaderName);
 	~Shader(void);
 
 	//shader locations
@@ -23,8 +23,22 @@ public:
 
 	GLuint getShaderProgram();
 
+	// Communication with shader
+	void UniformTexture(const std::string& uniformName, GLint textureId);
+	void Uniform(const std::string& uniformName, GLint value);
+	void Uniform(const std::string& uniformName, GLfloat value);
+	void Uniform(const std::string& uniformName, const glm::vec2& value);
+	void Uniform(const std::string& uniformName, const glm::vec3& value);
+	void Uniform(const std::string& uniformName, const glm::vec4& value);
+	void UniformMatrix(const std::string& uniformName, const glm::mat4& value);
+	void UniformMatrix(const std::string& uniformName, const glm::mat3& value);
+	//void UniformMatrix(const std::string& uniformName, const aiMatrix4x4& value);
+	void UniformTuniformNameure(const std::string& uniformName, GLint slot);
+	void UniformBlock(const std::string& ext, GLuint location);
+
 private:
 	GLuint mProgram;
+	std::string mName;
 
 	void bind(); //bind the shader to use (gl_UsePorgram)
 	void unBind(); //unbind the shader
