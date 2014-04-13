@@ -22,8 +22,9 @@ public:
 	//sets the new paren to the sceneNode
 	void setParentSceneNode(SceneNode* newParent);
 	//adds a new child to the sceneNode
-	SceneNode* addChildSceneNode(std::string name);
-	SceneNode* addChildSceneNode(std::string name, SceneNode* newChild);
+	SceneNode* createChildSceneNode(std::string name);
+	SceneNode* createChildSceneNode(std::string name, glm::vec3 newPosition);
+	SceneNode* createChildSceneNode(std::string name, SceneNode* newChild);
 	//deletes childrens
 	void deleteChildrenNode(SceneNode* mNode);
 	void deleteChildrenNode(std::string childName);
@@ -45,6 +46,12 @@ public:
 	void getDerivedOrientation();
 	//modify derivedScale the parent scale * mScane
 	void getDerivedScale();
+
+	//transformations functions
+	void translate(glm::vec3 trans);
+	void setPosition(glm::vec3 newPos);
+	void setOrientation(glm::vec3 newOrientation);
+	void setScale(glm::vec3 newScale);
 
 private:
 	//scenenode model matrix (derived from parent)

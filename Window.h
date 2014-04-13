@@ -8,7 +8,7 @@
 class Window
 {
 public:
-	Window(std::string windowName, int width, int height, bool fullscreen);
+	Window(std::string windowName, real width, real height, bool fullscreen);
 	~Window(void);
 
 	//Public functions
@@ -17,13 +17,13 @@ public:
 	void swapBuffers(bool swap);
 
 	//Get functions
-	int getWidth();
-	int getHeight();
+	real getWidth();
+	real getHeight();
 	bool isFullScreen();
 
 private:
 	//variables
-	int mWindowWidth, mWindowHeight;
+	real mWindowWidth, mWindowHeight;
 	bool mFullScreen;
 
 	//SDL variables
@@ -34,7 +34,7 @@ private:
 	//Private functions
 
 	//creates a window and set the new variables
-	void initWindow(std::string windowName, int width, int height, bool fullscreen);
+	void initWindow(std::string windowName, real width, real height, bool fullscreen);
 
 	//NON COPIABLE
 	//Window(void);

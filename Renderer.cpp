@@ -50,6 +50,7 @@ void Renderer::initOpenGL()
 	//Set viewprot and clear color
 	glViewport(0.0f, 0.0f, mWindow->getWidth(),mWindow->getHeight());
 	glClearColor(0.5f, 0.5f ,0.5f ,1.0);
+	glEnable(GL_DEPTH_TEST);
 
 	//GL STATES AND ENABLES
 }
@@ -57,22 +58,33 @@ void Renderer::initOpenGL()
 //delete this
 #include "Shader.h"
 #include "Entity.h"
+#include "SceneNode.h"
 //
 
 void Renderer::renderFrame()
 {
 	//PRuebas
 	Entity* mEnt = mSceneManager->createEntity("cube", "NULL");
+	Entity* mEnt2 = mSceneManager->createEntity("cube2", "NULL");
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(-1.0, 1.0, -5.0));
+	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(1.0, 0.0, 0.0));
+	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.1, 1000);
 
 	mSceneManager->setCurrentShader(mShader);
 
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	mEnt->setCubeMesh();
-	mEnt->render(glm::mat4(1.0));
-	//no pruebas
-
+	mEnt2->setCubeMesh();
+	//mEnt->render(glm::mat4(1.0));
+	node->attachObject(mEnt);
+	node2->attachObject(mEnt2);
+	
+	
+	//NO pruebas
+	//Process all the sceneNodes and renders all their attached objects
+	mSceneManager->getRootSceneNode()->processRootSceneNode();
 	//swap the buffers
 	mWindow->swapBuffers(true);
 }

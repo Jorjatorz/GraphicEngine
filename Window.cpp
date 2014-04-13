@@ -12,12 +12,12 @@ Window::~Window(void)
 	SDL_GL_DeleteContext(mSDLContext);
 }
 
-Window::Window(std::string windowName, int width, int height, bool fullscreen)
+Window::Window(std::string windowName, real width, real height, bool fullscreen)
 {
 	initWindow(windowName, width, height, fullscreen);
 }
 
-void Window::initWindow(std::string windowName, int width, int height, bool fullscreen)
+void Window::initWindow(std::string windowName, real width, real height, bool fullscreen)
 {
 	//Set attributes
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -49,11 +49,11 @@ void Window::swapBuffers(bool swap)
 		SDL_GL_SwapWindow(mSDLWindow);
 }
 
-int Window::getWidth()
+real Window::getWidth()
 {
 	return mWindowWidth;
 }
-int Window::getHeight()
+real Window::getHeight()
 {
 	return mWindowHeight;
 }

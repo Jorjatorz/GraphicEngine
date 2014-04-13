@@ -18,12 +18,10 @@ public:
 	//types
 	void setCubeMesh(); //set a cube as mesh
 
-
-	glm::mat4 modelMatrix; //entity model matrix
-
 private:
 	Mesh* mMesh; //mesh pointer
 	std::string mMeshName; //mesh name
+	glm::mat4 modelMatrix; //entity model matrix
 
 };
 

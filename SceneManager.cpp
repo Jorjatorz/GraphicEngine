@@ -5,9 +5,11 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Entity.h"
+#include "SceneNode.h"
 
 SceneManager::SceneManager(void)
 {
+	mRootSceneNode = new SceneNode("RootNode", this);
 }
 
 
@@ -84,6 +86,11 @@ void SceneManager::unbindCurrentShader()
 	mCurrentShader->unBind();
 
 	mCurrentShader = NULL;
+}
+
+void SceneManager::unbindShader()
+{
+	mCurrentShader->unBind();
 }
 
 Texture* SceneManager::createTexture(std::string textureName, bool mipmap, std::string texturePath)
@@ -165,4 +172,9 @@ void SceneManager::deleteEntity(std::string entityName)
 			break;
 		}
 	}
+}
+
+void SceneManager::setPerspectiveMatrix(real FOV, real width, real height, real zNear, real zFar)
+{
+	mPerspectiveMatrix = glm::perspective(FOV, width/height, zNear, zFar);
 }

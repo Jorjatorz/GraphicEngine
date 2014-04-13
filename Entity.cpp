@@ -10,7 +10,7 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 {
 	//apart from movableobject constructor
 	mName = mNewName;
-	modelMatrix = glm::mat4(); //identity
+	modelMatrix = glm::mat4(1.0); //identity
 	mMesh = NULL;
 	mMeshName = "unknown";
 	mSceneManager = newSceneManager;
@@ -19,7 +19,7 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager)
 {
 	mName = mNewName;
-	modelMatrix = glm::mat4(); //identity
+	modelMatrix = glm::mat4(1.0); //identity
 	mMesh = NULL;
 	mMeshName = meshName;
 	mSceneManager = newSceneManager;
@@ -36,6 +36,11 @@ void Entity::render(glm::mat4 perspectiveViewM)
 	//apply shader
 	mSceneManager->bindCurrentShader();
 
+	Shader* shad = mSceneManager->getCurrentShader();
+	
+	glm::mat4 finalMatrix = perspectiveViewM * modelMatrix; //final matrix composed of pers * view * node * model matrix
+	shad->UniformMatrix("finalM", finalMatrix);
+
 	//render
 	mMesh->bindMeshArray();
 
@@ -45,7 +50,7 @@ void Entity::render(glm::mat4 perspectiveViewM)
 
 	mMesh->unbindMeshArray();
 
-	mSceneManager->unbindCurrentShader();
+	mSceneManager->unbindShader();
 }
 
 void Entity::setCubeMesh()

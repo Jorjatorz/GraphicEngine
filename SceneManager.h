@@ -24,8 +24,14 @@ public:
 	//bind shader and set it to currentSahder
 	void bindShader(Shader* mNewShader);
 	void bindCurrentShader();
+	Shader* getCurrentShader()
+	{
+		return mCurrentShader;
+	}
 	//unbind shader and set currentoShader to null
 	void unbindCurrentShader();
+	//unbind shader
+	void unbindShader();
 	//current binded Shader
 	Shader* mCurrentShader;
 
@@ -46,6 +52,21 @@ public:
 	//Light
 	//etc
 
+	//aux
+	//sets the perspectiveMAtrix
+	void setPerspectiveMatrix(real FOV, real width, real height, real zNear, real zFar);
+	//return the perspective matrix
+	glm::mat4 getPerspectiveMatrix()
+	{
+		return mPerspectiveMatrix;
+	}
+	//return the rootSceneNode
+	SceneNode* getRootSceneNode()
+	{
+		return mRootSceneNode;
+	}
+
+private:
 
 	//maps
 	typedef std::map<std::string, Shader*> tShaderMap;
@@ -56,6 +77,12 @@ public:
 	tShaderMap mShaderMap;
 	tTextureMap mTextureMap;
 	tEntityMap mEntityMap;
+
+	//perspective matrix
+	glm::mat4 mPerspectiveMatrix;
+
+	//root sceneNode
+	SceneNode* mRootSceneNode;
 };
 
 #endif

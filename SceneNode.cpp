@@ -1,12 +1,15 @@
 #include "SceneNode.h"
 
 #include "MovableObject.h"
+#include "SceneManager.h"
 
 SceneNode::SceneNode(void)
 {
 	mParent = NULL;
 	mPosition = mOrientation = glm::vec3(0.0);
 	mScale = glm::vec3(1.0);
+	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
+	mDerivedScale = glm::vec3(1.0);
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
 	mName = "Unknown";
@@ -18,6 +21,8 @@ SceneNode::SceneNode(std::string sceneNodeName, SceneManager* newSceneManager)
 	mParent = NULL;
 	mPosition = mOrientation = glm::vec3(0.0);
 	mScale = glm::vec3(1.0);
+	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
+	mDerivedScale = glm::vec3(1.0);
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
 	mName = sceneNodeName;
@@ -29,6 +34,8 @@ SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneMana
 	mParent = nodeParent;
 	mPosition = mOrientation = glm::vec3(0.0);
 	mScale = glm::vec3(1.0);
+	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
+	mDerivedScale = glm::vec3(1.0);
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
 	mName = sceneNodeName;
@@ -50,8 +57,22 @@ void SceneNode::setParentSceneNode(SceneNode* newParent)
 	mParent = newParent;
 }
 
-SceneNode* SceneNode::addChildSceneNode(std::string name)
+SceneNode* SceneNode::createChildSceneNode(std::string name)
 {
+	tChildsNodesMap::iterator it;
+
+	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	{
+		if(name == it->first)
+		{
+			#ifdef DEBUG_MESSAGES
+			std::cout << name << " SceneNode already exists, returning it" << std::endl;
+			#endif
+			//if already exists retuern it
+			return it->second;
+		}
+	}
+	//else
 	SceneNode* newSceneNode = new SceneNode(name, this, mSceneManager);
 
 	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newSceneNode));
@@ -59,11 +80,52 @@ SceneNode* SceneNode::addChildSceneNode(std::string name)
 	return newSceneNode;
 }
 
-SceneNode* SceneNode::addChildSceneNode(std::string name, SceneNode* newChild)
+SceneNode* SceneNode::createChildSceneNode(std::string name, SceneNode* newChild)
 {
+	tChildsNodesMap::iterator it;
+
+	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	{
+		if(name == it->first)
+		{
+			#ifdef DEBUG_MESSAGES
+			std::cout << name << " SceneNode already exists, inserting new sceneNode in it" << std::endl;
+			#endif
+			//if already exists retuern it
+			it->second = newChild;
+
+			return it->second;
+		}
+	}
+	//else
 	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newChild));
 
 	return newChild;
+}
+
+SceneNode* SceneNode::createChildSceneNode(std::string name, glm::vec3 newPosition)
+{
+	tChildsNodesMap::iterator it;
+
+	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	{
+		if(name == it->first)
+		{
+			#ifdef DEBUG_MESSAGES
+			std::cout << name << " SceneNode already exists, returning it" << std::endl;
+			#endif
+			//if already exists retuern it
+			return it->second;
+		}
+	}
+	//else
+	SceneNode* newSceneNode = new SceneNode(name, this, mSceneManager);
+
+	newSceneNode->mPosition = newPosition;
+
+	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newSceneNode));
+
+	return newSceneNode;
 }
 
 void SceneNode::deleteChildrenNode(SceneNode* mNode)
@@ -103,7 +165,9 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 	//if the object is also attached
 	if(mNewObject->isAttached())
 	{
+		#ifdef DEBUG_MESSAGE
 		std::cout << mNewObject->getName() << " already attached" << std::endl;
+		#endif
 	}
 	else
 	{
@@ -146,6 +210,7 @@ void SceneNode::updateFromParent()
 	//if the node position has changed or the derived positon (thus the parent) has changed modify the sceneNodeMatrix
 	if(hasChanged)
 	{
+		mSceneNodeMatrix = glm::mat4(1.0); //identity
 		//update childs
 		updateChildrens();
 		//update matrix
@@ -155,6 +220,8 @@ void SceneNode::updateFromParent()
 		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.z, glm::vec3(0.0, 0.0, 1.0));
 		mSceneNodeMatrix = glm::scale(mSceneNodeMatrix, mDerivedScale);
 	}
+
+	hasChanged = false;
 
 }
 
@@ -175,13 +242,15 @@ void SceneNode::getDerivedPosition()
 	{
 		if(mParent->hasChanged)
 		{
-			mDerivedPosition = mParent->mDerivedPosition * mPosition;
+			mDerivedPosition = mParent->mDerivedPosition + mPosition;
 
 			hasChanged = true;
 		}
 	}
-
-	mDerivedPosition = mPosition;
+	else
+	{
+		mDerivedPosition = mPosition;
+	}
 }
 void SceneNode::getDerivedOrientation()
 {
@@ -190,13 +259,15 @@ void SceneNode::getDerivedOrientation()
 	{
 		if(mParent->hasChanged)
 		{
-			mDerivedOrientation = mParent->mDerivedOrientation * mOrientation;
+			mDerivedOrientation = mParent->mDerivedOrientation + mOrientation;
 			
 			hasChanged = true;
 		}
 	}
-
-	mDerivedOrientation = mOrientation;
+	else
+	{
+		mDerivedOrientation = mOrientation;
+	}
 }
 void SceneNode::getDerivedScale()
 {
@@ -210,16 +281,22 @@ void SceneNode::getDerivedScale()
 			hasChanged = true;
 		}
 	}
-
-	mDerivedScale = mDerivedScale;
+	else
+	{
+		mDerivedScale = mScale;
+	}
 }
 
 void SceneNode::processRootSceneNode()
 {
 	//calculate perspective and viewmatrix multiplyed matrix
+	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix();
+
+	//update positions
+	updateChildrens();
 
 	//go through all the childs
-	//processChilds...
+	processChilds(perspectiveViewM);
 }
 
 void SceneNode::processChilds(glm::mat4 perspectiveViewM)
@@ -240,8 +317,36 @@ void SceneNode::processObjects(glm::mat4 perspectiveViewM)
 {
 	tObjectsMaps::iterator it;
 
+	//we calculate the new matrix (perspective + view + sceneNodeMAtrix)
+	glm::mat4 finalMatrix = perspectiveViewM * mSceneNodeMatrix;
+
 	for(it = mObjectsMap.begin(); it != mObjectsMap.end(); ++it)
 	{
-		it->second->render(perspectiveViewM);
+		it->second->render(finalMatrix);
 	}
+}
+
+void SceneNode::translate(glm::vec3 trans)
+{
+	mPosition += trans;
+
+	hasChanged = true;
+}
+void SceneNode::setPosition(glm::vec3 newPos)
+{
+	mPosition = newPos;
+
+	hasChanged = true;
+}
+void SceneNode::setOrientation(glm::vec3 newOrientation)
+{
+	mOrientation = newOrientation;
+
+	hasChanged = true;
+}
+void SceneNode::setScale(glm::vec3 newScale)
+{
+	mScale = newScale;
+
+	hasChanged = true;
 }

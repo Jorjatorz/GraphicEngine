@@ -1,4 +1,6 @@
 //constains all classes declarations and other things
+#define DEBUG_MESSAGES
+
 
 //external includes
 #include <SDL.h>
@@ -10,7 +12,7 @@
 #include <glm\gtc\type_ptr.hpp>
 
 //custom type for decimals, default: float
-typedef float decimal;
+typedef float real;
 
 
 
