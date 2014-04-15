@@ -26,7 +26,7 @@ void Root::initEngine()
 
 	//create a new renderer
 	mRenderer = new Renderer();
-	mRenderer->createRenderer("Pruebas", 1280, 720, false);
+	mRenderer->createRenderer("Pruebas", 640, 420, false);
 
 	//create new input manager
 	mInput = new InputManager();

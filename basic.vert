@@ -10,6 +10,6 @@ uniform mat4 normalM;
 
 void main()
 {
-	mNorm = vec3(normalM * vec4(normal, 0.0));
+	mNorm = normalize((normalM * vec4(normal, 1.0)).xyz);
 	gl_Position =  finalM * vec4(position, 1.0);
 }

@@ -74,6 +74,7 @@ void Renderer::renderFrame()
 	Camera* mCam = mSceneManager->createCamera("camera1");
 	Camera* mCam2 = mSceneManager->createCamera("camera2");
 	mCam->lookAt(glm::vec3(-1.0, 1.0, -5.0));
+	mCam2->lookAt(node->getPosition());
 	mSceneManager->setCurrentShader(mShader);
 
 

@@ -42,7 +42,7 @@ void Entity::render(glm::mat4 perspectiveViewM)
 	
 	glm::mat4 finalMatrix = perspectiveViewM * mMesh->meshMatrix * modelMatrix; //final matrix composed of pers * view * node * model matrix
 	shad->UniformMatrix("finalM", finalMatrix);
-	glm::mat4 normalM = glm::transpose(glm::inverse(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mMesh->meshMatrix));
+	glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mMesh->meshMatrix);
 	shad->UniformMatrix("normalM", normalM);
 
 	//render

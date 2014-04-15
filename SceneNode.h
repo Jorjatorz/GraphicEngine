@@ -59,6 +59,11 @@ public:
 		return mSceneNodeMatrix;
 	}
 
+	glm::vec3 getPosition()
+	{
+		return mPosition;
+	}
+
 private:
 	//scenenode model matrix (derived from parent)
 	glm::mat4 mSceneNodeMatrix;

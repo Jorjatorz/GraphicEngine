@@ -8,6 +8,7 @@ Mesh::Mesh(void)
 	//generate buffers
 	glGenVertexArrays(1, &vertexArrayObject);
 	glGenBuffers(1, &vertexBuffer);
+	glGenBuffers(1, &normalBuffer);
 	glGenBuffers(1, &indexBuffer);
 }
 
@@ -15,6 +16,7 @@ Mesh::Mesh(void)
 Mesh::~Mesh(void)
 {
 	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &normalBuffer);
 	glDeleteBuffers(1, &indexBuffer);
 	glDeleteVertexArrays(1, &vertexArrayObject);
 }
@@ -84,8 +86,12 @@ void Mesh::loadMesh(std::string meshName)
 {
 	if(!buffersLoaded)
 	{
+		std::cout << "Loading mesh: " << meshName << std::endl;
+
 		Assimp::Importer mImporter;
 		const aiScene *scene = mImporter.ReadFile(meshName.c_str(), aiProcessPreset_TargetRealtime_Quality);
+
+		std::cout << "Load succesful" << std::endl;
 
 		if(!scene)
 		{
@@ -131,18 +137,16 @@ void Mesh::loadMesh(std::string meshName)
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, mVertexVector.size() * sizeof(GLfloat),	&mVertexVector[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
+		glEnableVertexAttribArray(Shader::vertexPosition);
 		//normals
-		glGenBuffers(1, &vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
 		glBufferData(GL_ARRAY_BUFFER, mNormalsVector.size() * sizeof(GLfloat),	&mNormalsVector[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(Shader::vertexNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
-
-		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(Shader::vertexNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
+		glEnableVertexAttribArray(Shader::vertexNormal);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndexVector.size() * sizeof(GLushort), &mIndexVector[0], GL_STATIC_DRAW);
 
-		glBindVertexArray(0);
 		glBindVertexArray(0);
 
 		buffersLoaded = true;
@@ -158,7 +162,7 @@ void Mesh::loadMesh(std::string meshName)
 			{
 				meshMatrix[i][j] = m[i][j];
 			}
-	}
+		}
 
 	}
 }
