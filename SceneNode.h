@@ -53,6 +53,12 @@ public:
 	void setOrientation(glm::vec3 newOrientation);
 	void setScale(glm::vec3 newScale);
 
+	//returns
+	glm::mat4 getSceneNodeMatrix()
+	{
+		return mSceneNodeMatrix;
+	}
+
 private:
 	//scenenode model matrix (derived from parent)
 	glm::mat4 mSceneNodeMatrix;

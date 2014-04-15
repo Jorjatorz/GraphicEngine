@@ -1,7 +1,9 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include <iostream>
 #include <string>
+#include <vector>
 
 #include "Definitions.h"
 
@@ -26,14 +28,23 @@ public:
 
 	//number of vertices the mesh have
 	GLint numberOfVertices;
+
+	glm::mat4 meshMatrix;
+
+	std::vector<GLfloat> mVertexVector;
+	std::vector<GLfloat> mNormalsVector;
+	std::vector<GLushort> mIndexVector;
 private:
 	//uv, etc.
+
+
+
 
 	//controls if the vertex and index buffers where already created (thus (if wanted to be loaded) it was succesfully loaded from file)
 	bool buffersLoaded;
 
 	//openGL buffers
-	GLuint vertexBuffer, indexBuffer, vertexArrayObject;
+	GLuint vertexBuffer, normalBuffer, uvBuffer, indexBuffer, vertexArrayObject;
 };
 
 #endif

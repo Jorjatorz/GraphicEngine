@@ -165,7 +165,7 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 	//if the object is also attached
 	if(mNewObject->isAttached())
 	{
-		#ifdef DEBUG_MESSAGE
+		#ifdef DEBUG_MESSAGES
 		std::cout << mNewObject->getName() << " already attached" << std::endl;
 		#endif
 	}
@@ -290,7 +290,7 @@ void SceneNode::getDerivedScale()
 void SceneNode::processRootSceneNode()
 {
 	//calculate perspective and viewmatrix multiplyed matrix
-	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix();
+	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix() * mSceneManager->getViewMatrix();
 
 	//update positions
 	updateChildrens();

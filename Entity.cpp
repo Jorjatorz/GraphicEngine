@@ -30,6 +30,8 @@ Entity::~Entity(void)
 {
 }
 
+#include "SceneNode.h"
+#include "SceneManager.h"
 
 void Entity::render(glm::mat4 perspectiveViewM)
 {
@@ -38,15 +40,17 @@ void Entity::render(glm::mat4 perspectiveViewM)
 
 	Shader* shad = mSceneManager->getCurrentShader();
 	
-	glm::mat4 finalMatrix = perspectiveViewM * modelMatrix; //final matrix composed of pers * view * node * model matrix
+	glm::mat4 finalMatrix = perspectiveViewM * mMesh->meshMatrix * modelMatrix; //final matrix composed of pers * view * node * model matrix
 	shad->UniformMatrix("finalM", finalMatrix);
+	glm::mat4 normalM = glm::transpose(glm::inverse(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mMesh->meshMatrix));
+	shad->UniformMatrix("normalM", normalM);
 
 	//render
 	mMesh->bindMeshArray();
 
 	//send uniforms
 
-	glDrawElements(GL_TRIANGLES, mMesh->numberOfVertices, GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, mMesh->mIndexVector.size(), GL_UNSIGNED_SHORT, 0);
 
 	mMesh->unbindMeshArray();
 
@@ -57,8 +61,11 @@ void Entity::setCubeMesh()
 {
 	mMeshName = "cube";
 
+	
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr(); //resourcemanager pointer
 	mMesh = mResourceManager->createMesh(mMeshName, "NULL"); //allocate new mesh
 
-	mMesh->createCube();
+	//mMesh->createCube();
+
+	mMesh->loadMesh("dragon.obj");
 }
