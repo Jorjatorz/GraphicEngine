@@ -35,17 +35,7 @@ public:
 	void detachObject(std::string objName);
 	void detachObject(MovableObject* obj);
 	void detachAllObjects();
-	//get the new derived traslations and update the scenenodeMatrix
-	void updateFromParent();
-	//update the childrens using the current derived position
-	void updateChildrens();
 
-	//modify derivedPos. the parent position * mPosition
-	void getDerivedPosition();
-	//modify derivedOri the parent orientation * mOrientation
-	void getDerivedOrientation();
-	//modify derivedScale the parent scale * mScane
-	void getDerivedScale();
 
 	//transformations functions
 	void translate(glm::vec3 trans);
@@ -62,6 +52,26 @@ public:
 	glm::vec3 getPosition()
 	{
 		return mPosition;
+	}
+	glm::vec3 getOrientation()
+	{
+		return mOrientation;
+	}
+	glm::vec3 getScale()
+	{
+		return mScale;
+	}
+	glm::vec3 getDerivedPosition()
+	{
+		return mDerivedPosition;
+	}
+	glm::vec3 getDerivedOrientation()
+	{
+		return mDerivedOrientation;
+	}
+	glm::vec3 getDerivedScale()
+	{
+		return mDerivedScale;
 	}
 
 private:
@@ -90,8 +100,15 @@ private:
 	SceneManager* mSceneManager;
 
 	//Functions
-	void processChilds(glm::mat4 perspectiveViewM);
-	void processObjects(glm::mat4 perspectiveViewM);
+	void processChilds(glm::mat4 perspectiveViewM); //go trhought out all his childs and process his objects
+	void processObjects(glm::mat4 perspectiveViewM); //rederall the objects attached to the scenenode
+
+	void processDerivedPosition(); //modify derivedPos. the parent position * mPosition
+	void processDerivedOrientation(); //modify derivedOri the parent orientation * mOrientation
+	void processDerivedScale();	//modify derivedScale the parent scale * mScane
+
+	void updateFromParent(); //process the derived traslations and update the scenenodeMatrix
+	void updateChildrens(); //update the childrens using the current derived translations
 };
 
 #endif

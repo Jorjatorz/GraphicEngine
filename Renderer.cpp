@@ -66,34 +66,28 @@ void Renderer::initOpenGL()
 void Renderer::renderFrame()
 {
 	//PRuebas
-	Entity* mEnt = mSceneManager->createEntity("cube", "NULL");
-	Entity* mEnt2 = mSceneManager->createEntity("cube2", "NULL");
+	Entity* mEnt = mSceneManager->createEntity("cube", "dragon.obj");
+	//Entity* mEnt2 = mSceneManager->createEntity("cube2", "NULL");
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -3.0));
 	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.1);
 	Camera* mCam = mSceneManager->createCamera("camera1");
-	Camera* mCam2 = mSceneManager->createCamera("camera2");
-	mCam->lookAt(glm::vec3(-1.0, 1.0, -5.0));
-	mCam2->lookAt(node->getPosition());
+	mCam->lookAt(node->getPosition());
 	mSceneManager->setCurrentShader(mShader);
 
+	Entity* mEnt2 = mSceneManager->createEntity("ent2", "dragon.obj");
+	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, 0.0));
+	node2->setOrientation(glm::vec3(0.0, 90.0, 0.0));
+	node2->attachObject(mEnt2);
 
-	if(Root::getSingletonPtr()->mInput->isKeyDown(SDL_SCANCODE_W))
-	{
-		mSceneManager->setCurrentCamera(mCam);
-	}
-	else
-	{
-		mSceneManager->setCurrentCamera(mCam2);
-	}
+
+	mSceneManager->setCurrentCamera(mCam);
 
 	node->setScale(glm::vec3(0.1, 0.1, 0.1));
 	node->translate(glm::vec3(0.001, 0.001, 0.001));
 
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	mEnt->setCubeMesh();
-	mEnt2->setCubeMesh();
 	//mEnt->render(glm::mat4(1.0));
 	node->attachObject(mEnt);	
 	//NO pruebas

@@ -12,6 +12,18 @@ Mesh::Mesh(void)
 	glGenBuffers(1, &indexBuffer);
 }
 
+Mesh::Mesh(std::string meshPath)
+{
+	//the mesh buffers are not filled not loaded
+	buffersLoaded = false;
+	//generate buffers
+	glGenVertexArrays(1, &vertexArrayObject);
+	glGenBuffers(1, &vertexBuffer);
+	glGenBuffers(1, &normalBuffer);
+	glGenBuffers(1, &indexBuffer);
+
+	loadMesh(meshPath); //load the mesh
+}
 
 Mesh::~Mesh(void)
 {
@@ -82,25 +94,26 @@ void Mesh::unbindMeshArray()
 	glBindVertexArray(0);
 }
 
-void Mesh::loadMesh(std::string meshName)
+void Mesh::loadMesh(std::string meshPath)
 {
 	if(!buffersLoaded)
 	{
-		std::cout << "Loading mesh: " << meshName << std::endl;
+		std::cout << "Loading mesh: " << meshPath << std::endl;
 
 		Assimp::Importer mImporter;
-		const aiScene *scene = mImporter.ReadFile(meshName.c_str(), aiProcessPreset_TargetRealtime_Quality);
+		const aiScene *scene = mImporter.ReadFile(meshPath.c_str(), aiProcessPreset_TargetRealtime_Quality);
 
 		std::cout << "Load succesful" << std::endl;
 
 		if(!scene)
 		{
-			std::cout << "Error importing " << meshName << " " << mImporter.GetErrorString() << std::endl;
+			std::cout << "Error importing " << meshPath << " " << mImporter.GetErrorString() << std::endl;
 		}
 
 		aiMesh* mesh = scene->mMeshes[0]; //We only take the first mesh
 
 		numberOfVertices = mesh->mNumVertices; //set the number of vertices
+		numberOfIndices = mesh->mNumFaces * 3; //each face has 3 indices
 
 		for(int i = 0; i < mesh->mNumVertices; ++i)
 		{
@@ -135,7 +148,7 @@ void Mesh::loadMesh(std::string meshName)
 		glBindVertexArray(vertexArrayObject);
 		//vertices
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, mVertexVector.size() * sizeof(GLfloat),	&mVertexVector[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, mVertexVector.size() * sizeof(GLfloat), &mVertexVector[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
 		glEnableVertexAttribArray(Shader::vertexPosition);
 		//normals
@@ -155,7 +168,7 @@ void Mesh::loadMesh(std::string meshName)
 		// OpenGL matrices are column major
 		m.Transpose();
 
-		// save model matrix and apply node transformation
+		// save model matrix
 		for(unsigned int i = 0; i < 4; i++)
 		{
 			for(unsigned int j = 0; j < 4; j++)

@@ -203,14 +203,14 @@ void SceneNode::detachAllObjects()
 
 void SceneNode::updateFromParent()
 {
-	getDerivedPosition();
-	getDerivedOrientation();
-	getDerivedScale();
+	processDerivedPosition();
+	processDerivedOrientation();
+	processDerivedScale();
 
 	//if the node position has changed or the derived positon (thus the parent) has changed modify the sceneNodeMatrix
 	if(hasChanged)
 	{
-		mSceneNodeMatrix = glm::mat4(1.0); //identity
+		mSceneNodeMatrix = glm::mat4(1.0); //set identity
 		//update childs
 		updateChildrens();
 		//update matrix
@@ -235,7 +235,7 @@ void SceneNode::updateChildrens()
 	}
 }
 
-void SceneNode::getDerivedPosition()
+void SceneNode::processDerivedPosition()
 {
 	//if we have parent
 	if(mParent != NULL)
@@ -252,7 +252,7 @@ void SceneNode::getDerivedPosition()
 		mDerivedPosition = mPosition;
 	}
 }
-void SceneNode::getDerivedOrientation()
+void SceneNode::processDerivedOrientation()
 {
 		//if we have parent
 	if(mParent != NULL)
@@ -269,7 +269,7 @@ void SceneNode::getDerivedOrientation()
 		mDerivedOrientation = mOrientation;
 	}
 }
-void SceneNode::getDerivedScale()
+void SceneNode::processDerivedScale()
 {
 		//if we have parent
 	if(mParent != NULL)
