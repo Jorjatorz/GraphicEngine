@@ -47,7 +47,7 @@ void Entity::render(glm::mat4 perspectiveViewM)
 	glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
 	shad->UniformMatrix("normalM", normalM);
 
-	glDrawElements(GL_TRIANGLES, mMesh->numberOfIndices, GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, mMesh->numberOfIndices, GL_UNSIGNED_INT, 0);
 
 	mMesh->unbindMeshArray();
 

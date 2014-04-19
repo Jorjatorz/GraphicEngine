@@ -38,7 +38,7 @@ private:
 	//uv, etc.
 	std::vector<GLfloat> mVertexVector;
 	std::vector<GLfloat> mNormalsVector;
-	std::vector<GLushort> mIndexVector;
+	std::vector<GLuint> mIndexVector;
 
 
 
