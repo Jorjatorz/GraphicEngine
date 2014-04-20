@@ -32,7 +32,7 @@ void Root::initEngine()
 	mInput = new InputManager();
 
 	bool running = true;
-	while(running && !mInput->isKeyDown(SDL_SCANCODE_ESCAPE))
+	while(running && !mInput->isKeyPressed(SDL_SCANCODE_ESCAPE))
 	{
 		//Get input
 		mInput->getFrameInput(running);

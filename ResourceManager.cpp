@@ -172,8 +172,8 @@ Mesh* ResourceManager::createMesh(std::string meshName, std::string meshPath)
 		}
 	}
 	//else
-	//create and load the mesh (will be deleted by the resource)
-	Mesh* mMesh = new Mesh(meshPath);
+	//create the mesh (will be deleted by the resource)
+	Mesh* mMesh = new Mesh();
 	//create new resource(will be deleted by the resourceManager)
 	GameResource<Mesh*>* mResource = new GameResource<Mesh*>(meshPath, mMesh);
 

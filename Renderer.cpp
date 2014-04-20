@@ -59,14 +59,26 @@ void Renderer::initOpenGL()
 #include "Shader.h"
 #include "Entity.h"
 #include "SceneNode.h"
-#include "Camera.h"
-#include "InputManager.h"
-#include "Mesh.h"
 //
+
 void Renderer::renderFrame()
 {
 	//PRuebas
+<<<<<<< HEAD
 	Entity* mEnt = mSceneManager->createEntity("cube", "guard.obj");
+=======
+<<<<<<< HEAD
+	Entity* mEnt = mSceneManager->createEntity("cube", "NULL");
+	Entity* mEnt2 = mSceneManager->createEntity("cube2", "NULL");
+	Shader* mShader = mSceneManager->createShader("basic", "basic");
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(-1.0, 1.0, -5.0));
+	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(1.0, 0.0, 0.0));
+	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.1, 1000);
+
+	mSceneManager->setCurrentShader(mShader);
+=======
+	Entity* mEnt = mSceneManager->createEntity("cube", "dragon.obj");
+>>>>>>> 8a286b3211449af3d84fa3521aafd09d8305108e
 	//Entity* mEnt2 = mSceneManager->createEntity("cube2", "NULL");
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -1.0));
@@ -84,12 +96,21 @@ void Renderer::renderFrame()
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));
 	node->translate(glm::vec3(0.001, 0.001, 0.001));
+<<<<<<< HEAD
 	node->lookAt(mCam->getPosition());
+=======
+>>>>>>> parent of f606805... Monomeshes now loading Ok. Trying to implement LookAt to SceneNodes
+>>>>>>> 8a286b3211449af3d84fa3521aafd09d8305108e
 
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	mEnt->setCubeMesh();
+	mEnt2->setCubeMesh();
 	//mEnt->render(glm::mat4(1.0));
-	node->attachObject(mEnt);	
+	node->attachObject(mEnt);
+	node2->attachObject(mEnt2);
+	
+	
 	//NO pruebas
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();

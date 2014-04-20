@@ -46,13 +46,7 @@ void InputManager::getFrameInput(bool &running)
 	}
 }
 
-bool InputManager::isKeyDown(short int keyCode)
+bool InputManager::isKeyPressed(short int keyCode)
 {
 	return mKeyPressedArray[keyCode];
-}
-
-bool InputManager::isKeyUp(short int keyCode)
-{
-	//return the array negated because if the key is not pressed (false) then its up (so !false = true)
-	return !mKeyPressedArray[keyCode];
 }
