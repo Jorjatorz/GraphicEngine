@@ -3,18 +3,34 @@
 
 Mesh::Mesh(void)
 {
+	numberOfVertices = numberOfIndices = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
 	//generate buffers
 	glGenVertexArrays(1, &vertexArrayObject);
 	glGenBuffers(1, &vertexBuffer);
+	glGenBuffers(1, &normalBuffer);
 	glGenBuffers(1, &indexBuffer);
 }
 
+Mesh::Mesh(std::string meshPath)
+{
+	numberOfVertices = numberOfIndices = 0;
+	//the mesh buffers are not filled not loaded
+	buffersLoaded = false;
+	//generate buffers
+	glGenVertexArrays(1, &vertexArrayObject);
+	glGenBuffers(1, &vertexBuffer);
+	glGenBuffers(1, &normalBuffer);
+	glGenBuffers(1, &indexBuffer);
+
+	loadMesh(meshPath); //load the mesh
+}
 
 Mesh::~Mesh(void)
 {
 	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &normalBuffer);
 	glDeleteBuffers(1, &indexBuffer);
 	glDeleteVertexArrays(1, &vertexArrayObject);
 }
@@ -78,4 +94,166 @@ void Mesh::bindMeshArray()
 void Mesh::unbindMeshArray()
 {
 	glBindVertexArray(0);
+}
+
+<<<<<<< HEAD
+void Mesh::loadMesh(std::string meshName)
+{
+	if(!buffersLoaded)
+	{
+		Assimp::Importer mImporter;
+		const aiScene *scene = mImporter.ReadFile(meshName.c_str(), aiProcessPreset_TargetRealtime_Quality);
+
+		if(!scene)
+		{
+			std::cout << "Error importing " << meshName << " " << mImporter.GetErrorString() << std::endl;
+		}
+
+		aiMesh* mesh = scene->mMeshes[0]; //We only take the first mesh
+
+		numberOfVertices = mesh->mNumVertices; //set the number of vertices
+
+		for(int i = 0; i < mesh->mNumVertices; ++i)
+		{
+			//create vertex array
+			const aiVector3D* vertex = &mesh->mVertices[i]; //copy the vertices
+			const aiVector3D* normal = &mesh->mNormals[i]; //copy the vertices
+
+			mVertexVector.push_back(vertex->x);
+			mVertexVector.push_back(vertex->y);
+			mVertexVector.push_back(vertex->z);
+
+			mNormalsVector.push_back(normal->x);
+			mNormalsVector.push_back(normal->y);
+			mNormalsVector.push_back(normal->z);
+
+		}
+
+		for(int j = 0; j < mesh->mNumFaces; ++j)
+		{
+			//create index array
+			const aiFace* face = &mesh->mFaces[j];
+
+			assert(face->mNumIndices == 3);
+
+			mIndexVector.push_back(face->mIndices[0]);
+			mIndexVector.push_back(face->mIndices[1]);
+			mIndexVector.push_back(face->mIndices[2]);
+=======
+void Mesh::loadMesh(std::string meshPath)
+{
+	if(!buffersLoaded)
+	{
+		std::cout << "Loading mesh: " << meshPath << std::endl;
+
+		Assimp::Importer mImporter;
+		const aiScene *scene = mImporter.ReadFile(meshPath.c_str(), aiProcessPreset_TargetRealtime_Fast);
+
+		std::cout << "Load succesful" << std::endl;
+		std::cout << "Number of meshes: " << scene->mNumMeshes << std::endl;
+
+		if(!scene)
+		{
+			std::cout << "Error importing " << meshPath << " " << mImporter.GetErrorString() << std::endl;
+		}
+
+		for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
+		{
+			aiMesh* mesh = scene->mMeshes[i]; //We only take the first mesh
+
+			numberOfVertices += mesh->mNumVertices; //set the number of vertices
+			numberOfIndices += mesh->mNumFaces * 3; //each face has 3 indices
+
+			for(unsigned int j = 0; j < mesh->mNumVertices; ++j)
+			{
+				//create vertex array
+				const aiVector3D* vertex = &mesh->mVertices[j]; //copy the vertices
+				const aiVector3D* normal = &mesh->mNormals[j]; //copy the vertices
+
+				mVertexVector.push_back(vertex->x);
+				mVertexVector.push_back(vertex->y);
+				mVertexVector.push_back(vertex->z);
+			
+
+				mNormalsVector.push_back(normal->x);
+				mNormalsVector.push_back(normal->y);
+				mNormalsVector.push_back(normal->z);
+
+			}
+
+			for(int j = 0; j < mesh->mNumFaces; ++j)
+			{
+				//create index array
+				const aiFace* face = &mesh->mFaces[j];
+
+				assert(face->mNumIndices == 3);
+
+				mIndexVector.push_back(face->mIndices[0]);
+				mIndexVector.push_back(face->mIndices[1]);
+				mIndexVector.push_back(face->mIndices[2]);
+			}
+
+
+>>>>>>> f60680574ae3ccb0f9be17c78d310144eda8d124
+		}
+
+
+
+		glBindVertexArray(vertexArrayObject);
+		//vertices
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+<<<<<<< HEAD
+		glBufferData(GL_ARRAY_BUFFER, mVertexVector.size() * sizeof(GLfloat),	&mVertexVector[0], GL_STATIC_DRAW);
+				glEnableVertexAttribArray(0);
+		glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
+		//normals
+		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+		glBufferData(GL_ARRAY_BUFFER, mNormalsVector.size() * sizeof(GLfloat),	&mNormalsVector[0], GL_STATIC_DRAW);
+				glEnableVertexAttribArray(1);
+		glVertexAttribPointer(Shader::vertexNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
+
+		//glEnableVertexAttribArray(0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndexVector.size() * sizeof(GLushort), &mIndexVector[0], GL_STATIC_DRAW);
+=======
+		glBufferData(GL_ARRAY_BUFFER, mVertexVector.size() * sizeof(GLfloat), &mVertexVector[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
+		glEnableVertexAttribArray(Shader::vertexPosition);
+		//normals
+		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+		glBufferData(GL_ARRAY_BUFFER, mNormalsVector.size() * sizeof(GLfloat),	&mNormalsVector[0], GL_STATIC_DRAW);
+		glVertexAttribPointer(Shader::vertexNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
+		glEnableVertexAttribArray(Shader::vertexNormal);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndexVector.size() * sizeof(GLuint), &mIndexVector[0], GL_STATIC_DRAW);
+>>>>>>> f60680574ae3ccb0f9be17c78d310144eda8d124
+
+		glBindVertexArray(0);
+
+		buffersLoaded = true;
+
+		aiMatrix4x4 m = scene->mRootNode->mTransformation;
+		// OpenGL matrices are column major
+		m.Transpose();
+
+<<<<<<< HEAD
+		// save model matrix and apply node transformation
+=======
+		// save model matrix
+>>>>>>> f60680574ae3ccb0f9be17c78d310144eda8d124
+		for(unsigned int i = 0; i < 4; i++)
+		{
+			for(unsigned int j = 0; j < 4; j++)
+			{
+				meshMatrix[i][j] = m[i][j];
+			}
+<<<<<<< HEAD
+	}
+=======
+		}
+>>>>>>> f60680574ae3ccb0f9be17c78d310144eda8d124
+
+	}
 }

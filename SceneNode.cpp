@@ -165,7 +165,7 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 	//if the object is also attached
 	if(mNewObject->isAttached())
 	{
-		#ifdef DEBUG_MESSAGE
+		#ifdef DEBUG_MESSAGES
 		std::cout << mNewObject->getName() << " already attached" << std::endl;
 		#endif
 	}
@@ -203,14 +203,14 @@ void SceneNode::detachAllObjects()
 
 void SceneNode::updateFromParent()
 {
-	getDerivedPosition();
-	getDerivedOrientation();
-	getDerivedScale();
+	processDerivedPosition();
+	processDerivedOrientation();
+	processDerivedScale();
 
 	//if the node position has changed or the derived positon (thus the parent) has changed modify the sceneNodeMatrix
 	if(hasChanged)
 	{
-		mSceneNodeMatrix = glm::mat4(1.0); //identity
+		mSceneNodeMatrix = glm::mat4(1.0); //set identity
 		//update childs
 		updateChildrens();
 		//update matrix
@@ -235,7 +235,7 @@ void SceneNode::updateChildrens()
 	}
 }
 
-void SceneNode::getDerivedPosition()
+void SceneNode::processDerivedPosition()
 {
 	//if we have parent
 	if(mParent != NULL)
@@ -252,7 +252,7 @@ void SceneNode::getDerivedPosition()
 		mDerivedPosition = mPosition;
 	}
 }
-void SceneNode::getDerivedOrientation()
+void SceneNode::processDerivedOrientation()
 {
 		//if we have parent
 	if(mParent != NULL)
@@ -269,7 +269,7 @@ void SceneNode::getDerivedOrientation()
 		mDerivedOrientation = mOrientation;
 	}
 }
-void SceneNode::getDerivedScale()
+void SceneNode::processDerivedScale()
 {
 		//if we have parent
 	if(mParent != NULL)
@@ -290,7 +290,7 @@ void SceneNode::getDerivedScale()
 void SceneNode::processRootSceneNode()
 {
 	//calculate perspective and viewmatrix multiplyed matrix
-	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix();
+	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix() * mSceneManager->getViewMatrix();
 
 	//update positions
 	updateChildrens();
@@ -326,9 +326,25 @@ void SceneNode::processObjects(glm::mat4 perspectiveViewM)
 	}
 }
 
+void SceneNode::lookAt(glm::vec3 destination)
+{
+	glm::vec3 rot = destination - mPosition; //calculate rotation vector
+
+	mOrientation = rot;
+
+	hasChanged = true;
+}
+
 void SceneNode::translate(glm::vec3 trans)
 {
 	mPosition += trans;
+
+	hasChanged = true;
+}
+
+void SceneNode::rotate(glm::vec3 rot)
+{
+	mOrientation += rot;
 
 	hasChanged = true;
 }

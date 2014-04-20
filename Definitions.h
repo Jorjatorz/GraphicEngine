@@ -1,5 +1,5 @@
 //constains all classes declarations and other things
-#define DEBUG_MESSAGES
+//#define DEBUG_MESSAGES
 
 
 //external includes
@@ -10,6 +10,12 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
+#include <glm\gtc\matrix_inverse.hpp>
+#include <assimp\Importer.hpp>
+#include <assimp\postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/types.h>
+#include <assimp/vector3.h>
 
 //custom type for decimals, default: float
 typedef float real;
@@ -18,6 +24,7 @@ typedef float real;
 
 //forward declarations of classes
 //allow declaration of pointers to them
+class Camera;
 class Entity;
 class InputManager;
 class Mesh;
