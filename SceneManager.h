@@ -32,8 +32,6 @@ public:
 	void unbindCurrentShader();
 	//unbind shader
 	void unbindShader();
-	//current binded Shader
-	Shader* mCurrentShader;
 
 	//Texture
 	//create, etc
@@ -52,9 +50,20 @@ public:
 	//Light
 	//etc
 
+	//Camera
+	//creates a new camera
+	Camera* createCamera(std::string cameraName);
+	//deletes a camera
+	void deleteCamera(std::string cameraName);
+	//set a camera as current
+	void setCurrentCamera(std::string newCamera);
+	void setCurrentCamera(Camera* newCamera);
+	//return the curent camera matrix
+	glm::mat4 getViewMatrix();
+
 	//aux
 	//sets the perspectiveMAtrix
-	void setPerspectiveMatrix(real FOV, real width, real height, real zNear, real zFar);
+	void setPerspectiveMatrix(real FOV, real width, real height, real zNear, real zFar = 0);
 	//return the perspective matrix
 	glm::mat4 getPerspectiveMatrix()
 	{
@@ -72,17 +81,27 @@ private:
 	typedef std::map<std::string, Shader*> tShaderMap;
 	typedef std::map<std::string, Texture*> tTextureMap;
 	typedef std::map<std::string, Entity*> tEntityMap;
+	typedef std::map<std::string, Camera*> tCameraMap;
 
 	//define maps
 	tShaderMap mShaderMap;
 	tTextureMap mTextureMap;
 	tEntityMap mEntityMap;
+	tCameraMap mCameraMap;
 
 	//perspective matrix
 	glm::mat4 mPerspectiveMatrix;
 
 	//root sceneNode
 	SceneNode* mRootSceneNode;
+
+	//shader private members-----
+	//current binded Shader
+	Shader* mCurrentShader;
+
+	//camera private members
+	//current active camera
+	Camera* mCurrentCamera;
 };
 
 #endif

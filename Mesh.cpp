@@ -9,11 +9,10 @@ Mesh::Mesh(void)
 	//generate buffers
 	glGenVertexArrays(1, &vertexArrayObject);
 	glGenBuffers(1, &vertexBuffer);
+	glGenBuffers(1, &normalBuffer);
 	glGenBuffers(1, &indexBuffer);
 }
 
-<<<<<<< HEAD
-=======
 Mesh::Mesh(std::string meshPath)
 {
 	numberOfVertices = numberOfIndices = 0;
@@ -27,11 +26,11 @@ Mesh::Mesh(std::string meshPath)
 
 	loadMesh(meshPath); //load the mesh
 }
->>>>>>> parent of f606805... Monomeshes now loading Ok. Trying to implement LookAt to SceneNodes
 
 Mesh::~Mesh(void)
 {
 	glDeleteBuffers(1, &vertexBuffer);
+	glDeleteBuffers(1, &normalBuffer);
 	glDeleteBuffers(1, &indexBuffer);
 	glDeleteVertexArrays(1, &vertexArrayObject);
 }
@@ -95,8 +94,6 @@ void Mesh::bindMeshArray()
 void Mesh::unbindMeshArray()
 {
 	glBindVertexArray(0);
-<<<<<<< HEAD
-=======
 }
 
 void Mesh::loadMesh(std::string meshPath)
@@ -190,5 +187,4 @@ void Mesh::loadMesh(std::string meshPath)
 		}
 
 	}
->>>>>>> parent of f606805... Monomeshes now loading Ok. Trying to implement LookAt to SceneNodes
 }
