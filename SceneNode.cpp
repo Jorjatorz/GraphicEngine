@@ -165,7 +165,7 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 	//if the object is also attached
 	if(mNewObject->isAttached())
 	{
-		#ifdef DEBUG_MESSAGES
+		#ifdef DEBUG_MESSAGE
 		std::cout << mNewObject->getName() << " already attached" << std::endl;
 		#endif
 	}
@@ -203,14 +203,14 @@ void SceneNode::detachAllObjects()
 
 void SceneNode::updateFromParent()
 {
-	processDerivedPosition();
-	processDerivedOrientation();
-	processDerivedScale();
+	getDerivedPosition();
+	getDerivedOrientation();
+	getDerivedScale();
 
 	//if the node position has changed or the derived positon (thus the parent) has changed modify the sceneNodeMatrix
 	if(hasChanged)
 	{
-		mSceneNodeMatrix = glm::mat4(1.0); //set identity
+		mSceneNodeMatrix = glm::mat4(1.0); //identity
 		//update childs
 		updateChildrens();
 		//update matrix
@@ -235,7 +235,7 @@ void SceneNode::updateChildrens()
 	}
 }
 
-void SceneNode::processDerivedPosition()
+void SceneNode::getDerivedPosition()
 {
 	//if we have parent
 	if(mParent != NULL)
@@ -252,7 +252,7 @@ void SceneNode::processDerivedPosition()
 		mDerivedPosition = mPosition;
 	}
 }
-void SceneNode::processDerivedOrientation()
+void SceneNode::getDerivedOrientation()
 {
 		//if we have parent
 	if(mParent != NULL)
@@ -269,7 +269,7 @@ void SceneNode::processDerivedOrientation()
 		mDerivedOrientation = mOrientation;
 	}
 }
-void SceneNode::processDerivedScale()
+void SceneNode::getDerivedScale()
 {
 		//if we have parent
 	if(mParent != NULL)
@@ -290,7 +290,7 @@ void SceneNode::processDerivedScale()
 void SceneNode::processRootSceneNode()
 {
 	//calculate perspective and viewmatrix multiplyed matrix
-	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix() * mSceneManager->getViewMatrix();
+	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix();
 
 	//update positions
 	updateChildrens();
