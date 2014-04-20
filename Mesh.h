@@ -28,6 +28,14 @@ public:
 	GLint numberOfVertices;
 private:
 	//uv, etc.
+<<<<<<< HEAD
+=======
+	std::vector<GLfloat> mVertexVector;
+	std::vector<GLfloat> mNormalsVector;
+	std::vector<GLushort> mIndexVector;
+
+
+>>>>>>> parent of f606805... Monomeshes now loading Ok. Trying to implement LookAt to SceneNodes
 
 	//controls if the vertex and index buffers where already created (thus (if wanted to be loaded) it was succesfully loaded from file)
 	bool buffersLoaded;
