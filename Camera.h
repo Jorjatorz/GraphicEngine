@@ -24,6 +24,15 @@ public:
 		return mCameraMatrix;
 	}
 
+	glm::vec3 getPosition()
+	{
+		return mPosition;
+	}
+
+	glm::vec3 setOrientation()
+	{
+		return mOrientation;
+	}
 	std::string getName()
 	{
 		return mName;

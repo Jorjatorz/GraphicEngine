@@ -3,6 +3,7 @@
 
 Mesh::Mesh(void)
 {
+	numberOfVertices = numberOfIndices = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
 	//generate buffers
@@ -14,6 +15,7 @@ Mesh::Mesh(void)
 
 Mesh::Mesh(std::string meshPath)
 {
+	numberOfVertices = numberOfIndices = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
 	//generate buffers
@@ -101,46 +103,53 @@ void Mesh::loadMesh(std::string meshPath)
 		std::cout << "Loading mesh: " << meshPath << std::endl;
 
 		Assimp::Importer mImporter;
-		const aiScene *scene = mImporter.ReadFile(meshPath.c_str(), aiProcessPreset_TargetRealtime_Quality);
+		const aiScene *scene = mImporter.ReadFile(meshPath.c_str(), aiProcessPreset_TargetRealtime_Fast);
 
 		std::cout << "Load succesful" << std::endl;
+		std::cout << "Number of meshes: " << scene->mNumMeshes << std::endl;
 
 		if(!scene)
 		{
 			std::cout << "Error importing " << meshPath << " " << mImporter.GetErrorString() << std::endl;
 		}
 
-		aiMesh* mesh = scene->mMeshes[0]; //We only take the first mesh
-
-		numberOfVertices = mesh->mNumVertices; //set the number of vertices
-		numberOfIndices = mesh->mNumFaces * 3; //each face has 3 indices
-
-		for(int i = 0; i < mesh->mNumVertices; ++i)
+		for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
 		{
-			//create vertex array
-			const aiVector3D* vertex = &mesh->mVertices[i]; //copy the vertices
-			const aiVector3D* normal = &mesh->mNormals[i]; //copy the vertices
+			aiMesh* mesh = scene->mMeshes[i]; //We only take the first mesh
 
-			mVertexVector.push_back(vertex->x);
-			mVertexVector.push_back(vertex->y);
-			mVertexVector.push_back(vertex->z);
+			numberOfVertices += mesh->mNumVertices; //set the number of vertices
+			numberOfIndices += mesh->mNumFaces * 3; //each face has 3 indices
 
-			mNormalsVector.push_back(normal->x);
-			mNormalsVector.push_back(normal->y);
-			mNormalsVector.push_back(normal->z);
+			for(unsigned int j = 0; j < mesh->mNumVertices; ++j)
+			{
+				//create vertex array
+				const aiVector3D* vertex = &mesh->mVertices[j]; //copy the vertices
+				const aiVector3D* normal = &mesh->mNormals[j]; //copy the vertices
 
-		}
+				mVertexVector.push_back(vertex->x);
+				mVertexVector.push_back(vertex->y);
+				mVertexVector.push_back(vertex->z);
+			
 
-		for(int j = 0; j < mesh->mNumFaces; ++j)
-		{
-			//create index array
-			const aiFace* face = &mesh->mFaces[j];
+				mNormalsVector.push_back(normal->x);
+				mNormalsVector.push_back(normal->y);
+				mNormalsVector.push_back(normal->z);
 
-			assert(face->mNumIndices == 3);
+			}
 
-			mIndexVector.push_back(face->mIndices[0]);
-			mIndexVector.push_back(face->mIndices[1]);
-			mIndexVector.push_back(face->mIndices[2]);
+			for(int j = 0; j < mesh->mNumFaces; ++j)
+			{
+				//create index array
+				const aiFace* face = &mesh->mFaces[j];
+
+				assert(face->mNumIndices == 3);
+
+				mIndexVector.push_back(face->mIndices[0]);
+				mIndexVector.push_back(face->mIndices[1]);
+				mIndexVector.push_back(face->mIndices[2]);
+			}
+
+
 		}
 
 
@@ -158,7 +167,7 @@ void Mesh::loadMesh(std::string meshPath)
 		glEnableVertexAttribArray(Shader::vertexNormal);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndexVector.size() * sizeof(GLushort), &mIndexVector[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndexVector.size() * sizeof(GLuint), &mIndexVector[0], GL_STATIC_DRAW);
 
 		glBindVertexArray(0);
 
