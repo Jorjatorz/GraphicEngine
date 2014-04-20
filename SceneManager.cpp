@@ -6,7 +6,6 @@
 #include "Texture.h"
 #include "Entity.h"
 #include "SceneNode.h"
-#include "Camera.h"
 
 SceneManager::SceneManager(void)
 {
@@ -175,93 +174,7 @@ void SceneManager::deleteEntity(std::string entityName)
 	}
 }
 
-Camera* SceneManager::createCamera(std::string cameraName)
-{
-	tCameraMap::iterator it;
-
-	//if the camera already exists
-	for(it = mCameraMap.begin(); it != mCameraMap.end(); ++it)
-	{
-		if(it->first == cameraName)
-		{
-			return it->second;
-		}
-	}
-	//else
-
-	//create a new camera
-	Camera* newCamera = new Camera(cameraName);
-
-	//save to the camera map
-	mCameraMap.insert(std::pair<std::string, Camera*>(cameraName, newCamera));
-
-	//set the new camera to be current
-	mCurrentCamera = newCamera;
-	//return the camera
-	return newCamera;
-}
-
-void SceneManager::deleteCamera(std::string cameraName)
-{
-	tCameraMap::iterator it;
-
-	//if the camera already exists
-	for(it = mCameraMap.begin(); it != mCameraMap.end(); ++it)
-	{
-		if(it->first == cameraName)
-		{
-			//if the camera to be deleted is the current camera set it to null
-			if(mCurrentCamera->getName() == cameraName)
-			{
-				mCurrentCamera = NULL;
-			}
-
-			delete it->second;
-
-			return;
-		}
-	}
-}
-
-void SceneManager::setCurrentCamera(std::string newCamera)
-{
-	
-	tCameraMap::iterator it;
-
-	//if the camera already exists
-	for(it = mCameraMap.begin(); it != mCameraMap.end(); ++it)
-	{
-		if(it->first == newCamera)
-		{
-			mCurrentCamera = it->second;
-
-			return;
-		}
-	}
-}
-void SceneManager::setCurrentCamera(Camera* newCamera)
-{
-	mCurrentCamera = newCamera;
-}
-
-glm::mat4 SceneManager::getViewMatrix()
-{
-	assert(mCurrentCamera);
-
-	//compute the new camera matrix
-	mCurrentCamera->updateCamera();
-
-	return mCurrentCamera->getCameraMatrix();
-}
-
 void SceneManager::setPerspectiveMatrix(real FOV, real width, real height, real zNear, real zFar)
 {
-	if(zFar > 0)
-	{
-		mPerspectiveMatrix = glm::perspective(FOV, width/height, zNear, zFar);
-	}
-	else
-	{
-		mPerspectiveMatrix = glm::infinitePerspective(FOV, width/height, zNear);
-	}
+	mPerspectiveMatrix = glm::perspective(FOV, width/height, zNear, zFar);
 }

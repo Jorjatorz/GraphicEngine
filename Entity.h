@@ -13,8 +13,6 @@ public:
 	Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager);
 	~Entity(void);
 
-	void attachMesh(std::string meshName);
-
 	void render(glm::mat4 perspectiveViewM);
 
 	//types
@@ -23,7 +21,7 @@ public:
 private:
 	Mesh* mMesh; //mesh pointer
 	std::string mMeshName; //mesh name
-	glm::mat4 mModelMatrix; //entity model matrix
+	glm::mat4 modelMatrix; //entity model matrix
 
 };
 
