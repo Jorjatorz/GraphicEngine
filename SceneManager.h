@@ -42,7 +42,7 @@ public:
 
 	//Entity
 	//creates a new entity
-	Entity* createEntity(std::string entityName, std::string meshPath);
+	Entity* createEntity(std::string entityName, std::string meshPath = "NULL");
 	//delete an entity by name (from scene)
 	void deleteEntity(std::string entityName);
 

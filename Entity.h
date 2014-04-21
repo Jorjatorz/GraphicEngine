@@ -14,14 +14,13 @@ public:
 	~Entity(void);
 
 	void attachMesh(std::string meshName);
+	void deAttachMesh();
 
 	void render(glm::mat4 perspectiveViewM);
 
-	//types
-	void setCubeMesh(); //set a cube as mesh
-
 private:
 	Mesh* mMesh; //mesh pointer
+	bool meshAttached; //is any mesh attached?
 	std::string mMeshName; //mesh name
 	glm::mat4 mModelMatrix; //entity model matrix
 

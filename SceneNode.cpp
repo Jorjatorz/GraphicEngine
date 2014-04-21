@@ -163,7 +163,7 @@ void SceneNode::deleteAllChilds()
 void SceneNode::attachObject(MovableObject* mNewObject)
 {
 	//if the object is also attached
-	if(mNewObject->isAttached())
+	if(mNewObject->isAttachedToNode())
 	{
 		#ifdef DEBUG_MESSAGES
 		std::cout << mNewObject->getName() << " already attached" << std::endl;
@@ -322,7 +322,10 @@ void SceneNode::processObjects(glm::mat4 perspectiveViewM)
 
 	for(it = mObjectsMap.begin(); it != mObjectsMap.end(); ++it)
 	{
-		it->second->render(finalMatrix);
+		if(it->second->isVisible())
+		{
+			it->second->render(finalMatrix);
+		}
 	}
 }
 

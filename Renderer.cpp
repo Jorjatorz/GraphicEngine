@@ -86,6 +86,11 @@ void Renderer::renderFrame()
 	node->translate(glm::vec3(0.001, -0.001, 0.001));
 	node2->setScale(glm::vec3(0.01, 0.01, 0.01));
 
+	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_W))
+		mEnt->setVisible(false);
+	else
+		mEnt->setVisible(true);
+
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//mEnt->render(glm::mat4(1.0));

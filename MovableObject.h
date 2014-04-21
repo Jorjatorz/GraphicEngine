@@ -16,9 +16,19 @@ public:
 		return mName;
 	}
 	
-	bool isAttached()
+	bool isAttachedToNode()
 	{
-		return mAttached;
+		return mAttachedToNode;
+	}
+
+	bool isVisible()
+	{
+		return visible;
+	}
+
+	void setVisible(bool vis)
+	{
+		visible = vis;
 	}
 
 	void setAttached(bool att);
@@ -32,7 +42,7 @@ protected:
 	SceneNode* mParentSceneNode;
 	bool visible;
 	bool castShadows;
-	bool mAttached; //is attached to a scenode?
+	bool mAttachedToNode; //is attached to a scenode?
 };
 
 #endif

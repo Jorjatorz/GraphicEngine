@@ -8,7 +8,7 @@ MovableObject::MovableObject(void)
 	mParentSceneNode = NULL;
 	visible = true;
 	castShadows = false;
-	mAttached = false;
+	mAttachedToNode = false;
 }
 
 
@@ -18,11 +18,11 @@ MovableObject::~MovableObject(void)
 
 void MovableObject::setAttached(bool att)
 {
-	mAttached = att;
+	mAttachedToNode = att;
 }
 
 void MovableObject::setAttached(bool att, SceneNode* newNode)
 {
-	mAttached = att;
+	mAttachedToNode = att;
 	mParentSceneNode = newNode;
 }

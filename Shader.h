@@ -16,7 +16,7 @@ public:
 	{
 		vertexPosition, //0
 		vertexNormal, //1
-		vertexTexture //2
+		vertexTexCoord //2
 	} shaderLocations;
 
 	void loadShader(std::string filePath);

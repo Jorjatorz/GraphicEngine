@@ -13,8 +13,9 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	mName = mNewName;
 	mModelMatrix = glm::mat4(1.0); //identity
 	mMesh = NULL;
-	mMeshName = "unknown";
+	mMeshName = "NULL";
 	mSceneManager = newSceneManager;
+	meshAttached = false;
 }
 
 Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager)
@@ -22,6 +23,7 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 	mName = mNewName;
 	mModelMatrix = glm::mat4(1.0); //identity
 	mSceneManager = newSceneManager;
+	meshAttached = false;
 
 	attachMesh(meshName); //load mesh
 }
@@ -34,28 +36,31 @@ Entity::~Entity(void)
 
 void Entity::render(glm::mat4 perspectiveViewM)
 {
-	//apply shader
-	mSceneManager->bindCurrentShader();
-
-	//send uniforms
-	Shader* shad = mSceneManager->getCurrentShader();	
-	glm::mat4 finalMatrix = perspectiveViewM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
-	shad->UniformMatrix("finalM", finalMatrix);
-	glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
-	shad->UniformMatrix("normalM", normalM);
-
-	for(int i = 0; i < mMesh->mMeshComponentsVector.size(); ++i)
+	if(meshAttached)
 	{
-		//render
-		mMesh->bindMeshArray(mMesh->mMeshComponentsVector[i]);
+		//apply shader
+		mSceneManager->bindCurrentShader();
 
-		glDrawElements(GL_TRIANGLES, mMesh->mMeshComponentsVector[i].mIndexVector.size(), GL_UNSIGNED_INT, 0);
+		//send uniforms
+		Shader* shad = mSceneManager->getCurrentShader();	
+		glm::mat4 finalMatrix = perspectiveViewM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
+		shad->UniformMatrix("finalM", finalMatrix);
+		glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
+		shad->UniformMatrix("normalM", normalM);
 
-		mMesh->unbindMeshArray();
+		for(int i = 0; i < mMesh->mMeshComponentsVector.size(); ++i)
+		{
+			//render
+			mMesh->bindMeshArray(mMesh->mMeshComponentsVector[i]);
 
+			glDrawElements(GL_TRIANGLES, mMesh->mMeshComponentsVector[i].mIndexVector.size(), GL_UNSIGNED_INT, 0);
+
+			mMesh->unbindMeshArray();
+
+		}
+
+		mSceneManager->unbindShader();
 	}
-
-	mSceneManager->unbindShader();
 }
 
 void Entity::attachMesh(std::string meshName)
@@ -66,15 +71,13 @@ void Entity::attachMesh(std::string meshName)
 	mMesh = mResourceManager->createMesh(mMeshName, mMeshName); //allocate new mesh
 
 	mModelMatrix = mMesh->meshMatrix;
+
+	meshAttached = true;
 }
 
-void Entity::setCubeMesh()
+void Entity::deAttachMesh()
 {
-	mMeshName = "cube";
-
-	
-	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr(); //resourcemanager pointer
-	mMesh = mResourceManager->createMesh(mMeshName, "NULL"); //allocate new mesh
-
-	mMesh->createCube();
+	mMeshName = "NULL";
+	mMesh = NULL;
+	meshAttached = false;
 }

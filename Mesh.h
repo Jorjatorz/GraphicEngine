@@ -20,10 +20,11 @@ private:
 	{
 		std::vector<GLfloat> mVertexVector;
 		std::vector<GLfloat> mNormalsVector;
+		std::vector<GLfloat> mTexCoordsVector;
 		std::vector<GLuint> mIndexVector;
 
 		//openGL buffers
-		GLuint vertexBuffer, normalBuffer, uvBuffer, indexBuffer, vertexArrayObject;
+		GLuint vertexBuffer, normalBuffer, texCoordsBuffer, indexBuffer, vertexArrayObject;
 	} tMeshStruct;
 
 public:

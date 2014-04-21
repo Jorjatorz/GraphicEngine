@@ -152,7 +152,15 @@ Entity* SceneManager::createEntity(std::string entityName, std::string meshPath)
 	//else
 
 	//create the entity 
-	Entity* mEntity = new Entity(entityName, meshPath, this);
+	Entity* mEntity;
+	if(meshPath != "NULL")
+	{
+		mEntity = new Entity(entityName, meshPath, this);
+	}
+	else
+	{
+		mEntity = new Entity(entityName, this);
+	}
 
 	//save it into the texture map
 	mEntityMap.insert(std::pair<std::string, Entity*>(entityName, mEntity));
