@@ -40,7 +40,6 @@ public:
 	//transformations functions
 	void translate(glm::vec3 trans);
 	void rotate(glm::vec3 rot);
-	void lookAt(glm::vec3 destination);
 	void setPosition(glm::vec3 newPos);
 	void setOrientation(glm::vec3 newOrientation);
 	void setScale(glm::vec3 newScale);

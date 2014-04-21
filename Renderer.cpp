@@ -75,7 +75,7 @@ void Renderer::renderFrame()
 	mCam->lookAt(node->getPosition());
 	mSceneManager->setCurrentShader(mShader);
 
-	Entity* mEnt2 = mSceneManager->createEntity("ent2", "sphere.obj");
+	Entity* mEnt2 = mSceneManager->createEntity("ent2", "spider.obj");
 	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, 0.0));
 	node2->setOrientation(glm::vec3(0.0, -90.0, 0.0));
 	node2->attachObject(mEnt2);
@@ -83,8 +83,8 @@ void Renderer::renderFrame()
 	mSceneManager->setCurrentCamera(mCam);
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));
-	node->translate(glm::vec3(0.001, 0.001, 0.001));
-	node->lookAt(mCam->getPosition());
+	node->translate(glm::vec3(0.001, -0.001, 0.001));
+	node2->setScale(glm::vec3(0.01, 0.01, 0.01));
 
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

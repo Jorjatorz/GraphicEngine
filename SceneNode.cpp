@@ -326,15 +326,6 @@ void SceneNode::processObjects(glm::mat4 perspectiveViewM)
 	}
 }
 
-void SceneNode::lookAt(glm::vec3 destination)
-{
-	glm::vec3 rot = destination - mPosition; //calculate rotation vector
-
-	mOrientation = rot;
-
-	hasChanged = true;
-}
-
 void SceneNode::translate(glm::vec3 trans)
 {
 	mPosition += trans;

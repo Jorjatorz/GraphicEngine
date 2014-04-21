@@ -37,9 +37,6 @@ void Entity::render(glm::mat4 perspectiveViewM)
 	//apply shader
 	mSceneManager->bindCurrentShader();
 
-	//render
-	mMesh->bindMeshArray();
-
 	//send uniforms
 	Shader* shad = mSceneManager->getCurrentShader();	
 	glm::mat4 finalMatrix = perspectiveViewM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
@@ -47,9 +44,16 @@ void Entity::render(glm::mat4 perspectiveViewM)
 	glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
 	shad->UniformMatrix("normalM", normalM);
 
-	glDrawElements(GL_TRIANGLES, mMesh->numberOfIndices, GL_UNSIGNED_INT, 0);
+	for(int i = 0; i < mMesh->mMeshComponentsVector.size(); ++i)
+	{
+		//render
+		mMesh->bindMeshArray(mMesh->mMeshComponentsVector[i]);
 
-	mMesh->unbindMeshArray();
+		glDrawElements(GL_TRIANGLES, mMesh->mMeshComponentsVector[i].mIndexVector.size(), GL_UNSIGNED_INT, 0);
+
+		mMesh->unbindMeshArray();
+
+	}
 
 	mSceneManager->unbindShader();
 }

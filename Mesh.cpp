@@ -3,36 +3,24 @@
 
 Mesh::Mesh(void)
 {
-	numberOfVertices = numberOfIndices = 0;
+	numberOfVertices = numberOfFaces = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
 	//generate buffers
-	glGenVertexArrays(1, &vertexArrayObject);
-	glGenBuffers(1, &vertexBuffer);
-	glGenBuffers(1, &normalBuffer);
-	glGenBuffers(1, &indexBuffer);
 }
 
 Mesh::Mesh(std::string meshPath)
 {
-	numberOfVertices = numberOfIndices = 0;
+	numberOfVertices = numberOfFaces = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
-	//generate buffers
-	glGenVertexArrays(1, &vertexArrayObject);
-	glGenBuffers(1, &vertexBuffer);
-	glGenBuffers(1, &normalBuffer);
-	glGenBuffers(1, &indexBuffer);
 
 	loadMesh(meshPath); //load the mesh
 }
 
 Mesh::~Mesh(void)
 {
-	glDeleteBuffers(1, &vertexBuffer);
-	glDeleteBuffers(1, &normalBuffer);
-	glDeleteBuffers(1, &indexBuffer);
-	glDeleteVertexArrays(1, &vertexArrayObject);
+
 }
 
 
@@ -72,23 +60,28 @@ void Mesh::createCube()
 
 		numberOfVertices = 36;
 
+		tMeshStruct newMesh;
 
-		glBindVertexArray(vertexArrayObject);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		genBuffers(newMesh); //generete buffers
+
+		glBindVertexArray(newMesh.vertexArrayObject);
+		glBindBuffer(GL_ARRAY_BUFFER, newMesh.vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions),	vertex_positions, GL_STATIC_DRAW);
 		glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
 		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newMesh.indexBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_indices), vertex_indices, GL_STATIC_DRAW);
 		glBindVertexArray(0);
+
+		mMeshComponentsVector.push_back(newMesh); //store the components
 
 		buffersLoaded = true;
 	}
 }
 
-void Mesh::bindMeshArray()
+void Mesh::bindMeshArray(const tMeshStruct &mComp)
 {
-	glBindVertexArray(vertexArrayObject);
+	glBindVertexArray(mComp.vertexArrayObject);
 }
 
 void Mesh::unbindMeshArray()
@@ -115,10 +108,13 @@ void Mesh::loadMesh(std::string meshPath)
 
 		for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
 		{
-			aiMesh* mesh = scene->mMeshes[i]; //We only take the first mesh
+			aiMesh* mesh = scene->mMeshes[i]; //We take the mesh
+
+			tMeshStruct newMesh;
+			genBuffers(newMesh); //generate buffers
 
 			numberOfVertices += mesh->mNumVertices; //set the number of vertices
-			numberOfIndices += mesh->mNumFaces * 3; //each face has 3 indices
+			numberOfFaces += mesh->mNumFaces; //each face has 3 indices
 
 			for(unsigned int j = 0; j < mesh->mNumVertices; ++j)
 			{
@@ -126,14 +122,14 @@ void Mesh::loadMesh(std::string meshPath)
 				const aiVector3D* vertex = &mesh->mVertices[j]; //copy the vertices
 				const aiVector3D* normal = &mesh->mNormals[j]; //copy the vertices
 
-				mVertexVector.push_back(vertex->x);
-				mVertexVector.push_back(vertex->y);
-				mVertexVector.push_back(vertex->z);
+				newMesh.mVertexVector.push_back(vertex->x);
+				newMesh.mVertexVector.push_back(vertex->y);
+				newMesh.mVertexVector.push_back(vertex->z);
 			
 
-				mNormalsVector.push_back(normal->x);
-				mNormalsVector.push_back(normal->y);
-				mNormalsVector.push_back(normal->z);
+				newMesh.mNormalsVector.push_back(normal->x);
+				newMesh.mNormalsVector.push_back(normal->y);
+				newMesh.mNormalsVector.push_back(normal->z);
 
 			}
 
@@ -144,32 +140,31 @@ void Mesh::loadMesh(std::string meshPath)
 
 				assert(face->mNumIndices == 3);
 
-				mIndexVector.push_back(face->mIndices[0]);
-				mIndexVector.push_back(face->mIndices[1]);
-				mIndexVector.push_back(face->mIndices[2]);
+				newMesh.mIndexVector.push_back(face->mIndices[0]);
+				newMesh.mIndexVector.push_back(face->mIndices[1]);
+				newMesh.mIndexVector.push_back(face->mIndices[2]);
 			}
 
+			glBindVertexArray(newMesh.vertexArrayObject);
+			//vertices
+			glBindBuffer(GL_ARRAY_BUFFER, newMesh.vertexBuffer);
+			glBufferData(GL_ARRAY_BUFFER, newMesh.mVertexVector.size() * sizeof(GLfloat), &newMesh.mVertexVector[0], GL_STATIC_DRAW);
+			glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
+			glEnableVertexAttribArray(Shader::vertexPosition);
+			//normals
+			glBindBuffer(GL_ARRAY_BUFFER, newMesh.normalBuffer);
+			glBufferData(GL_ARRAY_BUFFER, newMesh.mNormalsVector.size() * sizeof(GLfloat),	&newMesh.mNormalsVector[0], GL_STATIC_DRAW);
+			glVertexAttribPointer(Shader::vertexNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
+			glEnableVertexAttribArray(Shader::vertexNormal);
 
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newMesh.indexBuffer);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, newMesh.mIndexVector.size() * sizeof(GLuint), &newMesh.mIndexVector[0], GL_STATIC_DRAW);
+
+			glBindVertexArray(0);
+
+			mMeshComponentsVector.push_back(newMesh);
 		}
 
-
-
-		glBindVertexArray(vertexArrayObject);
-		//vertices
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, mVertexVector.size() * sizeof(GLfloat), &mVertexVector[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
-		glEnableVertexAttribArray(Shader::vertexPosition);
-		//normals
-		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-		glBufferData(GL_ARRAY_BUFFER, mNormalsVector.size() * sizeof(GLfloat),	&mNormalsVector[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(Shader::vertexNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
-		glEnableVertexAttribArray(Shader::vertexNormal);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mIndexVector.size() * sizeof(GLuint), &mIndexVector[0], GL_STATIC_DRAW);
-
-		glBindVertexArray(0);
 
 		buffersLoaded = true;
 
@@ -187,4 +182,12 @@ void Mesh::loadMesh(std::string meshPath)
 		}
 
 	}
+}
+
+void Mesh::genBuffers(tMeshStruct &meshToGen)
+{
+	glGenVertexArrays(1, &meshToGen.vertexArrayObject);
+	glGenBuffers(1, &meshToGen.vertexBuffer);
+	glGenBuffers(1, &meshToGen.normalBuffer);
+	glGenBuffers(1, &meshToGen.indexBuffer);
 }

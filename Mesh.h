@@ -14,6 +14,19 @@ public:
 	Mesh(std::string meshPath);
 	~Mesh(void);
 
+private:
+	//uv, etc.
+	typedef struct
+	{
+		std::vector<GLfloat> mVertexVector;
+		std::vector<GLfloat> mNormalsVector;
+		std::vector<GLuint> mIndexVector;
+
+		//openGL buffers
+		GLuint vertexBuffer, normalBuffer, uvBuffer, indexBuffer, vertexArrayObject;
+	} tMeshStruct;
+
+public:
 	//predifined mesh
 	//square
 	//triangle
@@ -24,29 +37,24 @@ public:
 	void loadMesh(std::string meshPath); //load the mesh from a file
 
 	//bind the mesh vertexArray
-	void bindMeshArray();
+	void bindMeshArray(const tMeshStruct &mComp);
 	void unbindMeshArray();
 
 	//number of vertices and indices the mesh have
 	GLuint numberOfVertices;
-	GLuint numberOfIndices;
+	GLuint numberOfFaces;
 
 	glm::mat4 meshMatrix;
 
+	std::vector<tMeshStruct> mMeshComponentsVector; //contains all the meshes of the total mesh
 
 private:
-	//uv, etc.
-	std::vector<GLfloat> mVertexVector;
-	std::vector<GLfloat> mNormalsVector;
-	std::vector<GLuint> mIndexVector;
 
+	void genBuffers(tMeshStruct &meshToGen); //Generates all the buffers of that mesh
 
 
 	//controls if the vertex and index buffers where already created (thus (if wanted to be loaded) it was succesfully loaded from file)
 	bool buffersLoaded;
-
-	//openGL buffers
-	GLuint vertexBuffer, normalBuffer, uvBuffer, indexBuffer, vertexArrayObject;
 };
 
 #endif
