@@ -8,6 +8,8 @@ InputManager::InputManager(void)
 	{
 		mKeyPressedArray[i] = false;
 	}
+
+	mSDLWindow = NULL;
 }
 
 
@@ -38,6 +40,7 @@ void InputManager::getFrameInput(bool &running)
 
 		}
 
+		
 		if(mEvent.type == SDL_KEYDOWN)
 			mKeyPressedArray[mEvent.key.keysym.scancode] = true;
 
@@ -55,4 +58,14 @@ bool InputManager::isKeyUp(short int keyCode)
 {
 	//return the array negated because if the key is not pressed (false) then its up (so !false = true)
 	return !mKeyPressedArray[keyCode];
+}
+
+void InputManager::warpMouse(int x, int y)
+{
+	SDL_WarpMouseInWindow(mSDLWindow, x, y);
+}
+
+void InputManager::getMousePosition(int &x, int &y)
+{
+	SDL_GetMouseState(&x, &y);
 }

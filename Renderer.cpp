@@ -76,6 +76,7 @@ void Renderer::renderFrame(real deltaTime)
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -1.0));
 	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.1);
 	Camera* mCam = mSceneManager->createCamera("camera1");
+	mCam->setControler(Camera::DEFAULT);
 	mSceneManager->setCurrentShader(mShader);
 
 	Entity* mEnt2 = mSceneManager->createEntity("ent2", "spider.obj");
@@ -96,6 +97,9 @@ void Renderer::renderFrame(real deltaTime)
 		mEnt->setVisible(false);
 	else
 		mEnt->setVisible(true);
+
+	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_C))
+		mCam->setControler(Camera::NOCONTROLER);
 
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

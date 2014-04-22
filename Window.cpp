@@ -1,5 +1,6 @@
 #include "Window.h"
 
+#include "InputManager.h"
 
 /*Window::Window(void)
 {
@@ -40,6 +41,9 @@ void Window::initWindow(std::string windowName, real width, real height, bool fu
 
 	//create the context
 	mSDLContext = SDL_GL_CreateContext(mSDLWindow);
+
+	//Send window to the inputManager (so input relative  to the window is reported)
+	InputManager::getSingletonPtr()->setSDLWindow(mSDLWindow);
 }
 
 void Window::swapBuffers(bool swap)

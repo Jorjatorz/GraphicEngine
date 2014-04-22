@@ -21,15 +21,15 @@ Root::~Root(void)
 #include "Timer.h"
 void Root::initEngine()
 {
+	//Create singletons---------------
 	//creeate new resource manager
 	mResourceManager = new ResourceManager();
-
+	//create new input manager
+	mInput = new InputManager();
+	//--------------------------------
 	//create a new renderer
 	mRenderer = new Renderer();
 	mRenderer->createRenderer("Pruebas", 1280, 720, false);
-
-	//create new input manager
-	mInput = new InputManager();
 
 	//MAIN LOOP
 	bool running = true;

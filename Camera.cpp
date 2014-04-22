@@ -38,6 +38,8 @@ void Camera::updateFromInput()
 	default:
 		break;
 	case NOCONTROLER:
+		//Set SDL Cursor mode off (show cursor)cccc
+		SDL_SetRelativeMouseMode(SDL_FALSE);
 		break; //no controler so we just skip
 	case DEFAULT:
 		{
@@ -72,5 +74,10 @@ void Camera::transformFromInput()
 {
 	InputManager* inputIns = InputManager::getSingletonPtr();
 
+	//Set SDL Cursor mode on (hide and get mouse input per frame)
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 
+	int mouseX, mouseY;
+	//get the cursor position
+	inputIns->getMousePosition(mouseX, mouseY);
 }
