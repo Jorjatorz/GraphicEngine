@@ -74,7 +74,7 @@ void Mesh::createCube()
 		glBindVertexArray(newMesh.vertexArrayObject);
 		glBindBuffer(GL_ARRAY_BUFFER, newMesh.vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions),	vertex_positions, GL_STATIC_DRAW);
-		glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
+		glVertexAttribPointer(Shader::VERTEXPOSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newMesh.indexBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_indices), vertex_indices, GL_STATIC_DRAW);
@@ -170,24 +170,24 @@ void Mesh::loadMesh(std::string meshPath)
 			{
 				glBindBuffer(GL_ARRAY_BUFFER, newMesh.vertexBuffer);
 				glBufferData(GL_ARRAY_BUFFER, newMesh.mVertexVector.size() * sizeof(GLfloat), &newMesh.mVertexVector[0], GL_STATIC_DRAW);
-				glVertexAttribPointer(Shader::vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
-				glEnableVertexAttribArray(Shader::vertexPosition);
+				glVertexAttribPointer(Shader::VERTEXPOSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
+				glEnableVertexAttribArray(Shader::VERTEXPOSITION);
 			}
 			//normals
 			if(mesh->HasNormals())
 			{
 				glBindBuffer(GL_ARRAY_BUFFER, newMesh.normalBuffer);
 				glBufferData(GL_ARRAY_BUFFER, newMesh.mNormalsVector.size() * sizeof(GLfloat),	&newMesh.mNormalsVector[0], GL_STATIC_DRAW);
-				glVertexAttribPointer(Shader::vertexNormal, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
-				glEnableVertexAttribArray(Shader::vertexNormal);
+				glVertexAttribPointer(Shader::VERTEXNORMALS, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
+				glEnableVertexAttribArray(Shader::VERTEXNORMALS);
 			}
 			//UV coords
 			if(mesh->HasTextureCoords(0))
 			{
 				glBindBuffer(GL_ARRAY_BUFFER, newMesh.texCoordsBuffer);
 				glBufferData(GL_ARRAY_BUFFER, newMesh.mTexCoordsVector.size() * sizeof(GLfloat),	&newMesh.mTexCoordsVector[0], GL_STATIC_DRAW);
-				glVertexAttribPointer(Shader::vertexTexCoord, 2, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
-				glEnableVertexAttribArray(Shader::vertexTexCoord);
+				glVertexAttribPointer(Shader::VERTEXTEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, NULL); //write normals position to the shader
+				glEnableVertexAttribArray(Shader::VERTEXTEXCOORD);
 			}
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newMesh.indexBuffer);

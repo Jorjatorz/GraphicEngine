@@ -14,9 +14,9 @@ public:
 	//shader locations
 	typedef enum 
 	{
-		vertexPosition, //0
-		vertexNormal, //1
-		vertexTexCoord //2
+		VERTEXPOSITION, //0
+		VERTEXNORMALS, //1
+		VERTEXTEXCOORD //2
 	} shaderLocations;
 
 	void loadShader(std::string filePath);

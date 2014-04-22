@@ -331,14 +331,14 @@ void SceneNode::processObjects(glm::mat4 perspectiveViewM)
 
 void SceneNode::translate(glm::vec3 trans)
 {
-	mPosition += trans;
+	mPosition += trans * mSceneManager->mDeltaTime;
 
 	hasChanged = true;
 }
 
 void SceneNode::rotate(glm::vec3 rot)
 {
-	mOrientation += rot;
+	mOrientation += rot * mSceneManager->mDeltaTime;
 
 	hasChanged = true;
 }

@@ -38,6 +38,7 @@ class SceneManager;
 class SceneNode;
 class Shader;
 class Texture;
+class Timer;
 class Window;
 
 //Not included

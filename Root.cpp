@@ -18,7 +18,7 @@ Root::~Root(void)
 	delete mInput;
 	delete mResourceManager;
 }
-
+#include "Timer.h"
 void Root::initEngine()
 {
 	//creeate new resource manager
@@ -31,15 +31,41 @@ void Root::initEngine()
 	//create new input manager
 	mInput = new InputManager();
 
+	//MAIN LOOP
 	bool running = true;
+
+	//PRuebas
+	Timer mTimer;
+	int frames = 0;
+	int miliSeconds = 0;
+	int framesPerSecond = 1000/60;
+	bool firstTime = true;
+	//
 	while(running && !mInput->isKeyDown(SDL_SCANCODE_ESCAPE))
 	{
+		mTimer.getTicks();
 		//Get input
 		mInput->getFrameInput(running);
+		//Render a frame
+		mRenderer->renderFrame(mTimer.getDeltaTicks() * 0.001);
 
-		mRenderer->renderFrame();
-		
-		SDL_Delay(16);
+		//compute delta
+		miliSeconds += mTimer.getDeltaTicks();
+
+		//if we are to fast
+		if(mTimer.mDeltaTime < framesPerSecond)
+		{
+			SDL_Delay(framesPerSecond - mTimer.mDeltaTime);
+			miliSeconds += framesPerSecond - mTimer.mDeltaTime;
+		}
+
+		frames++;
+		if(miliSeconds > 1000)
+		{
+			std::cout << frames << std::endl;
+			miliSeconds = 0;
+			frames = 0;
+		}
 	}
 
 }

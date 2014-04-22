@@ -17,7 +17,7 @@ public:
 	void createRenderer(std::string windowName, int width, int height, bool fullscreen);
 
 	//render a frame
-	void renderFrame();
+	void renderFrame(real deltaTime);
 
 	//swap front and back buffer
 	//void swapBuffers();

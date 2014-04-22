@@ -75,6 +75,9 @@ public:
 		return mRootSceneNode;
 	}
 
+	//Timer
+	real mDeltaTime;
+
 private:
 
 	//maps

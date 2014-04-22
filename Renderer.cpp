@@ -63,28 +63,34 @@ void Renderer::initOpenGL()
 #include "InputManager.h"
 #include "Mesh.h"
 //
-void Renderer::renderFrame()
+
+real caca = 0;
+void Renderer::renderFrame(real deltaTime)
 {
 	//PRuebas
+	mSceneManager->mDeltaTime = deltaTime;
+
 	Entity* mEnt = mSceneManager->createEntity("cube", "guard.obj");
 	//Entity* mEnt2 = mSceneManager->createEntity("cube2", "NULL");
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -1.0));
 	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.1);
 	Camera* mCam = mSceneManager->createCamera("camera1");
-	mCam->lookAt(node->getPosition());
 	mSceneManager->setCurrentShader(mShader);
 
 	Entity* mEnt2 = mSceneManager->createEntity("ent2", "spider.obj");
 	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, 0.0));
 	node2->setOrientation(glm::vec3(0.0, -90.0, 0.0));
 	node2->attachObject(mEnt2);
+	node->attachObject(mEnt);
 
 	mSceneManager->setCurrentCamera(mCam);
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));
-	node->translate(glm::vec3(0.001, -0.001, 0.001));
+	node->translate(glm::vec3(0.05, 0.05, 0.05));
 	node2->setScale(glm::vec3(0.01, 0.01, 0.01));
+
+	mCam->lookAt(node->getPosition());
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_W))
 		mEnt->setVisible(false);
@@ -93,11 +99,12 @@ void Renderer::renderFrame()
 
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//mEnt->render(glm::mat4(1.0));
-	node->attachObject(mEnt);	
+	
 	//NO pruebas
+
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();
+
 	//swap the buffers
 	mWindow->swapBuffers(true);
 }
