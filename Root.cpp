@@ -40,6 +40,7 @@ void Root::initEngine()
 	int miliSeconds = 0;
 	int framesPerSecond = 1000/60;
 	bool firstTime = true;
+	mTimer.getTicks();
 	//
 	while(running && !mInput->isKeyDown(SDL_SCANCODE_ESCAPE))
 	{
@@ -70,7 +71,7 @@ void Root::initEngine()
 
 }
 
-SceneManager* Root::createSceneManager(std::string name)
+SceneManager* Root::createSceneManager(std::string name, Renderer* callingRenderer)
 {
 	//find if the sceneManager already exists
 	tSceneManagerMap::iterator sceneMIterator;
@@ -83,7 +84,7 @@ SceneManager* Root::createSceneManager(std::string name)
 		}
 	}
 	//else
-	SceneManager* mSceneManager = new SceneManager();
+	SceneManager* mSceneManager = new SceneManager(callingRenderer);
 
 	mSceneManagerMap.insert(std::pair<std::string, SceneManager*>(name, mSceneManager));
 

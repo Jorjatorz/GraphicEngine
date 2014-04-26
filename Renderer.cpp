@@ -32,7 +32,7 @@ void Renderer::createRenderer(std::string windowName, int width, int height, boo
 
 	//create sceneManager
 	Root* mRoot = Root::getSingletonPtr();
-	mSceneManager = mRoot->createSceneManager("pruebas");
+	mSceneManager = mRoot->createSceneManager("pruebas", this);
 }
 
 void Renderer::initOpenGL()
@@ -88,18 +88,15 @@ void Renderer::renderFrame(real deltaTime)
 	mSceneManager->setCurrentCamera(mCam);
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));
-	node->translate(glm::vec3(0.05, 0.05, 0.05));
 	node2->setScale(glm::vec3(0.01, 0.01, 0.01));
 
-	mCam->lookAt(node->getPosition());
 
-	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_W))
-		mEnt->setVisible(false);
-	else
-		mEnt->setVisible(true);
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_C))
+	{
 		mCam->setControler(Camera::NOCONTROLER);
+		mCam->lookAt(node->getPosition());
+	}
 
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

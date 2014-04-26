@@ -22,6 +22,11 @@ public:
 	//swap front and back buffer
 	//void swapBuffers();
 
+	Window* getCurrentWindow()
+	{
+		return mWindow;
+	}
+
 
 private:
 	//prototypes

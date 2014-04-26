@@ -9,8 +9,13 @@
 class SceneManager
 {
 public:
-	SceneManager(void);
+	SceneManager(Renderer* mCurrentRenderer);
 	~SceneManager(void);
+
+	Renderer* getRenderer()
+	{
+		return mRenderer;
+	}
 
 	//Shader
 	//create, bind, unbind
@@ -58,6 +63,8 @@ public:
 	//set a camera as current
 	void setCurrentCamera(std::string newCamera);
 	void setCurrentCamera(Camera* newCamera);
+	//calculates the viewMatrix
+	void processViewMatrix();
 	//return the curent camera matrix
 	glm::mat4 getViewMatrix();
 
@@ -105,6 +112,9 @@ private:
 	//camera private members
 	//current active camera
 	Camera* mCurrentCamera;
+
+	//Pointer to renderer
+	Renderer* mRenderer;
 };
 
 #endif

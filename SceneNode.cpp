@@ -289,6 +289,9 @@ void SceneNode::processDerivedScale()
 
 void SceneNode::processRootSceneNode()
 {
+	//calculate the viewmatrix from the current camera
+	mSceneManager->processViewMatrix();
+
 	//calculate perspective and viewmatrix multiplyed matrix
 	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix() * mSceneManager->getViewMatrix();
 

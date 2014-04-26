@@ -1,6 +1,6 @@
 #include "SceneManager.h"
 
-
+#include "Renderer.h"
 #include "ResourceManager.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -8,8 +8,9 @@
 #include "SceneNode.h"
 #include "Camera.h"
 
-SceneManager::SceneManager(void)
+SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
+	mRenderer = mCurrentRenderer;
 	mRootSceneNode = new SceneNode("RootNode", this);
 }
 
@@ -198,7 +199,7 @@ Camera* SceneManager::createCamera(std::string cameraName)
 	//else
 
 	//create a new camera
-	Camera* newCamera = new Camera(cameraName);
+	Camera* newCamera = new Camera(cameraName, this);
 
 	//save to the camera map
 	mCameraMap.insert(std::pair<std::string, Camera*>(cameraName, newCamera));
@@ -252,12 +253,15 @@ void SceneManager::setCurrentCamera(Camera* newCamera)
 	mCurrentCamera = newCamera;
 }
 
+void SceneManager::processViewMatrix()
+{
+	//compute the new camera matrix
+	mCurrentCamera->updateCamera();
+}
+
 glm::mat4 SceneManager::getViewMatrix()
 {
 	assert(mCurrentCamera);
-
-	//compute the new camera matrix
-	mCurrentCamera->updateCamera();
 
 	return mCurrentCamera->getCameraMatrix();
 }

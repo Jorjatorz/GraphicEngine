@@ -24,7 +24,7 @@ public:
 	Renderer* mRenderer; //will be a list
 
 	//SceneManager creator and destructors
-	SceneManager* createSceneManager(std::string name);
+	SceneManager* createSceneManager(std::string name, Renderer* callingRenderer);
 	void deleteSceneManager(std::string name);
 
 private:

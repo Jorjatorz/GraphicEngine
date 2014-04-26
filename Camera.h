@@ -8,8 +8,8 @@
 class Camera
 {
 public:
-	Camera(void);
-	Camera(std::string& name);
+	Camera(SceneManager* newSceneManager);
+	Camera(std::string& name, SceneManager* newSceneManager);
 	~Camera(void);
 
 	//camera control mode
@@ -49,10 +49,14 @@ public:
 	}
 
 private:
+	SceneManager* mCurrentSceneManager;
+
 	//standar variables
-	glm::vec3 mPosition, mOrientation;
+	glm::vec3 mPosition, mOrientation, mUpVector;
 	std::string mName; //camera name
 	glm::mat4 mCameraMatrix; //view matrix (specific for each camera)
+
+	real camYaw, camPitch; //Y rotation, X rotation
 
 	//Special variables
 	tControlerType mCurrentControlType; //current control mode

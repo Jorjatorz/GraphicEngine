@@ -19,6 +19,7 @@ InputManager::~InputManager(void)
 
 #include "ResourceManager.h"
 
+int mX , mY;
 void InputManager::getFrameInput(bool &running)
 {
 	while(SDL_PollEvent(&mEvent))
@@ -39,8 +40,12 @@ void InputManager::getFrameInput(bool &running)
 			}
 
 		}
-
 		
+		if(mEvent.type == SDL_MOUSEMOTION)
+		{
+			SDL_GetMouseState(&mX, &mY);
+		}
+
 		if(mEvent.type == SDL_KEYDOWN)
 			mKeyPressedArray[mEvent.key.keysym.scancode] = true;
 
@@ -67,5 +72,6 @@ void InputManager::warpMouse(int x, int y)
 
 void InputManager::getMousePosition(int &x, int &y)
 {
-	SDL_GetMouseState(&x, &y);
+	x = mX;
+	y = mY;
 }
