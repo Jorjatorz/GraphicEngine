@@ -20,6 +20,7 @@ public:
 
 private:
 	Mesh* mMesh; //mesh pointer
+	Material* mMaterial; //Material attached to this entity
 	bool meshAttached; //is any mesh attached?
 	std::string mMeshName; //mesh name
 	glm::mat4 mModelMatrix; //entity model matrix

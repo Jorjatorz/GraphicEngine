@@ -65,7 +65,7 @@ bool InputManager::isKeyUp(short int keyCode)
 	return !mKeyPressedArray[keyCode];
 }
 
-void InputManager::warpMouse(int x, int y)
+void InputManager::setMousePosition(int x, int y)
 {
 	SDL_WarpMouseInWindow(mSDLWindow, x, y);
 }

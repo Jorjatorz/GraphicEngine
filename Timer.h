@@ -13,6 +13,7 @@ public:
 
 	int getTicks();
 	int getDeltaTicks();
+	int getTotalTicks();
 
 	int mPreviousTime;
 	int mCurrentTime;

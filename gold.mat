@@ -1,0 +1,6 @@
+baseColorV = 1.0, 0.0, 0.0
+ambientColorV = 0.0, 1.0, 0.0
+roughnessR = 0.5
+emissiveV = 1.0, 0.0, 1.0
+opacityR = 0.2535
+<end>

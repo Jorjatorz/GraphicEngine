@@ -22,6 +22,8 @@ public:
 
 	//classes
 	Renderer* mRenderer; //will be a list
+	//Timer
+	Timer* mTimer;
 
 	//SceneManager creator and destructors
 	SceneManager* createSceneManager(std::string name, Renderer* callingRenderer);

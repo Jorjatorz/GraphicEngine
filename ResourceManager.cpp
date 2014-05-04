@@ -54,15 +54,16 @@ Shader* ResourceManager::loadShader(std::string shaderName, std::string shaderPa
 	}
 
 	//if the resource doesnt exists
+	std::string completePath = "Data\\Shaders\\" + shaderPath;
 	//create Shader (will be deleted by the resource)
 	Shader* mShader = new Shader(shaderName);
 	//create a new resource(will be deleted by the resourceManager)
-	GameResource<Shader*>* mResource = new GameResource<Shader*>(shaderPath, mShader);
+	GameResource<Shader*>* mResource = new GameResource<Shader*>(completePath, mShader);
 
 	//load shader and information
-	mShader->loadShader(shaderPath);
-	mResource->lastModificationTime[0] = getModificationTime(shaderPath + ".vert");
-	mResource->lastModificationTime[1] = getModificationTime(shaderPath + ".frag");
+	mShader->loadShader(completePath);
+	mResource->lastModificationTime[0] = getModificationTime(completePath + ".vert");
+	mResource->lastModificationTime[1] = getModificationTime(completePath + ".frag");
 
 	//insert it into the map
 	mShaderMap.insert(std::pair<std::string, GameResource<Shader*>*>(shaderName, mResource));
@@ -101,14 +102,17 @@ Texture* ResourceManager::loadTexture(std::string textureName, bool mipmap, std:
 		}
 	}
 
+
+	std::string completePath = "Data\\Textures\\" + texturePath;
+	
 	//create Texture (will be deleted by the resource)
 	Texture* mTexture = new Texture();
 	//create new resource(will be deleted by the resourceManager)
-	GameResource<Texture*>* mResource = new GameResource<Texture*>(texturePath, mTexture);
+	GameResource<Texture*>* mResource = new GameResource<Texture*>(completePath, mTexture);
 
 	//load texture and information
-	mTexture->loadTexture(texturePath, mipmap);
-	mResource->lastModificationTime[0] = getModificationTime(texturePath);
+	mTexture->loadTexture(completePath, mipmap);
+	mResource->lastModificationTime[0] = getModificationTime(completePath);
 
 	//insert it into the map
 	mTextureMap.insert(std::pair<std::string, GameResource<Texture*>*>(textureName, mResource));
@@ -172,10 +176,11 @@ Mesh* ResourceManager::createMesh(std::string meshName, std::string meshPath)
 		}
 	}
 	//else
+	std::string completePath = "Data\\Models\\" + meshPath;
 	//create and load the mesh (will be deleted by the resource)
-	Mesh* mMesh = new Mesh(meshPath);
+	Mesh* mMesh = new Mesh(completePath);
 	//create new resource(will be deleted by the resourceManager)
-	GameResource<Mesh*>* mResource = new GameResource<Mesh*>(meshPath, mMesh);
+	GameResource<Mesh*>* mResource = new GameResource<Mesh*>( completePath, mMesh);
 
 
 	//insert it to the map

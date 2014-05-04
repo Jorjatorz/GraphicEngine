@@ -14,6 +14,7 @@ Root::Root(void)
 
 Root::~Root(void)
 {
+	delete mTimer;
 	delete mRenderer;
 	delete mInput;
 	delete mResourceManager;
@@ -35,29 +36,28 @@ void Root::initEngine()
 	bool running = true;
 
 	//PRuebas
-	Timer mTimer;
+	mTimer = new Timer();
 	int frames = 0;
 	int miliSeconds = 0;
 	int framesPerSecond = 1000/60;
-	bool firstTime = true;
-	mTimer.getTicks();
+	mTimer->getTicks();
 	//
 	while(running && !mInput->isKeyDown(SDL_SCANCODE_ESCAPE))
 	{
-		mTimer.getTicks();
+		mTimer->getTicks();
 		//Get input
 		mInput->getFrameInput(running);
 		//Render a frame
-		mRenderer->renderFrame(mTimer.getDeltaTicks() * 0.001);
+		mRenderer->renderFrame(mTimer->getDeltaTicks() * 0.001);
 
 		//compute delta
-		miliSeconds += mTimer.getDeltaTicks();
+		miliSeconds += mTimer->getDeltaTicks();
 
 		//if we are to fast
-		if(mTimer.mDeltaTime < framesPerSecond)
+		if(mTimer->mDeltaTime < framesPerSecond)
 		{
-			SDL_Delay(framesPerSecond - mTimer.mDeltaTime);
-			miliSeconds += framesPerSecond - mTimer.mDeltaTime;
+			SDL_Delay(framesPerSecond - mTimer->mDeltaTime);
+			miliSeconds += framesPerSecond - mTimer->mDeltaTime;
 		}
 
 		frames++;

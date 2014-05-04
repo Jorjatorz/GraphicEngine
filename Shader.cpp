@@ -143,8 +143,10 @@ void Shader::UniformTexture(const std::string& uniformName, GLint textureId)
 {
 	//glActiveTexture(GL_TEXTURE0+slot);
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 	glUniform1i(id, textureId);
 }
 
@@ -152,8 +154,10 @@ void Shader::UniformTexture(const std::string& uniformName, GLint textureId)
 void Shader::Uniform(const std::string& uniformName, GLint value)
 {
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 	glUniform1iARB(id, value);
 }
 
@@ -161,8 +165,10 @@ void Shader::Uniform(const std::string& uniformName, GLint value)
 void Shader::Uniform(const std::string& uniformName, GLfloat value)
 {
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 	glUniform1fARB(id, value);
 }
 
@@ -170,8 +176,10 @@ void Shader::Uniform(const std::string& uniformName, GLfloat value)
 void Shader::Uniform(const std::string& uniformName, const glm::vec2& value)
 {
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 	glUniform2fvARB(id, 1, glm::value_ptr(value));
 }
 
@@ -180,32 +188,40 @@ void Shader::Uniform(const std::string& uniformName, const glm::vec2& value)
 void Shader::Uniform(const std::string& uniformName, const glm::vec3& value)
 {
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 	glUniform3fvARB(id, 1, glm::value_ptr(value));
 }
 
 void Shader::Uniform(const std::string& uniformName, const glm::vec4& value)
 {
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 	glUniform3fvARB(id, 1, glm::value_ptr(value));
 }
 
 void Shader::UniformMatrix(const std::string& uniformName, const glm::mat4& value)
 {
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 	glUniformMatrix4fvARB(id, 1, false, glm::value_ptr(value));
 }
 
 void Shader::UniformMatrix(const std::string& uniformName, const glm::mat3& value)
 {
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 	glUniformMatrix4fvARB(id, 1, false, glm::value_ptr(value));
 }
 /*
@@ -231,8 +247,10 @@ void Shader::UniformMatrix(const std::string& uniformName, const aiMatrix4x4& va
 void Shader::UniformBlock(const std::string& uniformName, GLuint  location)
 {
 	GLuint id = glGetUniformBlockIndex(mProgram, uniformName.c_str());
+	#ifdef SHADER_MESSAGES
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
+	#endif
 
 	glUniformBlockBinding(mProgram, id, location);
 }

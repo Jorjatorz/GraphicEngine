@@ -24,7 +24,7 @@ public:
 	{
 		mSDLWindow = newWindow;
 	}
-	void InputManager::warpMouse(int x, int y);
+	void InputManager::setMousePosition(int x, int y);
 	void InputManager::getMousePosition(int &x, int &y);
 
 private:

@@ -26,3 +26,8 @@ int Timer::getDeltaTicks()
 	mDeltaTime = mCurrentTime - mPreviousTime;
 	return mDeltaTime;
 }
+
+int Timer::getTotalTicks()
+{
+	return SDL_GetTicks();
+}

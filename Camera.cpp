@@ -16,7 +16,9 @@ Camera::Camera(SceneManager* newSceneManager)
 	mCurrentControlType = NOCONTROLER;
 	movementSpeed = mouseSpeed = 0.2;
 
-	camPitch = camYaw = 0;
+	//Pointing to 0, 0, -1
+	camPitch = 3.1415;
+	camYaw = 0;
 }
 
 Camera::Camera(std::string& name, SceneManager* newSceneManager)
@@ -30,7 +32,9 @@ Camera::Camera(std::string& name, SceneManager* newSceneManager)
 	mCurrentControlType = NOCONTROLER;
 	movementSpeed = mouseSpeed = 0.2;
 
-	camPitch = camYaw = 0;
+	//Pointing to 0, 0, -1
+	camPitch = 3.1415;
+	camYaw = 0;
 }
 
 Camera::~Camera(void)
@@ -152,5 +156,5 @@ void Camera::transformFromInput()
 	}
 
 	//reset mouse position
-	inputIns->warpMouse(centerX, centerY);
+	inputIns->setMousePosition(centerX, centerY);
 }

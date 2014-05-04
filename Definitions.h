@@ -1,6 +1,6 @@
 //constains all classes declarations and other things
 //#define DEBUG_MESSAGES
-
+//#define SHADER_MESSAGES
 
 //external includes
 #include <SDL.h>

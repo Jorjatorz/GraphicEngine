@@ -62,6 +62,7 @@ void Renderer::initOpenGL()
 #include "Camera.h"
 #include "InputManager.h"
 #include "Mesh.h"
+#include "Material.h"
 //
 
 real caca = 0;
@@ -76,10 +77,10 @@ void Renderer::renderFrame(real deltaTime)
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -1.0));
 	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.1);
 	Camera* mCam = mSceneManager->createCamera("camera1");
-	mCam->setControler(Camera::DEFAULT);
+	//mCam->setControler(Camera::DEFAULT);
 	mSceneManager->setCurrentShader(mShader);
 
-	Entity* mEnt2 = mSceneManager->createEntity("ent2", "spider.obj");
+	Entity* mEnt2 = mSceneManager->createEntity("ent2", "monkey.obj");
 	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, 0.0));
 	node2->setOrientation(glm::vec3(0.0, -90.0, 0.0));
 	node2->attachObject(mEnt2);
@@ -88,14 +89,19 @@ void Renderer::renderFrame(real deltaTime)
 	mSceneManager->setCurrentCamera(mCam);
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));
-	node2->setScale(glm::vec3(0.01, 0.01, 0.01));
 
+	Material* mat = new Material();
+	mat->readMaterial("gold.mat");
 
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_C))
 	{
 		mCam->setControler(Camera::NOCONTROLER);
-		mCam->lookAt(node->getPosition());
+	}
+
+	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_V))
+	{
+		mCam->setControler(Camera::DEFAULT);
 	}
 
 	//clear buffers

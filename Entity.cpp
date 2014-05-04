@@ -14,6 +14,7 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	mModelMatrix = glm::mat4(1.0); //identity
 	mMesh = NULL;
 	mMeshName = "NULL";
+	mMaterial = NULL;
 	mSceneManager = newSceneManager;
 	meshAttached = false;
 }
@@ -24,6 +25,7 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 	mModelMatrix = glm::mat4(1.0); //identity
 	mSceneManager = newSceneManager;
 	meshAttached = false;
+	mMaterial = NULL;
 
 	attachMesh(meshName); //load mesh
 }
@@ -33,20 +35,22 @@ Entity::~Entity(void)
 {
 }
 
+#include "Root.h"
+#include "Timer.h"
+#include "Material.h"
 
 void Entity::render(glm::mat4 perspectiveViewM)
 {
 	if(meshAttached)
 	{
 		//apply shader
-		mSceneManager->bindCurrentShader();
+		mSceneManager->bindShader(mMaterial->mMaterialShader);
 
-		//send uniforms
-		Shader* shad = mSceneManager->getCurrentShader();	
+		//send uniforms	
 		glm::mat4 finalMatrix = perspectiveViewM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
-		shad->UniformMatrix("finalM", finalMatrix);
+		mMaterial->mMaterialShader->UniformMatrix("finalM", finalMatrix);
 		glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
-		shad->UniformMatrix("normalM", normalM);
+		mMaterial->mMaterialShader->UniformMatrix("normalM", normalM);
 
 		for(int i = 0; i < mMesh->mMeshComponentsVector.size(); ++i)
 		{
