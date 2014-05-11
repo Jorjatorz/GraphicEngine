@@ -2,10 +2,11 @@
 #define CAMERA_H
 
 #include "Definitions.h"
+#include "MovableObject.h"
 
 #include <string>
 
-class Camera
+class Camera : public MovableObject
 {
 public:
 	Camera(SceneManager* newSceneManager);
@@ -19,8 +20,8 @@ public:
 		DEFAULT
 	} tControlerType;
 
+	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient); //inheritated
 
-	void updateCamera();
 
 	void setControler(tControlerType newType);
 
@@ -49,11 +50,9 @@ public:
 	}
 
 private:
-	SceneManager* mCurrentSceneManager;
-
 	//standar variables
 	glm::vec3 mPosition, mOrientation, mUpVector;
-	std::string mName; //camera name
+	glm::vec3 mDerivedPosition, mDerivedOrientation;
 	glm::mat4 mCameraMatrix; //view matrix (specific for each camera)
 
 	real camYaw, camPitch; //Y rotation, X rotation
@@ -66,8 +65,18 @@ private:
 	real mouseSpeed;
 
 	//FUNCTIONS
+	void updateCamera();
 	void updateFromInput(); //function that updates the camera view depending on the current Controler
 	void transformFromInput(); //calculate the new position and orientation depending on the user input
+
+	/*
+	//inherited
+	std::string mName;
+	SceneManager* mSceneManager;
+	SceneNode* mParentSceneNode;
+	bool visible;
+	bool castShadows;
+	bool mAttachedToNode; //is attached to a scenode?*/
 };
 
 #endif

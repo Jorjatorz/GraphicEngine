@@ -3,7 +3,7 @@
 
 MovableObject::MovableObject(void)
 {
-	mName = "Unknown";
+	mName = "Unnamed Object";
 	mSceneManager = NULL;
 	mParentSceneNode = NULL;
 	visible = true;

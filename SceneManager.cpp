@@ -7,6 +7,7 @@
 #include "Entity.h"
 #include "SceneNode.h"
 #include "Camera.h"
+#include "Light.h"
 
 SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
@@ -17,6 +18,22 @@ SceneManager::SceneManager(Renderer* mCurrentRenderer)
 
 SceneManager::~SceneManager(void)
 {
+	mShaderMap.clear();
+	mTextureMap.clear();
+
+	tEntityMap::iterator entityIterator;
+	for(entityIterator = mEntityMap.begin(); entityIterator != mEntityMap.end(); ++entityIterator)
+	{
+		delete entityIterator->second;
+	}
+	mEntityMap.clear();
+
+	tCameraMap::iterator cameraIterator;
+	for(cameraIterator = mCameraMap.begin(); cameraIterator != mCameraMap.end(); ++cameraIterator)
+	{
+		delete cameraIterator->second;
+	}
+	mCameraMap.clear();
 }
 
 
@@ -26,14 +43,10 @@ Shader* SceneManager::createShader(std::string shaderName, std::string shaderPat
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr();
 
 	//iterate through the map in search of the shader
-	tShaderMap::iterator shaderIterator;
-	for(shaderIterator = mShaderMap.begin(); shaderIterator != mShaderMap.end(); ++shaderIterator)
+	tShaderMap::iterator it = mShaderMap.find(shaderName);
+	if(it != mShaderMap.end())
 	{
-		//if it exist return it
-		if(shaderName == shaderIterator->first)
-		{
-			return shaderIterator->second;
-		}
+		return it->second;
 	}
 
 	//if the shader doesnt exist
@@ -50,17 +63,13 @@ Shader* SceneManager::createShader(std::string shaderName, std::string shaderPat
 void SceneManager::deleteShader(std::string shaderName)
 {
 	//iterate through the map in search of the shader
-	tShaderMap::iterator shaderIterator;
-	for(shaderIterator = mShaderMap.begin(); shaderIterator != mShaderMap.end(); ++shaderIterator)
-	{
-		//if it exist delete it
-		if(shaderName == shaderIterator->first)
-		{
-			mShaderMap.erase(shaderIterator);
+	tShaderMap::iterator it = mShaderMap.find(shaderName);
 
-			break;
-		}
+	if(it != mShaderMap.end())
+	{
+		mShaderMap.erase(it);
 	}
+
 }
 
 void SceneManager::setCurrentShader(Shader* newShader)
@@ -101,14 +110,11 @@ Texture* SceneManager::createTexture(std::string textureName, bool mipmap, std::
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr();
 
 	//iterate through the map in search of the texture
-	tTextureMap::iterator textureIterator;
-	for(textureIterator = mTextureMap.begin(); textureIterator != mTextureMap.end(); ++textureIterator)
+	tTextureMap::iterator it = mTextureMap.find(textureName);
+	//if it exist return it
+	if(it != mTextureMap.end())
 	{
-		//if it exist return it
-		if(textureName == textureIterator->first)
-		{
-			return textureIterator->second;
-		}
+		return it->second;
 	}
 
 	//if the texture doesnt exist
@@ -124,17 +130,12 @@ Texture* SceneManager::createTexture(std::string textureName, bool mipmap, std::
 
 void SceneManager::deleteTexture(std::string textureName)
 {
-	//iterate through the map in search of the shader
-	tTextureMap::iterator textureIterator;
-	for(textureIterator = mTextureMap.begin(); textureIterator != mTextureMap.end(); ++textureIterator)
+	//iterate through the map in search of the texture
+	tTextureMap::iterator it = mTextureMap.find(textureName);
+	//if it exist erase it
+	if(it != mTextureMap.end())
 	{
-		//if it exist delete it
-		if(textureName == textureIterator->first)
-		{
-			mTextureMap.erase(textureIterator);
-
-			break;
-		}
+		mTextureMap.erase(it);
 	}
 }
 
@@ -142,16 +143,13 @@ void SceneManager::deleteTexture(std::string textureName)
 Entity* SceneManager::createEntity(std::string entityName, std::string meshPath)
 {
 	//search if an entity with that name already exists
-	tEntityMap::iterator entityIterator;
-	for(entityIterator = mEntityMap.begin(); entityIterator != mEntityMap.end(); ++entityIterator)
+	tEntityMap::iterator it = mEntityMap.find(entityName);
+	if(it != mEntityMap.end())
 	{
-		if(entityIterator->first == entityName)
-		{
-			return entityIterator->second;
-		}
+		return it->second;
 	}
-	//else
 
+	//else
 	//create the entity 
 	Entity* mEntity;
 	if(meshPath != "NULL")
@@ -172,34 +170,73 @@ Entity* SceneManager::createEntity(std::string entityName, std::string meshPath)
 //delete an entity by name (from scene)
 void SceneManager::deleteEntity(std::string entityName)
 {
-	tEntityMap::iterator entityIterator;
-	for(entityIterator = mEntityMap.begin(); entityIterator != mEntityMap.end(); ++entityIterator)
+	tEntityMap::iterator it = mEntityMap.find(entityName);
+	if(it != mEntityMap.end())
 	{
-		if(entityIterator->first == entityName)
-		{
-			mEntityMap.erase(entityIterator);
-
-			break;
-		}
+		delete it->second;
+		mEntityMap.erase(it);
 	}
 }
 
+
+Light* SceneManager::createLight(std::string lightName)
+{
+	tLightMap::iterator it = mLightMap.find(lightName);
+
+	if(it != mLightMap.end())
+	{
+		return it->second;
+	}
+
+	//if not found create it
+	Light* newLight = new Light(lightName, this);
+	//Attach the light to the sceneNode, just for lights and cameras
+	mRootSceneNode->attachObject(newLight);
+
+	mLightMap.insert(std::pair<std::string, Light*>(lightName, newLight));
+
+	return newLight;
+}
+
+void SceneManager::deleteLight(std::string lightName)
+{
+	tLightMap::iterator it = mLightMap.find(lightName);
+
+	if(it != mLightMap.end())
+	{
+		delete it->second;
+		mLightMap.erase(it);
+	}
+}
+
+Light* SceneManager::getLight(std::string lightName)
+{
+	tLightMap::iterator it = mLightMap.find(lightName);
+
+	if(it != mLightMap.end())
+	{
+		return it->second;
+	}
+
+	//if not found
+	return NULL;
+}
+
+
 Camera* SceneManager::createCamera(std::string cameraName)
 {
-	tCameraMap::iterator it;
-
+	tCameraMap::iterator it = mCameraMap.find(cameraName);
 	//if the camera already exists
-	for(it = mCameraMap.begin(); it != mCameraMap.end(); ++it)
+	if(it != mCameraMap.end())
 	{
-		if(it->first == cameraName)
-		{
-			return it->second;
-		}
+		return it->second;
 	}
-	//else
 
+	//else
 	//create a new camera
 	Camera* newCamera = new Camera(cameraName, this);
+	//Attach it to the root SceneNode (just for cameras and lights)
+	mRootSceneNode->attachObject(newCamera);
 
 	//save to the camera map
 	mCameraMap.insert(std::pair<std::string, Camera*>(cameraName, newCamera));
@@ -212,40 +249,29 @@ Camera* SceneManager::createCamera(std::string cameraName)
 
 void SceneManager::deleteCamera(std::string cameraName)
 {
-	tCameraMap::iterator it;
-
+	tCameraMap::iterator it = mCameraMap.find(cameraName);
 	//if the camera already exists
-	for(it = mCameraMap.begin(); it != mCameraMap.end(); ++it)
+	if(it != mCameraMap.end())
 	{
-		if(it->first == cameraName)
+		//if the camera to be deleted is the current camera set it to null
+		if(mCurrentCamera->getName() == cameraName)
 		{
-			//if the camera to be deleted is the current camera set it to null
-			if(mCurrentCamera->getName() == cameraName)
-			{
-				mCurrentCamera = NULL;
-			}
-
-			delete it->second;
-
-			return;
+			mCurrentCamera = NULL;
 		}
+
+		delete it->second;
+
+		mCameraMap.erase(it);
 	}
 }
 
 void SceneManager::setCurrentCamera(std::string newCamera)
-{
-	
-	tCameraMap::iterator it;
-
+{	
+	tCameraMap::iterator it = mCameraMap.find(newCamera);
 	//if the camera already exists
-	for(it = mCameraMap.begin(); it != mCameraMap.end(); ++it)
+	if(it != mCameraMap.end())
 	{
-		if(it->first == newCamera)
-		{
-			mCurrentCamera = it->second;
-
-			return;
-		}
+		mCurrentCamera = it->second;
 	}
 }
 void SceneManager::setCurrentCamera(Camera* newCamera)
@@ -256,7 +282,11 @@ void SceneManager::setCurrentCamera(Camera* newCamera)
 void SceneManager::processViewMatrix()
 {
 	//compute the new camera matrix
-	mCurrentCamera->updateCamera();
+	glm::vec3 pos, orient;
+	pos = mCurrentCamera->mParentSceneNode->getDerivedPosition();
+	orient = mCurrentCamera->mParentSceneNode->getDerivedOrientation();
+
+	mCurrentCamera->process(glm::mat4(1.0), glm::mat4(1.0), pos, orient);
 }
 
 glm::mat4 SceneManager::getViewMatrix()

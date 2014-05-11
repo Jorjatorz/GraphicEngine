@@ -16,10 +16,10 @@ public:
 	~Material(void);
 
 	//read the materials propertyes from a file
-	void readMaterial(std::string matFile);
+	void readMaterialFromFile(std::string matFile);
 
 	//Sends material information (uniforms) to the shader
-	void applyMaterial(SceneManager* currentSceneManager);
+	void applyMaterial();
 
 	typedef struct
 	{
@@ -61,15 +61,20 @@ public:
 	tEmissiveColor mEmissiveColorS;
 	tOpacity mOpacityS;
 	real mMetallicR; //0 - 1
-	real mSpecularR; //0 - 1 (Default 0.5) For non-Metallic elements
+	real mSpecularR; //0 - 1 (Default 0.5) For non-Metallic elements SHOULD BE LEFT AS DEFAULT. Controls microshadows https://docs.unrealengine.com/latest/INT/Engine/Rendering/Materials/PhysicallyBased/index.html
 	tNormal mNormalS;
 	real mRefractionR; //any value (default 1 (air))
 	glm::vec3 mAmbientColorV; //Can be a texture if passed a skyblock?? (maybe compute the mean color)
 
-	std::string mMaterialName;
-	Shader* mMaterialShader;
+	Shader* getShader()
+	{
+		return mMaterialShader;
+	}
 
 private:
+	Shader* mMaterialShader;
+	std::string mMaterialName;
+
 	void setParameterFromFile(std::string prop, std::ifstream& inputFile);
 
 };

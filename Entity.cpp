@@ -14,9 +14,11 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	mModelMatrix = glm::mat4(1.0); //identity
 	mMesh = NULL;
 	mMeshName = "NULL";
-	mMaterial = NULL;
+	mMaterial = ResourceManager::getSingletonPtr()->createMaterial("DefaultMaterial"); 
 	mSceneManager = newSceneManager;
 	meshAttached = false;
+
+	mTypeOfMovableObject = tTypeEnum::Entity;
 }
 
 Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager)
@@ -25,7 +27,9 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 	mModelMatrix = glm::mat4(1.0); //identity
 	mSceneManager = newSceneManager;
 	meshAttached = false;
-	mMaterial = NULL;
+	mMaterial = ResourceManager::getSingletonPtr()->createMaterial("DefaultMaterial"); 
+
+	mTypeOfMovableObject = tTypeEnum::Entity;
 
 	attachMesh(meshName); //load mesh
 }
@@ -35,22 +39,32 @@ Entity::~Entity(void)
 {
 }
 
+void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient)
+{
+	render(perspectiveViewSceneNodeM);
+}
+
 #include "Root.h"
 #include "Timer.h"
 #include "Material.h"
 
-void Entity::render(glm::mat4 perspectiveViewM)
+void Entity::render(glm::mat4 perspectiveViewSceneNodeM)
 {
 	if(meshAttached)
 	{
 		//apply shader
-		mSceneManager->bindShader(mMaterial->mMaterialShader);
+		Shader* shad = mMaterial->getShader();
+		mSceneManager->bindShader(shad);
 
-		//send uniforms	
-		glm::mat4 finalMatrix = perspectiveViewM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
-		mMaterial->mMaterialShader->UniformMatrix("finalM", finalMatrix);
+		//Send uniforms	
+
+		//send matrix
+		glm::mat4 finalMatrix = perspectiveViewSceneNodeM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
+		shad->UniformMatrix("finalM", finalMatrix);
 		glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
-		mMaterial->mMaterialShader->UniformMatrix("normalM", normalM);
+		shad->UniformMatrix("normalM", normalM);
+		//send material uniforms
+		mMaterial->applyMaterial();
 
 		for(int i = 0; i < mMesh->mMeshComponentsVector.size(); ++i)
 		{
@@ -72,7 +86,7 @@ void Entity::attachMesh(std::string meshName)
 	mMeshName = meshName;
 
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr(); //resourcemanager pointer
-	mMesh = mResourceManager->createMesh(mMeshName, mMeshName); //allocate new mesh
+	mMesh = mResourceManager->loadMesh(mMeshName, mMeshName); //allocate new mesh
 
 	mModelMatrix = mMesh->meshMatrix;
 
@@ -84,4 +98,9 @@ void Entity::deAttachMesh()
 	mMeshName = "NULL";
 	mMesh = NULL;
 	meshAttached = false;
+}
+
+void Entity::attachMaterial(std::string materialName)
+{
+	mMaterial = ResourceManager::getSingletonPtr()->loadMaterial(materialName, materialName);
 }

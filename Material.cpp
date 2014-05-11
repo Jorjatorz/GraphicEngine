@@ -2,17 +2,59 @@
 
 #include "ResourceManager.h"
 #include "SceneManager.h"
+#include "Shader.h"
+#include "Texture.h"
 
 Material::Material(void)
 {
 	mMaterialName = "NULL";
-	mMaterialShader = NULL;
+	mMaterialShader = ResourceManager::getSingletonPtr()->loadShader("basic", "basic"); //Default shader
+
+	//Init mat properties
+	mBaseColorS.baseColorTextured = false;
+	mBaseColorS.mBaseColorT = NULL;
+	mBaseColorS.mBaseColorV = glm::vec3(0.17, 0.17, 0.17);
+	mRoughNessS.roughnessTextured = false;
+	mRoughNessS.mRoughnessT = NULL;
+	mRoughNessS.mRoughnessR = 0.0;
+	mEmissiveColorS.emissiveTextured = false;
+	mEmissiveColorS.mEmissiveColorT = NULL;
+	mEmissiveColorS.mEmissiveColorV = glm::vec3(1.0);
+	mOpacityS.opacityTextured = false;
+	mOpacityS.mOpacityT = NULL;
+	mOpacityS.mOpacityR = 0.0;
+	mMetallicR = 1.0; //FUll metal
+	mSpecularR = 0.5;
+	mNormalS.normalTextured = false;
+	mNormalS.mNormalT = NULL;
+	mRefractionR = 1;
+	mAmbientColorV = glm::vec3(1.0);
 }
 
 Material::Material(std::string materialName, std::string shaderName)
 {
 	mMaterialName = materialName;
 	mMaterialShader = ResourceManager::getSingletonPtr()->getShader(shaderName);
+
+	//Init mat properties
+	mBaseColorS.baseColorTextured = false;
+	mBaseColorS.mBaseColorT = NULL;
+	mBaseColorS.mBaseColorV = glm::vec3(0.17, 0.17, 0.17);
+	mRoughNessS.roughnessTextured = false;
+	mRoughNessS.mRoughnessT = NULL;
+	mRoughNessS.mRoughnessR = 0.0;
+	mEmissiveColorS.emissiveTextured = false;
+	mEmissiveColorS.mEmissiveColorT = NULL;
+	mEmissiveColorS.mEmissiveColorV = glm::vec3(1.0);
+	mOpacityS.opacityTextured = false;
+	mOpacityS.mOpacityT = NULL;
+	mOpacityS.mOpacityR = 0.0;
+	mMetallicR = 1.0; //FUll metal
+	mSpecularR = 0.5;
+	mNormalS.normalTextured = false;
+	mNormalS.mNormalT = NULL;
+	mRefractionR = 1;
+	mAmbientColorV = glm::vec3(1.0);
 }
 
 
@@ -21,12 +63,60 @@ Material::~Material(void)
 {
 }
 
-void Material::applyMaterial(SceneManager* currentSceneManager)
+void Material::applyMaterial()
 {
 	//send uniforms
+	if(mBaseColorS.baseColorTextured)
+	{
+		mMaterialShader->UniformTexture("baseTexture", mBaseColorS.mBaseColorT->mTextureID);
+	}
+	else
+	{
+		mMaterialShader->Uniform("baseColorVector", mBaseColorS.mBaseColorV);
+	}
+
+	if(mRoughNessS.roughnessTextured)
+	{
+		mMaterialShader->UniformTexture("roughnessTexture", mRoughNessS.mRoughnessT->mTextureID);
+	}
+	else
+	{
+		mMaterialShader->Uniform("roughnessValue", mRoughNessS.mRoughnessR);
+	}
+
+	if(mEmissiveColorS.emissiveTextured)
+	{
+		mMaterialShader->UniformTexture("emissiveTexture", mEmissiveColorS.mEmissiveColorT->mTextureID);
+	}
+	else
+	{
+		mMaterialShader->Uniform("emissiveVector", mEmissiveColorS.mEmissiveColorV);
+	}
+
+	if(mOpacityS.opacityTextured)
+	{
+		mMaterialShader->UniformTexture("opacityTexture", mOpacityS.mOpacityT->mTextureID);
+	}
+	else
+	{
+		mMaterialShader->Uniform("opacityValue", mOpacityS.mOpacityR);
+	}
+	
+	mMaterialShader->Uniform("metallicValue", mMetallicR);
+
+	mMaterialShader->Uniform("specularValue", mSpecularR);
+
+	if(mNormalS.normalTextured)
+	{
+		mMaterialShader->UniformTexture("normalsTexture", mNormalS.mNormalT->mTextureID);
+	}
+
+	mMaterialShader->Uniform("refractionValue", mRefractionR);
+	
+	mMaterialShader->Uniform("ambientColorVector", mAmbientColorV);
 }
 
-void Material::readMaterial(std::string matFile)
+void Material::readMaterialFromFile(std::string matFile)
 {
 	std::string nextProp = "null";
 
@@ -48,26 +138,20 @@ void Material::readMaterial(std::string matFile)
 		
 		inputFile.close();
 	}
-	/*
-	material name
-	base texture?
-	base color/texture
-	rougness texture?
-	rougnes diff/tex
-	metallic tex/diff
-	specular
-	normalT
-	refraction
-	ambient
-	emissive
-	opacity
-	*/
 }
 
 void Material::setParameterFromFile(std::string prop, std::ifstream& inputFile)
 {
 	char equalSign;
-	if(prop == "baseColorT")
+
+	if(prop == "Shader")
+	{
+		inputFile >> equalSign;
+		std::string shaderPath;
+		inputFile >> shaderPath;
+		mMaterialShader = ResourceManager::getSingletonPtr()->loadShader(shaderPath, shaderPath);
+	}
+	else if(prop == "baseColorT")
 	{
 		inputFile >> equalSign; //get the =
 		std::string texturePath;

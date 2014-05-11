@@ -7,27 +7,32 @@
 
 Camera::Camera(SceneManager* newSceneManager)
 {
-	mCurrentSceneManager = newSceneManager;
+	mSceneManager = newSceneManager;
 
 	mPosition = glm::vec3(0.0);
 	mOrientation = glm::vec3(0.0, 0.0, -1.0);
 	mUpVector = glm::vec3(0.0, 1.0, 0.0);
-	mName = "Unknown Camera";
+	mDerivedPosition = mPosition;
+	mDerivedOrientation = mOrientation;
+	mName = "Unnamed Camera";
 	mCurrentControlType = NOCONTROLER;
 	movementSpeed = mouseSpeed = 0.2;
 
 	//Pointing to 0, 0, -1
 	camPitch = 3.1415;
 	camYaw = 0;
+
+	mTypeOfMovableObject = tTypeEnum::Entity;
 }
 
 Camera::Camera(std::string& name, SceneManager* newSceneManager)
 {
-	mCurrentSceneManager = newSceneManager;
+	mSceneManager = newSceneManager;
 
 	mPosition = glm::vec3(0.0);
 	mOrientation = glm::vec3(0.0, 0.0, -1.0);
 	mUpVector = glm::vec3(0.0, 1.0, 0.0);
+	mDerivedPosition = mPosition;
 	mName = name;
 	mCurrentControlType = NOCONTROLER;
 	movementSpeed = mouseSpeed = 0.2;
@@ -35,17 +40,26 @@ Camera::Camera(std::string& name, SceneManager* newSceneManager)
 	//Pointing to 0, 0, -1
 	camPitch = 3.1415;
 	camYaw = 0;
+
+	mTypeOfMovableObject = tTypeEnum::Entity;
 }
 
 Camera::~Camera(void)
 {
 }
 
+void Camera::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient)
+{
+	mDerivedPosition = parentPos;
+
+	updateCamera();
+}
+
 void Camera::updateCamera()
 {
 	updateFromInput();
 
-	mCameraMatrix = glm::lookAt(mPosition, mOrientation + mPosition, mUpVector);
+	mCameraMatrix = glm::lookAt(mDerivedPosition, mOrientation + mDerivedPosition, mUpVector);
 }
 
 void Camera::updateFromInput()
@@ -57,6 +71,7 @@ void Camera::updateFromInput()
 	case NOCONTROLER:
 		//Set SDL Cursor mode off (show cursor)
 		SDL_ShowCursor(1);
+		mDerivedPosition += mPosition;
 		mUpVector = glm::vec3(0.0, 1.0, 0.0);
 		break; //no controler so we just skip
 	case DEFAULT:
@@ -101,8 +116,8 @@ void Camera::transformFromInput()
 
 	//center of the screen
 	int centerX, centerY;
-	centerX = mCurrentSceneManager->getRenderer()->getCurrentWindow()->getWidth() / 2;
-	centerY = mCurrentSceneManager->getRenderer()->getCurrentWindow()->getHeight() / 2;
+	centerX = mSceneManager->getRenderer()->getCurrentWindow()->getWidth() / 2;
+	centerY = mSceneManager->getRenderer()->getCurrentWindow()->getHeight() / 2;
 
 	//difference from current mouse pos to the center
 
@@ -110,8 +125,8 @@ void Camera::transformFromInput()
 	int diffY = centerY - mouseY;
 
 	//calculate the new angle (radians)
-	camPitch += diffX * mCurrentSceneManager->mDeltaTime * mouseSpeed;
-	camYaw += diffY * mCurrentSceneManager->mDeltaTime * mouseSpeed;
+	camPitch += diffX * mSceneManager->mDeltaTime * mouseSpeed;
+	camYaw += diffY * mSceneManager->mDeltaTime * mouseSpeed;
 
 	//Just reset the angles, so we prevent huge numbers
 	if(camPitch > 2 * 3.1415)
@@ -137,23 +152,25 @@ void Camera::transformFromInput()
 	//COMPUTE MOVEMENT
 	if(inputIns->isKeyDown(SDL_SCANCODE_W))
 	{
-		mPosition += mOrientation * mCurrentSceneManager->mDeltaTime * movementSpeed;
+		mPosition += mOrientation * mSceneManager->mDeltaTime * movementSpeed;
 	}
 
 	if(inputIns->isKeyDown(SDL_SCANCODE_S))
 	{
-		mPosition -= mOrientation * mCurrentSceneManager->mDeltaTime * movementSpeed;
+		mPosition -= mOrientation * mSceneManager->mDeltaTime * movementSpeed;
 	}
 
 	if(inputIns->isKeyDown(SDL_SCANCODE_D))
 	{
-		mPosition += right * mCurrentSceneManager->mDeltaTime * movementSpeed;
+		mPosition += right * mSceneManager->mDeltaTime * movementSpeed;
 	}
 
 	if(inputIns->isKeyDown(SDL_SCANCODE_A))
 	{
-		mPosition -= right * mCurrentSceneManager->mDeltaTime * movementSpeed;
+		mPosition -= right * mSceneManager->mDeltaTime * movementSpeed;
 	}
+
+	mDerivedPosition += mPosition;
 
 	//reset mouse position
 	inputIns->setMousePosition(centerX, centerY);

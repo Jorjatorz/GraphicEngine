@@ -72,7 +72,6 @@ void Renderer::renderFrame(real deltaTime)
 	mSceneManager->mDeltaTime = deltaTime;
 
 	Entity* mEnt = mSceneManager->createEntity("cube", "guard.obj");
-	//Entity* mEnt2 = mSceneManager->createEntity("cube2", "NULL");
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -1.0));
 	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.1);
@@ -90,8 +89,8 @@ void Renderer::renderFrame(real deltaTime)
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));
 
-	Material* mat = new Material();
-	mat->readMaterial("gold.mat");
+	mEnt->attachMaterial("gold.mat");
+	//mEnt2->attachMaterial("gold.mat");
 
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_C))

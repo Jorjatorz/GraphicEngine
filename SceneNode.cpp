@@ -2,6 +2,7 @@
 
 #include "MovableObject.h"
 #include "SceneManager.h"
+#include "Camera.h"
 
 SceneNode::SceneNode(void)
 {
@@ -163,11 +164,18 @@ void SceneNode::deleteAllChilds()
 void SceneNode::attachObject(MovableObject* mNewObject)
 {
 	//if the object is also attached
-	if(mNewObject->isAttachedToNode())
+	if(mNewObject->mParentSceneNode == this)
 	{
-		#ifdef DEBUG_MESSAGES
-		std::cout << mNewObject->getName() << " already attached" << std::endl;
-		#endif
+		//its already attached to this node, dont do nothing
+	}
+	else if(mNewObject->isAttachedToNode())
+	{
+		//Detach object from old node
+		mNewObject->mParentSceneNode->detachObject(mNewObject);
+
+		//Attach object to new node
+		mObjectsMap.insert(std::pair<std::string, MovableObject*>(mNewObject->getName(), mNewObject));
+		mNewObject->setAttached(true, this);
 	}
 	else
 	{
@@ -178,18 +186,15 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 
 void SceneNode::detachObject(std::string objName)
 {
-	tObjectsMaps::iterator it;
+	tObjectsMaps::iterator it = mObjectsMap.find(objName);
 
-	for(it = mObjectsMap.begin(); it != mObjectsMap.end(); ++it)
+	if(it != mObjectsMap.end())
 	{
-		if(it->second->getName() == objName)
-		{
-			it->second->setAttached(false, NULL);
-			mObjectsMap.erase(it);
-			break;
-		}
+		it->second->setAttached(false, NULL);
+		mObjectsMap.erase(it);
 	}
 }
+
 void SceneNode::detachObject(MovableObject* obj)
 {
 	std::string objName = obj->getName();
@@ -289,14 +294,14 @@ void SceneNode::processDerivedScale()
 
 void SceneNode::processRootSceneNode()
 {
-	//calculate the viewmatrix from the current camera
+	//update positions
+	updateChildrens();
+
+	//Update current camera view matrix
 	mSceneManager->processViewMatrix();
 
 	//calculate perspective and viewmatrix multiplyed matrix
 	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix() * mSceneManager->getViewMatrix();
-
-	//update positions
-	updateChildrens();
 
 	//go through all the childs
 	processChilds(perspectiveViewM);
@@ -325,9 +330,10 @@ void SceneNode::processObjects(glm::mat4 perspectiveViewM)
 
 	for(it = mObjectsMap.begin(); it != mObjectsMap.end(); ++it)
 	{
-		if(it->second->isVisible())
+		//We check if we are updating the current camera (we have already updat eit so we dont want to update it again)
+		if((it->second->isVisible()) && (it->second->getName() != mSceneManager->getCurrentCamera()->getName()))
 		{
-			it->second->render(finalMatrix);
+			it->second->process(finalMatrix, mSceneManager->getViewMatrix(), mDerivedPosition, mOrientation);
 		}
 	}
 }

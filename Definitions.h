@@ -28,6 +28,7 @@ typedef float real;
 class Camera;
 class Entity;
 class InputManager;
+class Light;
 class Material;
 class Mesh;
 class MovableObject;

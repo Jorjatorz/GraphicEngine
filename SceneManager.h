@@ -53,7 +53,11 @@ public:
 
 
 	//Light
-	//etc
+	Light* createLight(std::string lightName);
+
+	void deleteLight(std::string lightName);
+
+	Light* getLight(std::string lightName);
 
 	//Camera
 	//creates a new camera
@@ -67,6 +71,11 @@ public:
 	void processViewMatrix();
 	//return the curent camera matrix
 	glm::mat4 getViewMatrix();
+	//Return the current camera
+	Camera* getCurrentCamera()
+	{
+		return mCurrentCamera;
+	}
 
 	//aux
 	//sets the perspectiveMAtrix
@@ -92,12 +101,14 @@ private:
 	typedef std::map<std::string, Texture*> tTextureMap;
 	typedef std::map<std::string, Entity*> tEntityMap;
 	typedef std::map<std::string, Camera*> tCameraMap;
+	typedef std::map<std::string, Light*> tLightMap;
 
 	//define maps
 	tShaderMap mShaderMap;
 	tTextureMap mTextureMap;
 	tEntityMap mEntityMap;
 	tCameraMap mCameraMap;
+	tLightMap mLightMap;
 
 	//perspective matrix
 	glm::mat4 mPerspectiveMatrix;

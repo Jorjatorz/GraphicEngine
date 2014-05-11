@@ -34,15 +34,26 @@ public:
 	void setAttached(bool att);
 	void setAttached(bool att, SceneNode* newNode);
 
-	virtual void render(glm::mat4 perspectiveViewM) = 0;
+	virtual void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient) = 0;
+
+	SceneManager* mSceneManager;
+	SceneNode* mParentSceneNode;
 
 protected:
 	std::string mName;
-	SceneManager* mSceneManager;
-	SceneNode* mParentSceneNode;
 	bool visible;
 	bool castShadows;
 	bool mAttachedToNode; //is attached to a scenode?
+
+	//type enumeration for detecting what inherit class it is
+	typedef enum
+	{
+		Entity,
+		Light,
+		Camera
+	} tTypeEnum;
+
+	tTypeEnum mTypeOfMovableObject;
 };
 
 #endif
