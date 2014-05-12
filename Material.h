@@ -18,9 +18,14 @@ public:
 	//read the materials propertyes from a file
 	void readMaterialFromFile(std::string matFile);
 
+	//Set properties
+	void setBaseColorV(glm::vec3 newBaseColor);
+	void setBaseColorRGB(glm::vec3 newBaseColor);
+
 	//Sends material information (uniforms) to the shader
 	void applyMaterial();
 
+private:
 	typedef struct
 	{
 		glm::vec3 mBaseColorV; //type 0
@@ -55,6 +60,7 @@ public:
 		bool normalTextured;
 	} tNormal;
 
+public:
 	//Material properties
 	tBaseColor mBaseColorS;
 	tRoughness mRoughNessS;

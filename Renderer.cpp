@@ -63,9 +63,9 @@ void Renderer::initOpenGL()
 #include "InputManager.h"
 #include "Mesh.h"
 #include "Material.h"
+#include <string>
 //
 
-real caca = 0;
 void Renderer::renderFrame(real deltaTime)
 {
 	//PRuebas
@@ -74,18 +74,19 @@ void Renderer::renderFrame(real deltaTime)
 	Entity* mEnt = mSceneManager->createEntity("cube", "guard.obj");
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -1.0));
-	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.1);
+	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.01);
 	Camera* mCam = mSceneManager->createCamera("camera1");
 	//mCam->setControler(Camera::DEFAULT);
 	mSceneManager->setCurrentShader(mShader);
 
-	Entity* mEnt2 = mSceneManager->createEntity("ent2", "monkey.obj");
+	Entity* mEnt2 = mSceneManager->createEntity("ent2", "guard.obj");
 	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, 0.0));
 	node2->setOrientation(glm::vec3(0.0, -90.0, 0.0));
 	node2->attachObject(mEnt2);
 	node->attachObject(mEnt);
 
 	mSceneManager->setCurrentCamera(mCam);
+	mSceneManager->createLight("light1");
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));
 
@@ -101,6 +102,13 @@ void Renderer::renderFrame(real deltaTime)
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_V))
 	{
 		mCam->setControler(Camera::DEFAULT);
+	}
+
+	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
+	{
+		real a, b, c;
+		std::cin >> a >> b >> c;
+		mEnt2->getMaterial()->setBaseColorRGB(glm::vec3(a, b, c));
 	}
 
 	//clear buffers

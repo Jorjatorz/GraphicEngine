@@ -16,7 +16,8 @@ Camera::Camera(SceneManager* newSceneManager)
 	mDerivedOrientation = mOrientation;
 	mName = "Unnamed Camera";
 	mCurrentControlType = NOCONTROLER;
-	movementSpeed = mouseSpeed = 0.2;
+	movementSpeed = 1.0;
+	mouseSpeed = 0.2;
 
 	//Pointing to 0, 0, -1
 	camPitch = 3.1415;
@@ -35,7 +36,8 @@ Camera::Camera(std::string& name, SceneManager* newSceneManager)
 	mDerivedPosition = mPosition;
 	mName = name;
 	mCurrentControlType = NOCONTROLER;
-	movementSpeed = mouseSpeed = 0.2;
+	movementSpeed = 1.0;
+	mouseSpeed = 0.2;
 
 	//Pointing to 0, 0, -1
 	camPitch = 3.1415;
@@ -103,6 +105,11 @@ void Camera::setPosition(glm::vec3& newPosition)
 void Camera::setOrientation(glm::vec3 newOrientation)
 {
 	mOrientation = newOrientation;
+}
+
+void Camera::setMovementSpeed(real newSpeed)
+{
+	movementSpeed = newSpeed;
 }
 
 void Camera::transformFromInput()

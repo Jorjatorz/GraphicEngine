@@ -29,6 +29,8 @@ public:
 
 	void setPosition(glm::vec3& newPosition);
 	void setOrientation(glm::vec3 newOrientation);
+	void setMovementSpeed(real newSpeed);
+
 
 	glm::mat4 getCameraMatrix()
 	{
@@ -39,8 +41,7 @@ public:
 	{
 		return mPosition;
 	}
-
-	glm::vec3 setOrientation()
+	glm::vec3 getOrientation()
 	{
 		return mOrientation;
 	}

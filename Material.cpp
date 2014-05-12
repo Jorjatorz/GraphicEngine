@@ -239,3 +239,13 @@ void Material::setParameterFromFile(std::string prop, std::ifstream& inputFile)
 		inputFile >> mAmbientColorV.x >> comma >> mAmbientColorV.y >> comma >> mAmbientColorV.z;
 	}
 }
+
+void Material::setBaseColorV(glm::vec3 newBaseColor)
+{
+	mBaseColorS.mBaseColorV = newBaseColor;
+}
+
+void Material::setBaseColorRGB(glm::vec3 newBaseColor)
+{
+	mBaseColorS.mBaseColorV = newBaseColor / 255.0f;
+}

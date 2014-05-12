@@ -60,18 +60,15 @@ void SceneNode::setParentSceneNode(SceneNode* newParent)
 
 SceneNode* SceneNode::createChildSceneNode(std::string name)
 {
-	tChildsNodesMap::iterator it;
+	tChildsNodesMap::iterator it = mChildNodes.find(name);;
 
-	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	if(it != mChildNodes.end())
 	{
-		if(name == it->first)
-		{
-			#ifdef DEBUG_MESSAGES
-			std::cout << name << " SceneNode already exists, returning it" << std::endl;
-			#endif
-			//if already exists retuern it
-			return it->second;
-		}
+		#ifdef DEBUG_MESSAGES
+		std::cout << name << " SceneNode already exists, returning it" << std::endl;
+		#endif
+		//if already exists retuern it
+		return it->second;
 	}
 	//else
 	SceneNode* newSceneNode = new SceneNode(name, this, mSceneManager);
@@ -83,20 +80,16 @@ SceneNode* SceneNode::createChildSceneNode(std::string name)
 
 SceneNode* SceneNode::createChildSceneNode(std::string name, SceneNode* newChild)
 {
-	tChildsNodesMap::iterator it;
+	tChildsNodesMap::iterator it = mChildNodes.find(name);
 
-	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	if(it != mChildNodes.end())
 	{
-		if(name == it->first)
-		{
-			#ifdef DEBUG_MESSAGES
-			std::cout << name << " SceneNode already exists, inserting new sceneNode in it" << std::endl;
-			#endif
-			//if already exists retuern it
-			it->second = newChild;
-
-			return it->second;
-		}
+		#ifdef DEBUG_MESSAGES
+		std::cout << name << " SceneNode already exists, returning it" << std::endl;
+		#endif
+		//Change the current node with the new one and return it
+		it->second = newChild;
+		return it->second;
 	}
 	//else
 	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newChild));
@@ -106,18 +99,15 @@ SceneNode* SceneNode::createChildSceneNode(std::string name, SceneNode* newChild
 
 SceneNode* SceneNode::createChildSceneNode(std::string name, glm::vec3 newPosition)
 {
-	tChildsNodesMap::iterator it;
+	tChildsNodesMap::iterator it = mChildNodes.find(name);
 
-	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	if(it != mChildNodes.end())
 	{
-		if(name == it->first)
-		{
-			#ifdef DEBUG_MESSAGES
-			std::cout << name << " SceneNode already exists, returning it" << std::endl;
-			#endif
-			//if already exists retuern it
-			return it->second;
-		}
+		#ifdef DEBUG_MESSAGES
+		std::cout << name << " SceneNode already exists, returning it" << std::endl;
+		#endif
+		//if already exists retuern it
+		return it->second;
 	}
 	//else
 	SceneNode* newSceneNode = new SceneNode(name, this, mSceneManager);
@@ -135,18 +125,13 @@ void SceneNode::deleteChildrenNode(SceneNode* mNode)
 }
 void SceneNode::deleteChildrenNode(std::string childName)
 {
-	tChildsNodesMap::iterator it;
+	tChildsNodesMap::iterator it = mChildNodes.find(childName);
 
-	for(it = mChildNodes.begin(); it != mChildNodes.end(); ++it)
+	if(it != mChildNodes.end())
 	{
-		if(childName == it->first)
-		{
-			//delete the scenenode (the destructor will also delete his childs)
-			delete it->second;
-			mChildNodes.erase(it);
-
-			break;
-		}
+		//if it exists delete it
+		delete it->second;
+		mChildNodes.erase(it);
 	}
 }
 void SceneNode::deleteAllChilds()
@@ -197,9 +182,7 @@ void SceneNode::detachObject(std::string objName)
 
 void SceneNode::detachObject(MovableObject* obj)
 {
-	std::string objName = obj->getName();
-
-	detachObject(objName);
+	detachObject(obj->getName());
 }
 void SceneNode::detachAllObjects()
 {

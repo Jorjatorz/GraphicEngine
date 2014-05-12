@@ -20,6 +20,11 @@ public:
 
 	void attachMaterial(std::string materialName);
 
+	Material* getMaterial()
+	{
+		return mMaterial;
+	}
+
 private:
 	Mesh* mMesh; //mesh pointer
 	Material* mMaterial; //Material attached to this entity
