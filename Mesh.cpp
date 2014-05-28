@@ -1,12 +1,17 @@
 #include "Mesh.h"
+
 #include "Shader.h"
+#include "Material.h"
+#include "ResourceManager.h"
 
 Mesh::Mesh(void)
 {
 	numberOfVertices = numberOfFaces = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
-	//generate buffers
+	AABBmaxVector = AABBminVector = glm::vec3(0.0);
+
+	meshMaterial = NULL;
 }
 
 Mesh::Mesh(std::string meshPath)
@@ -14,6 +19,9 @@ Mesh::Mesh(std::string meshPath)
 	numberOfVertices = numberOfFaces = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
+	AABBmaxVector = AABBminVector = glm::vec3(0.0);
+
+	meshMaterial = NULL;
 
 	loadMesh(meshPath); //load the mesh
 }
@@ -115,9 +123,12 @@ void Mesh::loadMesh(std::string meshPath)
 
 		for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
 		{
+			//We obtain the AABB
+			calculateAABB(scene);
+
 			aiMesh* mesh = scene->mMeshes[i]; //We take the mesh
 
-			tMeshStruct newMesh;
+			tMeshStruct newMesh; //aux mesh struct
 			genBuffers(newMesh); //generate buffers
 
 			numberOfVertices += mesh->mNumVertices; //set the number of vertices
@@ -165,6 +176,8 @@ void Mesh::loadMesh(std::string meshPath)
 			}
 
 			glBindVertexArray(newMesh.vertexArrayObject);
+
+			//Fill buffers
 			//vertices
 			if(mesh->HasPositions())
 			{
@@ -194,6 +207,36 @@ void Mesh::loadMesh(std::string meshPath)
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, newMesh.mIndexVector.size() * sizeof(GLuint), &newMesh.mIndexVector[0], GL_STATIC_DRAW);
 
 			mMeshComponentsVector.push_back(newMesh);
+
+			//Materials
+			meshMaterial = ResourceManager::getSingletonPtr()->createMaterial(meshPath + "Material");
+			aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];
+
+			//Load texture (if exists)
+			aiString texturePath;
+			if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
+			{
+				meshMaterial->mBaseColorS.mBaseColorT = ResourceManager::getSingletonPtr()->loadTexture(texturePath.data, false, texturePath.data);
+				meshMaterial->mBaseColorS.baseColorTextured = true;
+			}
+			else
+			{
+				meshMaterial->mBaseColorS.baseColorTextured = false;
+			}
+
+			//Diffuse Color
+			aiColor4D diffuse;
+			if (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuse) == AI_SUCCESS)
+			{
+				meshMaterial->mBaseColorS.mBaseColorV = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
+			}
+
+			//Emissive Color
+			aiColor4D emissive;
+			if (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissive) == AI_SUCCESS)
+			{
+				meshMaterial->mEmissiveColorS.mEmissiveColorV = glm::vec3(emissive.r, emissive.g, emissive.b);
+			}
 		}
 
 		// unbind buffers
@@ -227,4 +270,27 @@ void Mesh::genBuffers(tMeshStruct &meshToGen)
 	glGenBuffers(1, &meshToGen.normalBuffer);
 	glGenBuffers(1, &meshToGen.texCoordsBuffer);
 	glGenBuffers(1, &meshToGen.indexBuffer);
+}
+
+void Mesh::calculateAABB(const aiScene* mScene)
+{
+	for(int i = 0; i < mScene->mNumMeshes; ++i)
+	{
+		for(int j = 0; j < mScene->mMeshes[i]->mNumVertices; ++j)
+		{
+			if(AABBmaxVector.x < mScene->mMeshes[i]->mVertices->x)
+				AABBmaxVector.x = mScene->mMeshes[i]->mVertices->x;
+			if(AABBmaxVector.y < mScene->mMeshes[i]->mVertices->y)
+				AABBmaxVector.y = mScene->mMeshes[i]->mVertices->y;
+			if(AABBmaxVector.z < mScene->mMeshes[i]->mVertices->z)
+				AABBmaxVector.z = mScene->mMeshes[i]->mVertices->z;
+
+			if(AABBminVector.x > mScene->mMeshes[i]->mVertices->x)
+				AABBminVector.x = mScene->mMeshes[i]->mVertices->x;
+			if(AABBminVector.y > mScene->mMeshes[i]->mVertices->y)
+				AABBminVector.y = mScene->mMeshes[i]->mVertices->y;
+			if(AABBminVector.z > mScene->mMeshes[i]->mVertices->z)
+				AABBminVector.z = mScene->mMeshes[i]->mVertices->z;
+		}
+	}
 }

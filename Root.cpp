@@ -9,6 +9,7 @@
 Root::Root(void)
 {
 	mRenderer = 0;
+	mCurrentSceneManager = NULL;
 }
 
 
@@ -74,38 +75,37 @@ void Root::initEngine()
 SceneManager* Root::createSceneManager(std::string name, Renderer* callingRenderer)
 {
 	//find if the sceneManager already exists
-	tSceneManagerMap::iterator sceneMIterator;
-	for(sceneMIterator = mSceneManagerMap.begin(); sceneMIterator != mSceneManagerMap.end(); ++sceneMIterator)
+	tSceneManagerMap::iterator sceneMIterator = mSceneManagerMap.find(name);
+
+	//if it exist return it
+	if(sceneMIterator != mSceneManagerMap.end())
 	{
-		//if it exist return it
-		if(sceneMIterator->first == name)
-		{
-			return sceneMIterator->second;
-		}
+		return sceneMIterator->second;
 	}
+
 	//else
 	SceneManager* mSceneManager = new SceneManager(callingRenderer);
 
 	mSceneManagerMap.insert(std::pair<std::string, SceneManager*>(name, mSceneManager));
+
+	mCurrentSceneManager = mSceneManager;
 
 	return mSceneManager;
 }
 void Root::deleteSceneManager(std::string name)
 {
 	//find if the sceneManager already exists
-	tSceneManagerMap::iterator sceneMIterator;
-	for(sceneMIterator = mSceneManagerMap.begin(); sceneMIterator != mSceneManagerMap.end(); ++sceneMIterator)
+	//find if the sceneManager already exists
+	tSceneManagerMap::iterator sceneMIterator = mSceneManagerMap.find(name);
+
+	//if it exist delete it
+	if (sceneMIterator != mSceneManagerMap.end())
 	{
-		//if it exist delete it
-		if(sceneMIterator->first == name)
-		{
 			//delete the sceneManager and remove from the map
 			delete sceneMIterator->second;
 			mSceneManagerMap.erase(sceneMIterator);
-			//iterator now is invalid so we break from the loop or execution error
-			break;
-		}
 	}
+
 }
 void Root::deleteAllSceneManagers()
 {

@@ -68,7 +68,11 @@ void Material::applyMaterial()
 	//send uniforms
 	if(mBaseColorS.baseColorTextured)
 	{
-		mMaterialShader->UniformTexture("baseTexture", mBaseColorS.mBaseColorT->mTextureID);
+		int textureId = mBaseColorS.mBaseColorT->mTextureID;
+		glActiveTexture(GL_TEXTURE0 + textureId);
+		glBindTexture(GL_TEXTURE_2D, textureId);
+
+		mMaterialShader->UniformTexture("baseTexture", textureId);
 	}
 	else
 	{

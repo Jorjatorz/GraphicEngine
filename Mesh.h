@@ -27,6 +27,8 @@ private:
 		GLuint vertexBuffer, normalBuffer, texCoordsBuffer, indexBuffer, vertexArrayObject;
 	} tMeshStruct;
 
+	Material* meshMaterial;
+
 public:
 	//predifined mesh
 	//square
@@ -36,6 +38,12 @@ public:
 
 	//load mesh
 	void loadMesh(std::string meshPath); //load the mesh from a file
+
+	//Material fro mmesh
+	Material* getMaterial()
+	{
+		return meshMaterial;
+	}
 
 	//bind the mesh vertexArray
 	void bindMeshArray(const tMeshStruct &mComp);
@@ -52,6 +60,9 @@ public:
 private:
 
 	void genBuffers(tMeshStruct &meshToGen); //Generates all the buffers of that mesh
+
+	void calculateAABB(const aiScene* mScene); //Get the AABB vertices and generate buffers
+	glm::vec3 AABBmaxVector, AABBminVector; //Holds AABB vertex positions
 
 
 	//controls if the vertex and index buffers where already created (thus (if wanted to be loaded) it was succesfully loaded from file)

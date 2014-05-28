@@ -3,6 +3,8 @@
 
 #include "Definitions.h"
 
+#include <iostream>
+
 #include <string>
 
 class Texture

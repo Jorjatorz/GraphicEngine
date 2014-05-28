@@ -14,6 +14,11 @@ public:
 
 	void setPosition(glm::vec3 newPos);
 
+	glm::vec3 getPosition()
+	{
+		return mPosition;
+	}
+
 private:
 	glm::vec3 mPosition;
 	glm::vec3 mOrientation; //for directional and spot

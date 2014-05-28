@@ -37,7 +37,7 @@ Camera::Camera(std::string& name, SceneManager* newSceneManager)
 	mName = name;
 	mCurrentControlType = NOCONTROLER;
 	movementSpeed = 1.0;
-	mouseSpeed = 0.2;
+	mouseSpeed = 0.002;
 
 	//Pointing to 0, 0, -1
 	camPitch = 3.1415;
@@ -112,28 +112,36 @@ void Camera::setMovementSpeed(real newSpeed)
 	movementSpeed = newSpeed;
 }
 
+void Camera::handleMouseMove(InputManager* inputMInstance, int x, int y)
+{
+	//If we are at default control type update camera view
+	if (mCurrentControlType == DEFAULT)
+	{
+		//center of the screen
+		int centerX, centerY;
+		centerX = mSceneManager->getRenderer()->getCurrentWindow()->getWidth() / 2;
+		centerY = mSceneManager->getRenderer()->getCurrentWindow()->getHeight() / 2;
+
+		//difference from current mouse pos to the center
+
+		int diffX = centerX - x;
+		int diffY = centerY - y;
+
+		//calculate the new angle (radians)
+		camPitch += diffX * mouseSpeed;
+		camYaw += diffY * mouseSpeed;
+
+		inputMInstance->setMousePosition(centerX, centerY);
+	}
+}
+
 void Camera::transformFromInput()
 {
 	InputManager* inputIns = InputManager::getSingletonPtr();
 
 	//COMPUTE ORIENTATION
 	//get the cursor position
-	int mouseX, mouseY;
-	inputIns->getMousePosition(mouseX, mouseY);
 
-	//center of the screen
-	int centerX, centerY;
-	centerX = mSceneManager->getRenderer()->getCurrentWindow()->getWidth() / 2;
-	centerY = mSceneManager->getRenderer()->getCurrentWindow()->getHeight() / 2;
-
-	//difference from current mouse pos to the center
-
-	int diffX = centerX - mouseX;
-	int diffY = centerY - mouseY;
-
-	//calculate the new angle (radians)
-	camPitch += diffX * mSceneManager->mDeltaTime * mouseSpeed;
-	camYaw += diffY * mSceneManager->mDeltaTime * mouseSpeed;
 
 	//Just reset the angles, so we prevent huge numbers
 	if(camPitch > 2 * 3.1415)
@@ -178,7 +186,4 @@ void Camera::transformFromInput()
 	}
 
 	mDerivedPosition += mPosition;
-
-	//reset mouse position
-	inputIns->setMousePosition(centerX, centerY);
 }

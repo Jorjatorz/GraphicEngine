@@ -28,6 +28,10 @@ public:
 	//SceneManager creator and destructors
 	SceneManager* createSceneManager(std::string name, Renderer* callingRenderer);
 	void deleteSceneManager(std::string name);
+	SceneManager* getCurrentSceneManager()
+	{
+		return mCurrentSceneManager;
+	}
 
 private:
 	//SceneManagerMap

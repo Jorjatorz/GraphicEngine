@@ -34,6 +34,13 @@ SceneManager::~SceneManager(void)
 		delete cameraIterator->second;
 	}
 	mCameraMap.clear();
+
+	tLightMap::iterator lightIterator;
+	for(lightIterator = mLightMap.begin(); lightIterator != mLightMap.end(); ++lightIterator)
+	{
+		delete lightIterator->second;
+	}
+	mLightMap.clear();
 }
 
 

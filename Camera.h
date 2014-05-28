@@ -22,6 +22,8 @@ public:
 
 	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient); //inheritated
 
+	void handleMouseMove(InputManager* inputMInstance, int x, int y);
+
 
 	void setControler(tControlerType newType);
 

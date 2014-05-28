@@ -14,7 +14,7 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	mModelMatrix = glm::mat4(1.0); //identity
 	mMesh = NULL;
 	mMeshName = "NULL";
-	mMaterial = ResourceManager::getSingletonPtr()->createMaterial("DefaultMaterial"); 
+	mMaterial = NULL; 
 	mSceneManager = newSceneManager;
 	meshAttached = false;
 
@@ -27,7 +27,7 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 	mModelMatrix = glm::mat4(1.0); //identity
 	mSceneManager = newSceneManager;
 	meshAttached = false;
-	mMaterial = ResourceManager::getSingletonPtr()->createMaterial("DefaultMaterial"); 
+	mMaterial = NULL; 
 
 	mTypeOfMovableObject = tTypeEnum::Entity;
 
@@ -87,6 +87,8 @@ void Entity::attachMesh(std::string meshName)
 
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr(); //resourcemanager pointer
 	mMesh = mResourceManager->loadMesh(mMeshName, mMeshName); //allocate new mesh
+
+	mMaterial = mMesh->getMaterial();
 
 	mModelMatrix = mMesh->meshMatrix;
 

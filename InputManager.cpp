@@ -9,6 +9,11 @@ InputManager::InputManager(void)
 		mKeyPressedArray[i] = false;
 	}
 
+	for(int i = 0; i < 3; ++i)
+	{
+		mMousePressedArray[i] = false;
+	}
+
 	mSDLWindow = NULL;
 }
 
@@ -18,8 +23,12 @@ InputManager::~InputManager(void)
 }
 
 #include "ResourceManager.h"
+#include "Root.h"
+#include "SceneManager.h"
+#include "Renderer.h"
+#include "Window.h"
+#include "Camera.h"
 
-int mX , mY;
 void InputManager::getFrameInput(bool &running)
 {
 	while(SDL_PollEvent(&mEvent))
@@ -43,7 +52,23 @@ void InputManager::getFrameInput(bool &running)
 		
 		if(mEvent.type == SDL_MOUSEMOTION)
 		{
-			SDL_GetMouseState(&mX, &mY);
+			SDL_GetMouseState(&mouseX, &mouseY);
+			Camera* mCam = Root::getSingletonPtr()->getCurrentSceneManager()->getCurrentCamera();
+			//Check that a camera exists
+			if (mCam != NULL)
+			{
+				mCam->handleMouseMove(this, mouseX, mouseY);
+			}
+		}
+
+		if(mEvent.type == SDL_MOUSEBUTTONDOWN)
+		{
+			mMousePressedArray[mEvent.button.button - 1] = true; //-1 to pass from sdl encoding to array acces encoding
+		}
+
+		if(mEvent.type == SDL_MOUSEBUTTONUP)
+		{
+			mMousePressedArray[mEvent.button.button - 1] = false;
 		}
 
 		if(mEvent.type == SDL_KEYDOWN)
@@ -65,6 +90,15 @@ bool InputManager::isKeyUp(short int keyCode)
 	return !mKeyPressedArray[keyCode];
 }
 
+bool InputManager::isMouseButtonDown(short int buttonCode)
+{
+	return mMousePressedArray[buttonCode - 1]; //transform from 1, 2, 3 sdl numbers into 0, 1, 2 array acces numbers
+}
+bool InputManager::isMouseButtonUp(short int buttonCode)
+{
+	return !mMousePressedArray[buttonCode - 1];
+}
+
 void InputManager::setMousePosition(int x, int y)
 {
 	SDL_WarpMouseInWindow(mSDLWindow, x, y);
@@ -72,6 +106,6 @@ void InputManager::setMousePosition(int x, int y)
 
 void InputManager::getMousePosition(int &x, int &y)
 {
-	x = mX;
-	y = mY;
+	x = mouseX;
+	y = mouseY;
 }

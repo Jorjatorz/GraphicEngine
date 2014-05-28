@@ -1,6 +1,6 @@
 //constains all classes declarations and other things
 //#define DEBUG_MESSAGES
-//#define SHADER_MESSAGES
+//#define SHADER_MESSAGES //Display shader uniform messages (not found etc)
 
 //external includes
 #include <SDL.h>

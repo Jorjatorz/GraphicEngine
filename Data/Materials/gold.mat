@@ -1,6 +1,6 @@
 Shader = basic
 
-baseColorV = 1.000, 0.766, 0.336
+baseColorT = Ulvida.jpg
 ambientColorV = 0.0, 1.0, 0.0
 roughnessR = 0.5
 emissiveV = 1.0, 0.0, 1.0
