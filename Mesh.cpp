@@ -11,7 +11,6 @@ Mesh::Mesh(void)
 	buffersLoaded = false;
 	AABBmaxVector = AABBminVector = glm::vec3(0.0);
 
-	meshMaterial = NULL;
 }
 
 Mesh::Mesh(std::string meshPath)
@@ -20,8 +19,6 @@ Mesh::Mesh(std::string meshPath)
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
 	AABBmaxVector = AABBminVector = glm::vec3(0.0);
-
-	meshMaterial = NULL;
 
 	loadMesh(meshPath); //load the mesh
 }
@@ -206,37 +203,46 @@ void Mesh::loadMesh(std::string meshPath)
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newMesh.indexBuffer);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, newMesh.mIndexVector.size() * sizeof(GLuint), &newMesh.mIndexVector[0], GL_STATIC_DRAW);
 
-			mMeshComponentsVector.push_back(newMesh);
 
 			//Materials
-			meshMaterial = ResourceManager::getSingletonPtr()->createMaterial(meshPath + "Material");
+			newMesh.meshMaterial = ResourceManager::getSingletonPtr()->createMaterial(meshPath + "Material" + std::to_string(i)); //i the index
 			aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];
 
 			//Load texture (if exists)
 			aiString texturePath;
 			if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
 			{
-				meshMaterial->mBaseColorS.mBaseColorT = ResourceManager::getSingletonPtr()->loadTexture(texturePath.data, false, texturePath.data);
-				meshMaterial->mBaseColorS.baseColorTextured = true;
+				newMesh.meshMaterial->mBaseColorS.mBaseColorT = ResourceManager::getSingletonPtr()->loadTexture(texturePath.data, false, texturePath.data);
+				newMesh.meshMaterial->mBaseColorS.baseColorTextured = true;
 			}
 			else
 			{
-				meshMaterial->mBaseColorS.baseColorTextured = false;
+				newMesh.meshMaterial->mBaseColorS.baseColorTextured = false;
 			}
 
 			//Diffuse Color
 			aiColor4D diffuse;
 			if (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuse) == AI_SUCCESS)
 			{
-				meshMaterial->mBaseColorS.mBaseColorV = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
+				newMesh.meshMaterial->mBaseColorS.mBaseColorV = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
+			}
+
+			//Ambien color
+			aiColor4D ambient;
+			if (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_AMBIENT, &ambient) == AI_SUCCESS)
+			{
+				newMesh.meshMaterial->mAmbientColorV = glm::vec3(ambient.r, ambient.g, ambient.b);
 			}
 
 			//Emissive Color
 			aiColor4D emissive;
 			if (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissive) == AI_SUCCESS)
 			{
-				meshMaterial->mEmissiveColorS.mEmissiveColorV = glm::vec3(emissive.r, emissive.g, emissive.b);
+				newMesh.meshMaterial->mEmissiveColorS.mEmissiveColorV = glm::vec3(emissive.r, emissive.g, emissive.b);
 			}
+
+			//Save the new mesh
+			mMeshComponentsVector.push_back(newMesh);
 		}
 
 		// unbind buffers

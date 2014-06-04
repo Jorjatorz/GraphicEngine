@@ -1,8 +1,9 @@
 #include "Timer.h"
 
 
-Timer::Timer(void)
+Timer::Timer(std::string name)
 {
+	mName = name;
 	mPreviousTime = mCurrentTime = 0;
 }
 

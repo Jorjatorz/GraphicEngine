@@ -15,7 +15,8 @@ Root::Root(void)
 
 Root::~Root(void)
 {
-	delete mTimer;
+	deleteAllTimers();
+	deleteAllSceneManagers();
 	delete mRenderer;
 	delete mInput;
 	delete mResourceManager;
@@ -36,8 +37,8 @@ void Root::initEngine()
 	//MAIN LOOP
 	bool running = true;
 
-	//PRuebas
-	mTimer = new Timer();
+	//Pruebas
+	Timer* mTimer = createTimer("fpsTimer");
 	int frames = 0;
 	int miliSeconds = 0;
 	int framesPerSecond = 1000/60;
@@ -54,7 +55,7 @@ void Root::initEngine()
 		//compute delta
 		miliSeconds += mTimer->getDeltaTicks();
 
-		//if we are to fast
+		//if we are too fast
 		if(mTimer->mDeltaTime < framesPerSecond)
 		{
 			SDL_Delay(framesPerSecond - mTimer->mDeltaTime);
@@ -118,4 +119,58 @@ void Root::deleteAllSceneManagers()
 
 	//clear the map
 	mSceneManagerMap.clear();
+}
+
+Timer* Root::createTimer(std::string name)
+{
+	tTimerMap::iterator it = mTimerMap.find(name);
+
+	if (it != mTimerMap.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		Timer* newTimer = new Timer(name);
+
+		mTimerMap.insert(std::pair<std::string, Timer*>(name, newTimer));
+
+		return newTimer;
+	}
+}
+
+void Root::deleteTimer(std::string name)
+{
+	tTimerMap::iterator it = mTimerMap.find(name);
+
+	if (it != mTimerMap.end())
+	{
+		delete it->second;
+	}
+}
+
+Timer* Root::getTimer(std::string name)
+{
+	tTimerMap::iterator it = mTimerMap.find(name);
+
+	if (it != mTimerMap.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+void Root::deleteAllTimers()
+{
+	tTimerMap::iterator it;
+
+	for (it = mTimerMap.begin(); it != mTimerMap.end(); ++it)
+	{
+		delete it->second;
+	}
+
+	mTimerMap.clear();
 }

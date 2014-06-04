@@ -175,7 +175,7 @@ Material* ResourceManager::loadMaterial(std::string materialName, std::string ma
 	std::string completePath = "Data\\Materials\\" + materialPath;
 
 	//create and load the mesh (will be deleted by the resource)
-	Material* mMat = new Material();
+	Material* mMat = new Material(materialName);
 	mMat->readMaterialFromFile(completePath);
 
 	//create new resource(will be deleted by the resourceManager)

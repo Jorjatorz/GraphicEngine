@@ -31,6 +31,32 @@ Material::Material(void)
 	mAmbientColorV = glm::vec3(1.0);
 }
 
+Material::Material(std::string materialName)
+{
+	mMaterialName = materialName;
+	mMaterialShader = ResourceManager::getSingletonPtr()->loadShader("basic", "basic"); //Default shader
+
+	//Init mat properties
+	mBaseColorS.baseColorTextured = false;
+	mBaseColorS.mBaseColorT = NULL;
+	mBaseColorS.mBaseColorV = glm::vec3(0.17, 0.17, 0.17);
+	mRoughNessS.roughnessTextured = false;
+	mRoughNessS.mRoughnessT = NULL;
+	mRoughNessS.mRoughnessR = 0.0;
+	mEmissiveColorS.emissiveTextured = false;
+	mEmissiveColorS.mEmissiveColorT = NULL;
+	mEmissiveColorS.mEmissiveColorV = glm::vec3(1.0);
+	mOpacityS.opacityTextured = false;
+	mOpacityS.mOpacityT = NULL;
+	mOpacityS.mOpacityR = 0.0;
+	mMetallicR = 1.0; //FUll metal
+	mSpecularR = 0.5;
+	mNormalS.normalTextured = false;
+	mNormalS.mNormalT = NULL;
+	mRefractionR = 1;
+	mAmbientColorV = glm::vec3(1.0);
+}
+
 Material::Material(std::string materialName, std::string shaderName)
 {
 	mMaterialName = materialName;

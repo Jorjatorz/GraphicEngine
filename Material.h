@@ -12,6 +12,7 @@ class Material
 {
 public:
 	Material(void);
+	Material(std::string materialName);
 	Material(std::string materialName, std::string shaderName);
 	~Material(void);
 

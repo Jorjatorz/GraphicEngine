@@ -8,7 +8,7 @@
 class Timer
 {
 public:
-	Timer(void);
+	Timer(std::string name);
 	~Timer(void);
 
 	int getTicks();
@@ -18,6 +18,9 @@ public:
 	int mPreviousTime;
 	int mCurrentTime;
 	int mDeltaTime;
+
+private:
+	std::string mName;
 };
 
 #endif

@@ -23,11 +23,13 @@ private:
 		std::vector<GLfloat> mTexCoordsVector;
 		std::vector<GLuint> mIndexVector;
 
+		//Mesh material
+		Material* meshMaterial;
+
 		//openGL buffers
 		GLuint vertexBuffer, normalBuffer, texCoordsBuffer, indexBuffer, vertexArrayObject;
 	} tMeshStruct;
 
-	Material* meshMaterial;
 
 public:
 	//predifined mesh
@@ -38,12 +40,6 @@ public:
 
 	//load mesh
 	void loadMesh(std::string meshPath); //load the mesh from a file
-
-	//Material fro mmesh
-	Material* getMaterial()
-	{
-		return meshMaterial;
-	}
 
 	//bind the mesh vertexArray
 	void bindMeshArray(const tMeshStruct &mComp);

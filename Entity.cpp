@@ -52,24 +52,34 @@ void Entity::render(glm::mat4 perspectiveViewSceneNodeM)
 {
 	if(meshAttached)
 	{
-		//apply shader
-		Shader* shad = mMaterial->getShader();
-		mSceneManager->bindShader(shad);
-
-		//Send uniforms	
-
-		//send matrix
-		glm::mat4 finalMatrix = perspectiveViewSceneNodeM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
-		shad->UniformMatrix("finalM", finalMatrix);
-		glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
-		shad->UniformMatrix("normalM", normalM);
-		//send material uniforms
-		mMaterial->applyMaterial();
 
 		for(int i = 0; i < mMesh->mMeshComponentsVector.size(); ++i)
 		{
+
+			// apply shader
+			Shader* shad = mMesh->mMeshComponentsVector[i].meshMaterial->getShader();
+			mSceneManager->bindShader(shad);
+
+			//Send uniforms	
+
+			//send matrix
+			glm::mat4 finalMatrix = perspectiveViewSceneNodeM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
+			shad->UniformMatrix("finalM", finalMatrix);
+			glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
+			shad->UniformMatrix("normalM", normalM);
+
 			//render
 			mMesh->bindMeshArray(mMesh->mMeshComponentsVector[i]);
+
+			//Set the material for each mesh (can be optimice the else)
+			if (mMaterial == NULL)
+			{
+				mMesh->mMeshComponentsVector[i].meshMaterial->applyMaterial();
+			}
+			else
+			{
+				mMaterial->applyMaterial();
+			}
 
 			glDrawElements(GL_TRIANGLES, mMesh->mMeshComponentsVector[i].mIndexVector.size(), GL_UNSIGNED_INT, 0);
 
@@ -88,7 +98,6 @@ void Entity::attachMesh(std::string meshName)
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr(); //resourcemanager pointer
 	mMesh = mResourceManager->loadMesh(mMeshName, mMeshName); //allocate new mesh
 
-	mMaterial = mMesh->getMaterial();
 
 	mModelMatrix = mMesh->meshMatrix;
 

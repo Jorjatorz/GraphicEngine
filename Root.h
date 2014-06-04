@@ -22,8 +22,6 @@ public:
 
 	//classes
 	Renderer* mRenderer; //will be a list
-	//Timer
-	Timer* mTimer;
 
 	//SceneManager creator and destructors
 	SceneManager* createSceneManager(std::string name, Renderer* callingRenderer);
@@ -33,12 +31,22 @@ public:
 		return mCurrentSceneManager;
 	}
 
+	//Timer
+	Timer* createTimer(std::string name);
+	void deleteTimer(std::string name);
+	Timer* getTimer(std::string name);
+
 private:
 	//SceneManagerMap
 	typedef std::map<std::string, SceneManager*> tSceneManagerMap;
 	tSceneManagerMap mSceneManagerMap;
 	SceneManager* mCurrentSceneManager;
 	void deleteAllSceneManagers();
+
+	//Timers maps
+	typedef std::map<std::string, Timer*> tTimerMap;
+	tTimerMap mTimerMap;
+	void deleteAllTimers();
 };
 
 #endif
