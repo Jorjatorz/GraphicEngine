@@ -77,6 +77,11 @@ public:
 		return mCurrentCamera;
 	}
 
+	//FrameBuffer
+	FrameBuffer* createFrameBuffer(std::string name, int width, int height);
+	void deleteFrameBuffer(std::string name);
+	FrameBuffer* getFrameBuffer(std::string name);
+
 	//aux
 	//sets the perspectiveMAtrix
 	void setPerspectiveMatrix(real FOV, real width, real height, real zNear, real zFar = 0);
@@ -102,6 +107,7 @@ private:
 	typedef std::map<std::string, Entity*> tEntityMap;
 	typedef std::map<std::string, Camera*> tCameraMap;
 	typedef std::map<std::string, Light*> tLightMap;
+	typedef std::map<std::string, FrameBuffer*> tFrameBufferMap;
 
 	//define maps
 	tShaderMap mShaderMap;
@@ -109,6 +115,7 @@ private:
 	tEntityMap mEntityMap;
 	tCameraMap mCameraMap;
 	tLightMap mLightMap;
+	tFrameBufferMap mFrameBufferMap;
 
 	//perspective matrix
 	glm::mat4 mPerspectiveMatrix;

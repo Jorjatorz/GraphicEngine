@@ -27,6 +27,7 @@ typedef float real;
 //allow declaration of pointers to them
 class Camera;
 class Entity;
+class FrameBuffer;
 class InputManager;
 class Light;
 class Material;

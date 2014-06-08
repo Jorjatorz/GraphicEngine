@@ -8,6 +8,7 @@ Texture::Texture(void)
 
 Texture::~Texture(void)
 {
+	glDeleteTextures(1, &mTextureID);
 }
 
 void Texture::loadTexture(std::string filePath, bool mipmap)

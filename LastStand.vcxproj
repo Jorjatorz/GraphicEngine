@@ -73,6 +73,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GameResource.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Light.h" />
@@ -93,6 +94,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GameResource.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Light.cpp" />

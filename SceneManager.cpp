@@ -8,6 +8,7 @@
 #include "SceneNode.h"
 #include "Camera.h"
 #include "Light.h"
+#include "FrameBuffer.h"
 
 SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
@@ -18,6 +19,7 @@ SceneManager::SceneManager(Renderer* mCurrentRenderer)
 
 SceneManager::~SceneManager(void)
 {
+	//Memory deallocation handeled by the resoruceManager
 	mShaderMap.clear();
 	mTextureMap.clear();
 
@@ -41,6 +43,13 @@ SceneManager::~SceneManager(void)
 		delete lightIterator->second;
 	}
 	mLightMap.clear();
+
+	tFrameBufferMap::iterator fboIterator;
+	for (fboIterator = mFrameBufferMap.begin(); fboIterator != mFrameBufferMap.end(); ++fboIterator)
+	{
+		delete fboIterator->second;
+	}
+	mFrameBufferMap.clear();
 }
 
 
@@ -312,5 +321,50 @@ void SceneManager::setPerspectiveMatrix(real FOV, real width, real height, real 
 	else
 	{
 		mPerspectiveMatrix = glm::infinitePerspective(FOV, width/height, zNear);
+	}
+}
+
+
+FrameBuffer* SceneManager::createFrameBuffer(std::string name, int width, int height)
+{
+	tFrameBufferMap::iterator it = mFrameBufferMap.find(name);
+
+	if (it != mFrameBufferMap.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		FrameBuffer* newFBO = new FrameBuffer(name, width, height);
+
+		mFrameBufferMap.insert(std::pair<std::string, FrameBuffer*>(name, newFBO));
+
+		return newFBO;
+	}
+}
+
+void SceneManager::deleteFrameBuffer(std::string name)
+{
+	tFrameBufferMap::iterator it = mFrameBufferMap.find(name);
+
+	if (it != mFrameBufferMap.end())
+	{
+		delete it->second;
+
+		mFrameBufferMap.erase(it);
+	}
+}
+
+FrameBuffer* SceneManager::getFrameBuffer(std::string name)
+{
+	tFrameBufferMap::iterator it = mFrameBufferMap.find(name);
+
+	if (it != mFrameBufferMap.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		return NULL;
 	}
 }

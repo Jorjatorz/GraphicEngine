@@ -15,7 +15,7 @@ Renderer::~Renderer(void)
 	delete mWindow;
 }
 
-
+#include "FrameBuffer.h"
 void Renderer::createRenderer(std::string windowName, int width, int height, bool fullscreen)
 {
 	//inits components of SDL
@@ -33,6 +33,8 @@ void Renderer::createRenderer(std::string windowName, int width, int height, boo
 	//create sceneManager
 	Root* mRoot = Root::getSingletonPtr();
 	mSceneManager = mRoot->createSceneManager("pruebas", this);
+
+
 }
 
 void Renderer::initOpenGL()
@@ -114,11 +116,9 @@ void Renderer::renderFrame(real deltaTime)
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
-		srand(time(0));
-		Entity* ent4 = mSceneManager->createEntity("guard" + std::to_string(deltaTime * rand()), "guard.obj");
-		SceneNode* node4 = mSceneManager->getRootSceneNode()->createChildSceneNode("guard" + std::to_string(deltaTime * rand()));
-		node4->setPosition(glm::vec3(rand() / 10000, rand() / 10000, rand() / 10000));
-		node4->attachObject(ent4);
+		FrameBuffer* fbo = mSceneManager->createFrameBuffer("pruebas", mWindow->getWidth(), mWindow->getHeight());
+		fbo->createDeferredFrameBuffer();
+		fbo->bind();
 	}
 
 	//clear buffers
