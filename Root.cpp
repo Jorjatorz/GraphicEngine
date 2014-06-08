@@ -42,33 +42,35 @@ void Root::initEngine()
 	int frames = 0;
 	int miliSeconds = 0;
 	int framesPerSecond = 1000/60;
-	mTimer->getTicks();
+	int lastTime = 0;
+	mTimer->start();
 	//
 	while(running && !mInput->isKeyDown(SDL_SCANCODE_ESCAPE))
 	{
-		mTimer->getTicks();
+		lastTime = mTimer->mStartTime; //Get the duration fo the previous frame
+		mTimer->start();
+
 		//Get input
 		mInput->getFrameInput(running);
+
 		//Render a frame
-		mRenderer->renderFrame(mTimer->getDeltaTicks() * 0.001);
+		mRenderer->renderFrame((mTimer->mStartTime - lastTime) * 0.001);
 
-		//compute delta
-		miliSeconds += mTimer->getDeltaTicks();
-
-		//if we are too fast
-		if(mTimer->mDeltaTime < framesPerSecond)
+		if (mTimer->getMiliSeconds() < framesPerSecond)
 		{
-			SDL_Delay(framesPerSecond - mTimer->mDeltaTime);
-			miliSeconds += framesPerSecond - mTimer->mDeltaTime;
+			SDL_Delay(framesPerSecond - mTimer->getMiliSeconds());
 		}
+
+		miliSeconds += mTimer->getMiliSeconds();
 
 		frames++;
-		if(miliSeconds > 1000)
+		if (miliSeconds > 1000)
 		{
 			std::cout << frames << std::endl;
-			miliSeconds = 0;
 			frames = 0;
+			miliSeconds = 0;
 		}
+		
 	}
 
 }

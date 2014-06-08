@@ -65,6 +65,7 @@ void Renderer::initOpenGL()
 #include "Material.h"
 #include "Light.h"
 #include <string>
+#include <time.h>
 //
 
 void Renderer::renderFrame(real deltaTime)
@@ -113,9 +114,11 @@ void Renderer::renderFrame(real deltaTime)
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
-		real a, b, c;
-		std::cin >> a >> b >> c;
-		light1->setPosition(glm::vec3(a, b, c));
+		srand(time(0));
+		Entity* ent4 = mSceneManager->createEntity("guard" + std::to_string(deltaTime * rand()), "guard.obj");
+		SceneNode* node4 = mSceneManager->getRootSceneNode()->createChildSceneNode("guard" + std::to_string(deltaTime * rand()));
+		node4->setPosition(glm::vec3(rand() / 10000, rand() / 10000, rand() / 10000));
+		node4->attachObject(ent4);
 	}
 
 	//clear buffers

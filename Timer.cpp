@@ -3,8 +3,11 @@
 
 Timer::Timer(std::string name)
 {
+	paused = false;
+	mStartTime = -1;
+	mStopTime = 0;
+
 	mName = name;
-	mPreviousTime = mCurrentTime = 0;
 }
 
 
@@ -13,22 +16,46 @@ Timer::~Timer(void)
 }
 
 
-int Timer::getTicks()
+void Timer::start()
 {
-	mPreviousTime = mCurrentTime;
-
-	mCurrentTime = SDL_GetTicks();
-
-	return mCurrentTime;
+	mStartTime = SDL_GetTicks();
 }
 
-int Timer::getDeltaTicks()
+int Timer::stop()
 {
-	mDeltaTime = mCurrentTime - mPreviousTime;
-	return mDeltaTime;
+	mStopTime = SDL_GetTicks() - mStartTime;
+	mStartTime = -1;
+
+	return mStopTime;
 }
 
-int Timer::getTotalTicks()
+void Timer::resume()
 {
-	return SDL_GetTicks();
+	mStartTime = SDL_GetTicks() - mStartTime; //Set the new start time
+
+	paused = false;
+}
+
+void Timer::pause()
+{
+	mStartTime = SDL_GetTicks() - mStartTime; //Set the new start time
+
+	paused = true;
+}
+
+void Timer::reset()
+{
+	mStartTime = 0;
+}
+
+int Timer::getMiliSeconds()
+{
+	if (!paused)
+	{
+		return SDL_GetTicks() - mStartTime;
+	}
+	else
+	{
+		return mStartTime;
+	}
 }

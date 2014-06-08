@@ -11,16 +11,23 @@ public:
 	Timer(std::string name);
 	~Timer(void);
 
-	int getTicks();
-	int getDeltaTicks();
-	int getTotalTicks();
+	int getMiliSeconds();
 
-	int mPreviousTime;
-	int mCurrentTime;
-	int mDeltaTime;
+	void start();
+	int stop();
+	void resume();
+	void pause();
+	void reset();
+
+
+	int mStartTime;
+	int mStopTime;
 
 private:
 	std::string mName;
+
+	bool paused;
+
 };
 
 #endif
