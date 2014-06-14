@@ -40,8 +40,8 @@ public:
 
 	//Texture
 	//create, etc
-	//Creates a new texture, if it already exists it return a pointer to it
-	Texture* createTexture(std::string textureName, bool mipmap, std::string texturePath);
+	//Creates a new texture, It loads the texture if a texturePath is selected (dont need to set the dimensions of the texture), if not it creates an empty texture with the desired width and heigh
+	Texture* createTexture(std::string textureName, bool mipmap, GLint format, std::string texturePath, int width = 0, int height = 0);
 	//delete texture by name (from the scene)
 	void deleteTexture(std::string textueName);
 
@@ -77,6 +77,11 @@ public:
 		return mCurrentCamera;
 	}
 
+	//Material
+	Material* createMaterial(std::string materialName, std::string materialPath);
+	Material* getMaterial(std::string materialName);
+	//void deleteMaterial(std::string materialName); need to be implemented (also in resourceManager)
+
 	//FrameBuffer
 	FrameBuffer* createFrameBuffer(std::string name, int width, int height);
 	void deleteFrameBuffer(std::string name);
@@ -107,6 +112,7 @@ private:
 	typedef std::map<std::string, Entity*> tEntityMap;
 	typedef std::map<std::string, Camera*> tCameraMap;
 	typedef std::map<std::string, Light*> tLightMap;
+	typedef std::map<std::string, Material*> tMaterialMap;
 	typedef std::map<std::string, FrameBuffer*> tFrameBufferMap;
 
 	//define maps
@@ -115,6 +121,7 @@ private:
 	tEntityMap mEntityMap;
 	tCameraMap mCameraMap;
 	tLightMap mLightMap;
+	tMaterialMap mMaterialMap;
 	tFrameBufferMap mFrameBufferMap;
 
 	//perspective matrix

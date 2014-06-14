@@ -1,7 +1,9 @@
 #include "Renderer.h"
 
+
 #include "Root.h"
 #include "SceneManager.h"
+#include "FrameBuffer.h"
 #include "Window.h"
 
 
@@ -15,7 +17,6 @@ Renderer::~Renderer(void)
 	delete mWindow;
 }
 
-#include "FrameBuffer.h"
 void Renderer::createRenderer(std::string windowName, int width, int height, bool fullscreen)
 {
 	//inits components of SDL
@@ -34,6 +35,9 @@ void Renderer::createRenderer(std::string windowName, int width, int height, boo
 	Root* mRoot = Root::getSingletonPtr();
 	mSceneManager = mRoot->createSceneManager("pruebas", this);
 
+	//Create FBO
+	FrameBuffer* fbo = mSceneManager->createFrameBuffer("deferredFBO", mWindow->getWidth(), mWindow->getHeight());
+	fbo->createGBuffer();
 
 }
 
@@ -68,6 +72,7 @@ void Renderer::initOpenGL()
 #include "Light.h"
 #include <string>
 #include <time.h>
+#include "ResourceManager.h""
 //
 
 void Renderer::renderFrame(real deltaTime)
@@ -92,7 +97,7 @@ void Renderer::renderFrame(real deltaTime)
 	mSceneManager->setCurrentCamera(mCam);
 	Light* light1 = mSceneManager->createLight("light1");
 
-	Entity* ent3 = mSceneManager->createEntity("sphere", "sphere.obj");
+	Entity* ent3 = mSceneManager->createEntity("sphere");
 	SceneNode* nod3 = mSceneManager->getRootSceneNode()->createChildSceneNode("spehereNode");
 	nod3->attachObject(ent3);
 	nod3->setScale(glm::vec3(0.1, 0.1, 0.1));
@@ -116,18 +121,21 @@ void Renderer::renderFrame(real deltaTime)
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
-		FrameBuffer* fbo = mSceneManager->createFrameBuffer("pruebas", mWindow->getWidth(), mWindow->getHeight());
-		fbo->createDeferredFrameBuffer();
-		fbo->bind();
+
 	}
+
+	//Bind framebuffer
+	FrameBuffer* fbo = mSceneManager->getFrameBuffer("deferredFBO");
+	fbo->bindForDrawing();
 
 	//clear buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	//NO pruebas
 
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();
+
+	//Read the FBO
+	fbo->bindForRendering();
 
 	//swap the buffers
 	mWindow->swapBuffers(true);

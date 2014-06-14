@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "FrameBuffer.h"
+#include "Material.h"
 
 SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
@@ -22,6 +23,7 @@ SceneManager::~SceneManager(void)
 	//Memory deallocation handeled by the resoruceManager
 	mShaderMap.clear();
 	mTextureMap.clear();
+	mMaterialMap.clear();
 
 	tEntityMap::iterator entityIterator;
 	for(entityIterator = mEntityMap.begin(); entityIterator != mEntityMap.end(); ++entityIterator)
@@ -120,7 +122,7 @@ void SceneManager::unbindShader()
 	mCurrentShader->unBind();
 }
 
-Texture* SceneManager::createTexture(std::string textureName, bool mipmap, std::string texturePath)
+Texture* SceneManager::createTexture(std::string textureName, bool mipmap, GLint format, std::string texturePath, int width, int height)
 {
 	//get ResourceManager singleton pointer
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr();
@@ -133,9 +135,17 @@ Texture* SceneManager::createTexture(std::string textureName, bool mipmap, std::
 		return it->second;
 	}
 
+	Texture* mTexture;
 	//if the texture doesnt exist
-	//load it into disc (if its not already loaded
-	Texture* mTexture = mResourceManager->loadTexture(textureName, mipmap, texturePath);
+	if (texturePath != "NULL")
+	{
+		//load it into disc (if its not already loaded
+		mTexture = mResourceManager->loadTexture(textureName, mipmap, format, texturePath);
+	}
+	else
+	{
+		mTexture = mResourceManager->createTexture(textureName, width, height, mipmap, format);
+	}
 
 	//save it into the texture map
 	mTextureMap.insert(std::pair<std::string, Texture*>(textureName, mTexture));
@@ -325,6 +335,45 @@ void SceneManager::setPerspectiveMatrix(real FOV, real width, real height, real 
 }
 
 
+Material* SceneManager::createMaterial(std::string materialName, std::string materialPath)
+{
+	tMaterialMap::iterator it = mMaterialMap.find(materialName);
+
+	if (it != mMaterialMap.end())
+	{
+		return it->second;
+	}
+
+	Material* mat;
+
+	if (materialPath != "NULL")
+	{
+		mat = ResourceManager::getSingletonPtr()->loadMaterial(materialName, materialPath, this);
+	}
+	else
+	{
+		mat = ResourceManager::getSingletonPtr()->createMaterial(materialName, this);
+	}
+
+	mMaterialMap.insert(std::pair<std::string, Material*>(materialName, mat));
+
+	return mat;
+}
+
+Material* SceneManager::getMaterial(std::string materialName)
+{
+	tMaterialMap::iterator it = mMaterialMap.find(materialName);
+
+	if (it != mMaterialMap.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
 FrameBuffer* SceneManager::createFrameBuffer(std::string name, int width, int height)
 {
 	tFrameBufferMap::iterator it = mFrameBufferMap.find(name);
@@ -335,7 +384,7 @@ FrameBuffer* SceneManager::createFrameBuffer(std::string name, int width, int he
 	}
 	else
 	{
-		FrameBuffer* newFBO = new FrameBuffer(name, width, height);
+		FrameBuffer* newFBO = new FrameBuffer(name, width, height, this);
 
 		mFrameBufferMap.insert(std::pair<std::string, FrameBuffer*>(name, newFBO));
 

@@ -22,19 +22,21 @@ public:
 
 	//Textures
 	//load texture
-	Texture* loadTexture(std::string textureName, bool mipmap, std::string texturePath);
+	Texture* loadTexture(std::string textureName, bool mipmap, GLint format, std::string texturePath);
+	//Create a new Texture without loading it from any file
+	Texture* createTexture(std::string textureName, int width, int height, bool mipmap, GLuint format);
 	//return the texture
 	Texture* getTexture(std::string textureName);
 
 	//Meshes
 	//load mesh from file
-	Mesh* loadMesh(std::string meshName, std::string meshPath);
+	Mesh* loadMesh(std::string meshName, std::string meshPath, SceneManager* sceneManager);
 	//return the shader
 	Mesh* getMesh(std::string meshName);
 
 	//Materials
-	Material* loadMaterial(std::string materialName, std::string materialPath);
-	Material* createMaterial(std::string materialName); //creates a material (the material is not loaded from file)
+	Material* loadMaterial(std::string materialName, std::string materialPath, SceneManager* manager);
+	Material* createMaterial(std::string materialName, SceneManager* manager); //creates a material (the material is not loaded from file)
 
 	Material* getMaterial(std::string materialName);
 

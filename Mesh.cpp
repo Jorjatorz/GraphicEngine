@@ -3,9 +3,11 @@
 #include "Shader.h"
 #include "Material.h"
 #include "ResourceManager.h"
+#include "SceneManager.h"
 
 Mesh::Mesh(void)
 {
+	mCurrentSceneManager = NULL;
 	numberOfVertices = numberOfFaces = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
@@ -13,8 +15,9 @@ Mesh::Mesh(void)
 
 }
 
-Mesh::Mesh(std::string meshPath)
+Mesh::Mesh(std::string meshPath, SceneManager* manager)
 {
+	mCurrentSceneManager = manager;
 	numberOfVertices = numberOfFaces = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
@@ -35,61 +38,6 @@ Mesh::~Mesh(void)
 	}
 }
 
-
-void Mesh::createCube()
-{
-	//if the buffers werent filled, fill them
-	if(!buffersLoaded)
-	{
-		//vertices
-		const GLfloat vertex_positions[] =
-		{
-			-0.25f, -0.25f, -0.25f,
-			-0.25f, 0.25f, -0.25f,
-			0.25f, -0.25f, -0.25f,
-			0.25f, 0.25f, -0.25f,
-			0.25f, -0.25f, 0.25f,
-			0.25f, 0.25f, 0.25f,
-			-0.25f, -0.25f, 0.25f,
-			-0.25f, 0.25f, 0.25f,
-		};
-		//indexes
-		const GLushort vertex_indices[] =
-		{
-			0, 1, 2,
-			2, 1, 3,
-			2, 3, 4,
-			4, 3, 5,
-			4, 5, 6,
-			6, 5, 7,
-			6, 7, 0,
-			0, 7, 1,
-			6, 0, 2,
-			2, 4, 6,
-			7, 5, 3,
-			7, 3, 1
-		};
-
-		numberOfVertices = 36;
-
-		tMeshStruct newMesh;
-
-		genBuffers(newMesh); //generete buffers
-
-		glBindVertexArray(newMesh.vertexArrayObject);
-		glBindBuffer(GL_ARRAY_BUFFER, newMesh.vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions),	vertex_positions, GL_STATIC_DRAW);
-		glVertexAttribPointer(Shader::VERTEXPOSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL); //write vertices position to the shader
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newMesh.indexBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_indices), vertex_indices, GL_STATIC_DRAW);
-		glBindVertexArray(0);
-
-		mMeshComponentsVector.push_back(newMesh); //store the components
-
-		buffersLoaded = true;
-	}
-}
 
 void Mesh::bindMeshArray(const tMeshStruct &mComp)
 {
@@ -205,14 +153,14 @@ void Mesh::loadMesh(std::string meshPath)
 
 
 			//Materials
-			newMesh.meshMaterial = ResourceManager::getSingletonPtr()->createMaterial(meshPath + "Material" + std::to_string(i)); //i the index
+			newMesh.meshMaterial = mCurrentSceneManager->createMaterial(meshPath + "Material" + std::to_string(i), "NULL"); //i the index
 			aiMaterial* aiMat = scene->mMaterials[mesh->mMaterialIndex];
 
 			//Load texture (if exists)
 			aiString texturePath;
 			if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
 			{
-				newMesh.meshMaterial->mBaseColorS.mBaseColorT = ResourceManager::getSingletonPtr()->loadTexture(texturePath.data, false, texturePath.data);
+				newMesh.meshMaterial->mBaseColorS.mBaseColorT = mCurrentSceneManager->createTexture(texturePath.data, false, GL_RGB, texturePath.data);
 				newMesh.meshMaterial->mBaseColorS.baseColorTextured = true;
 			}
 			else

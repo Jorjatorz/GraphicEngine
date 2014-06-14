@@ -6,6 +6,8 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "SceneNode.h"
+#include "Root.h"
+#include "Material.h"
 
 Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 {
@@ -44,10 +46,6 @@ void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, 
 	render(perspectiveViewSceneNodeM);
 }
 
-#include "Root.h"
-#include "Timer.h"
-#include "Material.h"
-
 void Entity::render(glm::mat4 perspectiveViewSceneNodeM)
 {
 	if(meshAttached)
@@ -61,12 +59,12 @@ void Entity::render(glm::mat4 perspectiveViewSceneNodeM)
 			mSceneManager->bindShader(shad);
 
 			//Send uniforms	
-
-			//send matrix
 			glm::mat4 finalMatrix = perspectiveViewSceneNodeM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
-			shad->UniformMatrix("finalM", finalMatrix);
+			shad->UniformMatrix("MVP", finalMatrix);
 			glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
 			shad->UniformMatrix("normalM", normalM);
+			shad->UniformMatrix("viewM", mSceneManager->getViewMatrix());
+			shad->UniformMatrix("modelM", mModelMatrix);
 
 			//render
 			mMesh->bindMeshArray(mMesh->mMeshComponentsVector[i]);
@@ -96,7 +94,7 @@ void Entity::attachMesh(std::string meshName)
 	mMeshName = meshName;
 
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr(); //resourcemanager pointer
-	mMesh = mResourceManager->loadMesh(mMeshName, mMeshName); //allocate new mesh
+	mMesh = mResourceManager->loadMesh(mMeshName, mMeshName, mSceneManager); //allocate new mesh
 
 
 	mModelMatrix = mMesh->meshMatrix;
@@ -113,5 +111,5 @@ void Entity::deAttachMesh()
 
 void Entity::attachMaterial(std::string materialName)
 {
-	mMaterial = ResourceManager::getSingletonPtr()->loadMaterial(materialName, materialName);
+	mMaterial = mSceneManager->createMaterial(materialName, materialName);
 }

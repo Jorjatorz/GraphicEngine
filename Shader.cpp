@@ -112,7 +112,10 @@ void Shader::loadShader(std::string filePath)
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragmentShader);
 
+	//Framgent shader outputs
 	glBindFragDataLocation(program, 0, "outColor"); //output color to the buffer number 0
+	glBindFragDataLocation(program, 1, "outPosition"); //output position to the buffer number 1
+	glBindFragDataLocation(program, 2, "outNormals"); //normal number 2
 
 	glLinkProgram(program);
 	

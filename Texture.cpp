@@ -3,6 +3,9 @@
 
 Texture::Texture(void)
 {
+	mWidth = mHeight = 0;
+	mFormat = -1;
+	isMipmap = false;
 }
 
 
@@ -11,7 +14,7 @@ Texture::~Texture(void)
 	glDeleteTextures(1, &mTextureID);
 }
 
-void Texture::loadTexture(std::string filePath, bool mipmap)
+void Texture::loadTexture(std::string filePath, bool mipmap, GLint format)
 {
 	SDL_Surface* image = IMG_Load(filePath.c_str());
 
@@ -22,39 +25,48 @@ void Texture::loadTexture(std::string filePath, bool mipmap)
 	}
 	else
 	{
-		GLuint tex;
-		glGenTextures(1, &tex);
-
-		glBindTexture(GL_TEXTURE_2D, tex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
-
-		if(mipmap)
-		{
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-			isMipmap = true;
-		}
-		else
-		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			isMipmap = false;
-		}
+		generateTexture(image->w, image->h, format, mipmap, image->pixels);
 
 		std::cout << "Texture loaded: " << filePath << std::endl;
 
 		SDL_FreeSurface(image);
-
-		mTextureID = tex;
 	}
+}
+
+void Texture::generateTexture(int width, int height, GLint format, bool mipmap, const GLvoid* pixels)
+{
+	GLuint tex;
+	glGenTextures(1, &tex);
+
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+	if (mipmap)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+		isMipmap = true;
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		isMipmap = false;
+	}
+
+	mFormat = format;
+	mWidth = width;
+	mHeight = height;
+
+	mTextureID = tex;
 }

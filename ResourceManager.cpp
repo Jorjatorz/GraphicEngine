@@ -81,7 +81,7 @@ Shader* ResourceManager::getShader(std::string shaderName)
 	return NULL;
 }
 
-Texture* ResourceManager::loadTexture(std::string textureName, bool mipmap, std::string texturePath)
+Texture* ResourceManager::loadTexture(std::string textureName, bool mipmap, GLint format, std::string texturePath)
 {
 
 	//search if the resource already exists
@@ -101,7 +101,7 @@ Texture* ResourceManager::loadTexture(std::string textureName, bool mipmap, std:
 	GameResource<Texture*>* mResource = new GameResource<Texture*>(completePath, mTexture);
 
 	//load texture and information
-	mTexture->loadTexture(completePath, mipmap);
+	mTexture->loadTexture(completePath, mipmap, format);
 	mResource->lastModificationTime[0] = getModificationTime(completePath);
 
 	//insert it into the map
@@ -109,6 +109,28 @@ Texture* ResourceManager::loadTexture(std::string textureName, bool mipmap, std:
 
 	return mTexture;
 
+}
+
+Texture* ResourceManager::createTexture(std::string textureName, int width, int height, bool mipmap, GLuint format)
+{
+	//search if the resource already exists
+	tTextureMap::iterator it = mTextureMap.find(textureName);
+	//if it exist return it
+	if (it != mTextureMap.end())
+	{
+		return it->second->getResource();
+	}
+
+	//create Texture (will be deleted by the resource)
+	Texture* mTexture = new Texture();
+	mTexture->generateTexture(width, height, format, mipmap, NULL);
+	//create new resource(will be deleted by the resourceManager)
+	GameResource<Texture*>* mResource = new GameResource<Texture*>("NULL", mTexture);
+
+	//insert it into the map
+	mTextureMap.insert(std::pair<std::string, GameResource<Texture*>*>(textureName, mResource));
+
+	return mTexture;
 }
 
 Texture* ResourceManager::getTexture(std::string textureName)
@@ -125,7 +147,7 @@ Texture* ResourceManager::getTexture(std::string textureName)
 }
 
 //load entity
-Mesh* ResourceManager::loadMesh(std::string meshName, std::string meshPath)
+Mesh* ResourceManager::loadMesh(std::string meshName, std::string meshPath, SceneManager* sceneManager)
 {
 	//search if an mesh with that name already exists
 	tMeshMap::iterator it = mMeshMap.find(meshName);
@@ -137,7 +159,7 @@ Mesh* ResourceManager::loadMesh(std::string meshName, std::string meshPath)
 	//else
 	std::string completePath = "Data\\Models\\" + meshPath;
 	//create and load the mesh (will be deleted by the resource)
-	Mesh* mMesh = new Mesh(completePath);
+	Mesh* mMesh = new Mesh(completePath, sceneManager);
 	//create new resource(will be deleted by the resourceManager)
 	GameResource<Mesh*>* mResource = new GameResource<Mesh*>( completePath, mMesh);
 
@@ -162,7 +184,7 @@ Mesh* ResourceManager::getMesh(std::string meshName)
 	return NULL;
 }
 
-Material* ResourceManager::loadMaterial(std::string materialName, std::string materialPath)
+Material* ResourceManager::loadMaterial(std::string materialName, std::string materialPath, SceneManager* manager)
 {
 	//search if an mesh with that name already exists
 	tMaterialMap::iterator it = mMaterialMap.find(materialName);
@@ -176,6 +198,7 @@ Material* ResourceManager::loadMaterial(std::string materialName, std::string ma
 
 	//create and load the mesh (will be deleted by the resource)
 	Material* mMat = new Material(materialName);
+	mMat->setSceneManager(manager);
 	mMat->readMaterialFromFile(completePath);
 
 	//create new resource(will be deleted by the resourceManager)
@@ -188,7 +211,7 @@ Material* ResourceManager::loadMaterial(std::string materialName, std::string ma
 	return mMat;
 }
 
-Material* ResourceManager::createMaterial(std::string materialName)
+Material* ResourceManager::createMaterial(std::string materialName, SceneManager* manager)
 {
 	//search if an mesh with that name already exists
 	tMaterialMap::iterator it = mMaterialMap.find(materialName);
@@ -199,7 +222,8 @@ Material* ResourceManager::createMaterial(std::string materialName)
 
 	//else
 	//create and load the mesh (will be deleted by the resource)
-	Material* mMat = new Material();
+	Material* mMat = new Material(materialName);
+	mMat->setSceneManager(manager);
 	//create new resource(will be deleted by the resourceManager)
 	GameResource<Material*>* mResource = new GameResource<Material*>( "NULL", mMat);
 
@@ -263,7 +287,7 @@ void ResourceManager::checkForModifications()
 		if(textureIterator->second->lastModificationTime[0] != getModificationTime(textureIterator->second->getFilePath()))
 		{
 			//reload the file
-			textureIterator->second->getResource()->loadTexture(textureIterator->second->getFilePath(), textureIterator->second->getResource()->isMipmap);
+			textureIterator->second->getResource()->loadTexture(textureIterator->second->getFilePath(), textureIterator->second->getResource()->isMipmap, textureIterator->second->getResource()->mFormat);
 			textureIterator->second->lastModificationTime[0] = getModificationTime(textureIterator->second->getFilePath());
 		}
 	}

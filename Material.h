@@ -21,7 +21,8 @@ public:
 
 	//Set properties
 	void setBaseColorV(glm::vec3 newBaseColor);
-	void setBaseColorRGB(glm::vec3 newBaseColor);
+	void setBaseColorRGB(glm::vec3 newBaseColor); //Parameter value is pass in a range from 0-255
+	void setBaseColorTexture(Texture* texture);
 
 	//Sends material information (uniforms) to the shader
 	void applyMaterial();
@@ -78,11 +79,23 @@ public:
 		return mMaterialShader;
 	}
 
+	void setMaterialShader(Shader* shader)
+	{
+		mMaterialShader = shader;
+	}
+
+	void setSceneManager(SceneManager* manager)
+	{
+		mCurrentSceneManager = manager;
+	}
+
 private:
 	Shader* mMaterialShader;
 	std::string mMaterialName;
 
 	void setParameterFromFile(std::string prop, std::ifstream& inputFile);
+
+	SceneManager* mCurrentSceneManager;
 
 };
 

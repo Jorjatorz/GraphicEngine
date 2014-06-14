@@ -11,7 +11,7 @@ class Mesh
 {
 public:
 	Mesh(void);
-	Mesh(std::string meshPath);
+	Mesh(std::string meshPath, SceneManager* manager);
 	~Mesh(void);
 
 private:
@@ -32,12 +32,6 @@ private:
 
 
 public:
-	//predifined mesh
-	//square
-	//triangle
-	//cube
-	void createCube();
-
 	//load mesh
 	void loadMesh(std::string meshPath); //load the mesh from a file
 
@@ -63,6 +57,8 @@ private:
 
 	//controls if the vertex and index buffers where already created (thus (if wanted to be loaded) it was succesfully loaded from file)
 	bool buffersLoaded;
+
+	SceneManager* mCurrentSceneManager;
 };
 
 #endif

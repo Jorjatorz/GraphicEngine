@@ -179,14 +179,14 @@ void Material::setParameterFromFile(std::string prop, std::ifstream& inputFile)
 		inputFile >> equalSign;
 		std::string shaderPath;
 		inputFile >> shaderPath;
-		mMaterialShader = ResourceManager::getSingletonPtr()->loadShader(shaderPath, shaderPath);
+		mMaterialShader = mCurrentSceneManager->createShader(shaderPath, shaderPath);
 	}
 	else if(prop == "baseColorT")
 	{
 		inputFile >> equalSign; //get the =
 		std::string texturePath;
 		inputFile >> texturePath;
-		mBaseColorS.mBaseColorT = ResourceManager::getSingletonPtr()->loadTexture(texturePath, false, texturePath);
+		mBaseColorS.mBaseColorT = mCurrentSceneManager->createTexture(texturePath, false, GL_RGBA, texturePath);
 		mBaseColorS.baseColorTextured = true;
 	}
 	else if(prop == "baseColorV")
@@ -201,7 +201,7 @@ void Material::setParameterFromFile(std::string prop, std::ifstream& inputFile)
 		inputFile >> equalSign; //get the =
 		std::string texturePath;
 		inputFile >> texturePath;
-		mRoughNessS.mRoughnessT = ResourceManager::getSingletonPtr()->loadTexture(texturePath, false, texturePath);
+		mRoughNessS.mRoughnessT = mCurrentSceneManager->createTexture(texturePath, false, GL_RGBA, texturePath);
 		mRoughNessS.roughnessTextured = true;
 	}
 	else if(prop == "roughnessR")
@@ -215,7 +215,7 @@ void Material::setParameterFromFile(std::string prop, std::ifstream& inputFile)
 		inputFile >> equalSign; //get the =
 		std::string texturePath;
 		inputFile >> texturePath;
-		mEmissiveColorS.mEmissiveColorT = ResourceManager::getSingletonPtr()->loadTexture(texturePath, false, texturePath);
+		mEmissiveColorS.mEmissiveColorT = mCurrentSceneManager->createTexture(texturePath, false, GL_RGBA, texturePath);
 		mEmissiveColorS.emissiveTextured = true;
 	}
 	else if(prop == "emissiveV")
@@ -230,7 +230,7 @@ void Material::setParameterFromFile(std::string prop, std::ifstream& inputFile)
 		inputFile >> equalSign; //get the =
 		std::string texturePath;
 		inputFile >> texturePath;
-		mOpacityS.mOpacityT = ResourceManager::getSingletonPtr()->loadTexture(texturePath, false, texturePath);
+		mOpacityS.mOpacityT = mCurrentSceneManager->createTexture(texturePath, false, GL_RGBA, texturePath);;
 		mOpacityS.opacityTextured = true;
 	}
 	else if(prop == "opacityR")
@@ -254,7 +254,7 @@ void Material::setParameterFromFile(std::string prop, std::ifstream& inputFile)
 		inputFile >> equalSign; //get the =
 		std::string texturePath;
 		inputFile >> texturePath;
-		mNormalS.mNormalT = ResourceManager::getSingletonPtr()->loadTexture(texturePath, false, texturePath);
+		mNormalS.mNormalT = mCurrentSceneManager->createTexture(texturePath, false, GL_RGBA, texturePath);
 		mNormalS.normalTextured = true;
 	}
 	else if(prop == "refractionR")
@@ -278,4 +278,10 @@ void Material::setBaseColorV(glm::vec3 newBaseColor)
 void Material::setBaseColorRGB(glm::vec3 newBaseColor)
 {
 	mBaseColorS.mBaseColorV = newBaseColor / 255.0f;
+}
+
+void Material::setBaseColorTexture(Texture* texture)
+{
+	mBaseColorS.mBaseColorT = texture;
+	mBaseColorS.baseColorTextured = true;
 }
