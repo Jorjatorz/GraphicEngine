@@ -37,7 +37,10 @@ void Renderer::createRenderer(std::string windowName, int width, int height, boo
 
 	//Create FBO
 	FrameBuffer* fbo = mSceneManager->createFrameBuffer("deferredFBO", mWindow->getWidth(), mWindow->getHeight());
+	FrameBuffer* fbo1 = mSceneManager->createFrameBuffer("lightFBO", mWindow->getWidth(), mWindow->getHeight());
 	fbo->createGBuffer();
+	fbo1->addTexture(GL_RGBA);
+	fbo1->addTexture(GL_RGBA);
 
 }
 
@@ -88,21 +91,24 @@ void Renderer::renderFrame(real deltaTime)
 	//mCam->setControler(Camera::DEFAULT);
 	mSceneManager->setCurrentShader(mShader);
 
-	Entity* mEnt2 = mSceneManager->createEntity("ent2", "map.obj");
+	Entity* mEnt2 = mSceneManager->createEntity("ent2", "Hall.obj");
 	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, 0.0));
 	node2->setOrientation(glm::vec3(0.0, -90.0, 0.0));
+	node2->setPosition(glm::vec3(-1.0, 0.0, 0.0));
+	node2->setScale(glm::vec3(9.0, 9.0, 9.0));
 	node2->attachObject(mEnt2);
 	node->attachObject(mEnt);
 
 	mSceneManager->setCurrentCamera(mCam);
 	Light* light1 = mSceneManager->createLight("light1");
+	light1->setColor(glm::vec3(1.0, 0.0, 0.0));
+	Light* light2 = mSceneManager->createLight("light2");
+	light2->setPosition(glm::vec3(2, 0.0, 0.0));
+	light2->setColor(glm::vec3(0.0, 1.0, 0.0));
 
-	Entity* ent3 = mSceneManager->createEntity("sphere");
-	SceneNode* nod3 = mSceneManager->getRootSceneNode()->createChildSceneNode("spehereNode");
-	nod3->attachObject(ent3);
-	nod3->setScale(glm::vec3(0.1, 0.1, 0.1));
-	nod3->setPosition(light1->getPosition());
-	nod3->attachObject(mCam);
+	Light* light3 = mSceneManager->createLight("light3");
+	light2->setPosition(glm::vec3(0.0, 0.0, -1.0));
+	light2->setColor(glm::vec3(0.0, 0.0, 1.0));
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));
 
@@ -129,12 +135,14 @@ void Renderer::renderFrame(real deltaTime)
 	fbo->bindForDrawing();
 
 	//clear buffers
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();
+	mSceneManager->processLights();
 
-	//Read the FBO
+	fbo = mSceneManager->getFrameBuffer("lightFBO");
 	fbo->bindForRendering();
 
 	//swap the buffers

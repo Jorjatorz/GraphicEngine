@@ -6,6 +6,7 @@ Timer::Timer(std::string name)
 	paused = false;
 	mStartTime = -1;
 	mStopTime = 0;
+	mToltalTime = 0;
 
 	mName = name;
 }
@@ -24,6 +25,7 @@ void Timer::start()
 int Timer::stop()
 {
 	mStopTime = SDL_GetTicks() - mStartTime;
+	mToltalTime += mStopTime;
 	mStartTime = -1;
 
 	return mStopTime;
@@ -46,6 +48,8 @@ void Timer::pause()
 void Timer::reset()
 {
 	mStartTime = 0;
+	mStopTime = 0;
+	mToltalTime = 0;
 }
 
 int Timer::getMiliSeconds()

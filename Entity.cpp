@@ -43,10 +43,10 @@ Entity::~Entity(void)
 
 void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient)
 {
-	render(perspectiveViewSceneNodeM);
+	render(perspectiveViewSceneNodeM, viewMatrix);
 }
 
-void Entity::render(glm::mat4 perspectiveViewSceneNodeM)
+void Entity::render(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix)
 {
 	if(meshAttached)
 	{
@@ -54,17 +54,21 @@ void Entity::render(glm::mat4 perspectiveViewSceneNodeM)
 		for(int i = 0; i < mMesh->mMeshComponentsVector.size(); ++i)
 		{
 
-			// apply shader
-			Shader* shad = mMesh->mMeshComponentsVector[i].meshMaterial->getShader();
-			mSceneManager->bindShader(shad);
+			// apply shader. If we dont have a full entity material use each entity material
+			Shader* materialShader;
+			if (mMaterial == NULL)
+			{
+				materialShader = mMesh->mMeshComponentsVector[i].meshMaterial->getShader();
+				mSceneManager->bindShader(materialShader);
+			}
+			else
+			{
+				materialShader = mMaterial->getShader();
+				mSceneManager->bindShader(materialShader);
+			}
 
 			//Send uniforms	
-			glm::mat4 finalMatrix = perspectiveViewSceneNodeM * mModelMatrix; //final matrix composed of pers * view * node * model matrix
-			shad->UniformMatrix("MVP", finalMatrix);
-			glm::mat4 normalM = glm::inverseTranspose(mSceneManager->getViewMatrix() * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
-			shad->UniformMatrix("normalM", normalM);
-			shad->UniformMatrix("viewM", mSceneManager->getViewMatrix());
-			shad->UniformMatrix("modelM", mModelMatrix);
+			sendEntityUniforms(materialShader, perspectiveViewSceneNodeM, viewMatrix);
 
 			//render
 			mMesh->bindMeshArray(mMesh->mMeshComponentsVector[i]);
@@ -84,9 +88,28 @@ void Entity::render(glm::mat4 perspectiveViewSceneNodeM)
 			mMesh->unbindMeshArray();
 
 		}
-
-		mSceneManager->unbindShader();
 	}
+}
+
+void Entity::sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm::mat4 viewMatrix)
+{
+	glm::mat4 finalMatrix = PVNMatrix * mModelMatrix; //final matrix composed of pers * view * node * model matrix
+
+	//IF we dont have node we cant multiply by the node matrix (i.e. deferred light volums
+	glm::mat4 normalM;
+	if (mParentSceneNode != NULL)
+	{
+		normalM = glm::inverseTranspose(viewMatrix * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
+	}
+	else
+	{
+		normalM = glm::inverseTranspose(viewMatrix * mModelMatrix);
+	}
+	currentShader->UniformMatrix("MVP", finalMatrix);
+	currentShader->UniformMatrix("projectionM", mSceneManager->getPerspectiveMatrix());
+	currentShader->UniformMatrix("viewM", viewMatrix);
+	currentShader->UniformMatrix("normalM", normalM);
+	currentShader->UniformMatrix("modelM", mModelMatrix);
 }
 
 void Entity::attachMesh(std::string meshName)

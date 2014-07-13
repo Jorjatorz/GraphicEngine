@@ -98,10 +98,12 @@ void Material::applyMaterial()
 		glActiveTexture(GL_TEXTURE0 + textureId);
 		glBindTexture(GL_TEXTURE_2D, textureId);
 
+		mMaterialShader->Uniform("isTextured", 1);
 		mMaterialShader->UniformTexture("baseTexture", textureId);
 	}
 	else
 	{
+		mMaterialShader->Uniform("isTextured", 0);
 		mMaterialShader->Uniform("baseColorVector", mBaseColorS.mBaseColorV);
 	}
 
@@ -284,4 +286,9 @@ void Material::setBaseColorTexture(Texture* texture)
 {
 	mBaseColorS.mBaseColorT = texture;
 	mBaseColorS.baseColorTextured = true;
+}
+
+void Material::setShader(Shader* newShader)
+{
+	mMaterialShader = newShader;
 }

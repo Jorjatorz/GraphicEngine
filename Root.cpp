@@ -39,6 +39,7 @@ void Root::initEngine()
 
 	//Pruebas
 	Timer* mTimer = createTimer("fpsTimer");
+	Timer* timer2 = createTimer("renderTimer");
 	int frames = 0;
 	int miliSeconds = 0;
 	int framesPerSecond = 1000/60;
@@ -47,14 +48,15 @@ void Root::initEngine()
 	//
 	while(running && !mInput->isKeyDown(SDL_SCANCODE_ESCAPE))
 	{
-		lastTime = mTimer->mStartTime; //Get the duration fo the previous frame
 		mTimer->start();
 
 		//Get input
 		mInput->getFrameInput(running);
 
 		//Render a frame
+		timer2->start();
 		mRenderer->renderFrame((mTimer->mStartTime - lastTime) * 0.001);
+		timer2->stop();
 
 		if (mTimer->getMiliSeconds() < framesPerSecond)
 		{
@@ -66,11 +68,17 @@ void Root::initEngine()
 		frames++;
 		if (miliSeconds > 1000)
 		{
+			std::cout << "Renderer: " << (float)timer2->mToltalTime / frames << std::endl;
+			std::cout << "Total: " << (float)mTimer->mToltalTime / frames << std::endl;
+			mTimer->mToltalTime = 0;
+			timer2->reset();
 			std::cout << frames << std::endl;
 			frames = 0;
 			miliSeconds = 0;
 		}
 		
+		lastTime = mTimer->mStartTime; //Get the duration of the previous frame
+		mTimer->stop();
 	}
 
 }

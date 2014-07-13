@@ -4,19 +4,23 @@ layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 texCoord;
 
-out vec3 vNormal;
-out vec2 uv;
-
 uniform mat4 MVP; //ModelViewPerspective matrix
 uniform mat4 modelM;
 uniform mat4 viewM;
-uniform mat4 perspectiveM;
+uniform mat4 projectionM;
 uniform mat4 normalM;
+uniform vec3 lightPos;
+
+out mat4 inverseProjView;
+out vec4 persPos;
+out vec3 lPos;
 
 void main()
 {
-	uv = texCoord;	
-	vNormal = vec3(normalM * vec4(normal, 1.0)) * 0.5 + 0.5;
-	
 	gl_Position =  MVP * vec4(position, 1.0);
+	persPos = gl_Position;
+	
+	lPos = (viewM * modelM * vec4(lightPos, 1.0)).xyz;
+	
+	inverseProjView = inverse(projectionM);
 }

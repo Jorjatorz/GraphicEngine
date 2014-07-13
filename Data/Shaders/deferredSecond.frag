@@ -2,19 +2,23 @@
 
 out vec4 outColor;           // layout(location = 0)
 
-uniform sampler2D posTex;
-uniform sampler2D normalTex;
-uniform sampler2D diffuseTex;
+uniform sampler2D lightTex;
+uniform sampler2D specTex;
+uniform sampler2D diffTex;
 
 in vec2 uv;
 
 void main(void)
 {
    // Load data, stored in textures, from the first stage rendering.
-   vec4 diffuse = texture(diffuseTex, uv);
-   vec4 worldPos = texture(posTex, uv);
-   vec4 normal = texture(normalTex, uv);
+  
+  vec4 diffuse = texture(diffTex, uv);
+  vec4 light = texture(lightTex, uv);
+  vec4 specular = texture(specTex, uv);
 
-   outColor = vec4(1.0, 1.0, 1.0, 1.0) - diffuse;
+   outColor = diffuse * 0.2;
+   outColor += diffuse * light;
+   outColor += specular;
+   outColor.a = 1.0;
 
 }

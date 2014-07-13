@@ -20,6 +20,8 @@ public:
 	void readMaterialFromFile(std::string matFile);
 
 	//Set properties
+	void setShader(Shader* newShader);
+
 	void setBaseColorV(glm::vec3 newBaseColor);
 	void setBaseColorRGB(glm::vec3 newBaseColor); //Parameter value is pass in a range from 0-255
 	void setBaseColorTexture(Texture* texture);

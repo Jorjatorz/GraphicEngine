@@ -10,6 +10,7 @@ FrameBuffer::FrameBuffer()
 	mName = "Unnamed FrameBuffer";
 	deferredFBO = false;
 	quadSet = false;
+	depthTexture = false;
 	//Create it in the constructor
 	glGenFramebuffers(1, &mFrameBufferId);
 }
@@ -51,15 +52,29 @@ void FrameBuffer::createGBuffer()
 	{
 		//Color
 		addTexture(GL_RGBA);
-		//Position
-		addTexture(GL_RGBA32F);
 		//Normal
-		addTexture(GL_RGBA16);
-		//Depth and stencil
-		glGenRenderbuffers(1, &mRenderBufferId);
-		glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferId);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWidth, mHeight); //24 bits depth 8 stencil
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRenderBufferId);
+		addTexture(GL_RGBA);
+		//Depth
+		GLuint depthTex;
+		glGenTextures(1, &depthTex);
+		glBindTexture(GL_TEXTURE_2D, depthTex);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, mWidth, mHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex, 0);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		mTexturesIdVector.push_back(depthTex);
+
+		depthTexture = true;
 
 		//check the fbo
 		glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId);
@@ -71,7 +86,6 @@ void FrameBuffer::createGBuffer()
 
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 		deferredFBO = true;
 	}
@@ -80,8 +94,28 @@ void FrameBuffer::createGBuffer()
 void FrameBuffer::bindForDrawing()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferId);
-	GLuint windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2}; //We have 4 color attachments (can be more, put at will)
-	glDrawBuffers(mTexturesIdVector.size(), windowBuffClear); // Select all buffers
+	GLuint windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	if (depthTexture)
+	{
+		glDrawBuffers(mTexturesIdVector.size() - 1, windowBuffClear); // Select all buffers except the depthBuffer
+	}
+	else
+	{
+		glDrawBuffers(mTexturesIdVector.size(), windowBuffClear);
+	}
+}
+
+void FrameBuffer::bindForReading()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//We suppose we have 3 textures
+
+	for (int i = 0; i < mTexturesIdVector.size(); ++i)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(i));
+	}
 }
 
 void FrameBuffer::bindForRendering()
@@ -125,15 +159,17 @@ void FrameBuffer::bindForRendering()
 
 	mCurrentSceneManager->bindShader(mCurrentSceneManager->createShader("deferredSecond", "deferredSecond"));
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(0));
-	mCurrentSceneManager->getCurrentShader()->UniformTexture("diffuseTex", 0);
+	mCurrentSceneManager->getFrameBuffer("deferredFBO")->bindForReading();
+	mCurrentSceneManager->getCurrentShader()->Uniform("diffTex", 0);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(1));
-	mCurrentSceneManager->getCurrentShader()->UniformTexture("posTex", 1);
+	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(0));
+	mCurrentSceneManager->getCurrentShader()->UniformTexture("lightTex", 1);
 	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(1));
+	mCurrentSceneManager->getCurrentShader()->UniformTexture("specTex", 2);
+	/*glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(2));
-	mCurrentSceneManager->getCurrentShader()->UniformTexture("normalTex",2);
+	mCurrentSceneManager->getCurrentShader()->UniformTexture("normalTex",2);*/
 	
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 

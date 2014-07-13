@@ -22,6 +22,7 @@ public:
 
 	int mStartTime;
 	int mStopTime;
+	int mToltalTime;
 
 private:
 	std::string mName;

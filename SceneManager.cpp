@@ -248,6 +248,69 @@ Light* SceneManager::getLight(std::string lightName)
 	return NULL;
 }
 
+void SceneManager::processLights()
+{
+
+	//Set read FBO
+	FrameBuffer* readFBO = getFrameBuffer("deferredFBO");
+	readFBO->bindForReading();
+
+	//Set write FBO
+	FrameBuffer* writeFBO = getFrameBuffer("lightFBO");
+	writeFBO->bindForDrawing();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+
+	//Set the light shader
+	Shader* lightShader = createShader("lightPassShader", "lightPass");
+	bindShader(lightShader);
+
+	//Send textures
+	lightShader->UniformTexture("diffuseTex", 0);
+	lightShader->UniformTexture("normalTex", 1);
+	lightShader->UniformTexture("depthTex", 2);
+
+	//Other uniforms
+	lightShader->Uniform("cameraPos", mCurrentCamera->getPosition());
+
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE);
+	
+	tLightMap::iterator it;
+	for (it = mLightMap.begin(); it != mLightMap.end(); ++it)
+	{
+		//Set the lightvolume for each type of light
+		Entity* lightVolume = createEntity(it->first + "LightVolume", "sphere.obj");
+
+		//Matrices
+		glm::mat4 V = getViewMatrix();
+
+		//Transform the lightVolume
+		glm::mat4 transM = glm::mat4(1.0);
+		transM = glm::scale(transM, glm::vec3(it->second->getSize()));
+		transM = glm::translate(transM, it->second->getPosition());
+		glm::mat4 PVS = mPerspectiveMatrix * V * transM; //Perspective * View * Trans
+
+		glm::vec3 pos = it->second->mParentSceneNode->getDerivedPosition();
+		glm::vec3 orient = it->second->mParentSceneNode->getDerivedOrientation();
+
+		//Process the light
+		it->second->process(PVS, V, pos, orient);
+
+		//Process its light volume
+		lightVolume->attachMaterial("lightVolumeMaterial");
+		lightVolume->getMaterial()->setShader(lightShader);
+		lightVolume->getMaterial()->mBaseColorS.mBaseColorV = it->second->getColor();
+		lightVolume->process(PVS, V);
+
+	}
+	glDisable(GL_BLEND);
+	unbindCurrentShader();
+	writeFBO->unBind();
+}
+
 
 Camera* SceneManager::createCamera(std::string cameraName)
 {
