@@ -20,6 +20,8 @@ public:
 
 	void attachMaterial(std::string materialName);
 
+	void setWireFrame(bool wire);
+
 	Material* getMaterial()
 	{
 		return mMaterial;
@@ -35,6 +37,8 @@ private:
 
 	void render(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix);
 	void sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm::mat4 viewMatrix);
+
+	bool wireFrame;
 
 	/*
 	//inheritated

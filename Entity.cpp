@@ -19,6 +19,8 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	mMaterial = NULL; 
 	mSceneManager = newSceneManager;
 	meshAttached = false;
+	
+	wireFrame = false;
 
 	mTypeOfMovableObject = tTypeEnum::Entity;
 }
@@ -83,6 +85,14 @@ void Entity::render(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix)
 				mMaterial->applyMaterial();
 			}
 
+			if (wireFrame)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			else
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
 			glDrawElements(GL_TRIANGLES, mMesh->mMeshComponentsVector[i].mIndexVector.size(), GL_UNSIGNED_INT, 0);
 
 			mMesh->unbindMeshArray();
@@ -99,11 +109,11 @@ void Entity::sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm:
 	glm::mat4 normalM;
 	if (mParentSceneNode != NULL)
 	{
-		normalM = glm::inverseTranspose(viewMatrix * mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
+		normalM = glm::transpose(mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
 	}
 	else
 	{
-		normalM = glm::inverseTranspose(viewMatrix * mModelMatrix);
+		normalM = glm::inverseTranspose(mModelMatrix);
 	}
 	currentShader->UniformMatrix("MVP", finalMatrix);
 	currentShader->UniformMatrix("projectionM", mSceneManager->getPerspectiveMatrix());
@@ -135,4 +145,9 @@ void Entity::deAttachMesh()
 void Entity::attachMaterial(std::string materialName)
 {
 	mMaterial = mSceneManager->createMaterial(materialName, materialName);
+}
+
+void Entity::setWireFrame(bool wire)
+{
+	wireFrame = wire;
 }

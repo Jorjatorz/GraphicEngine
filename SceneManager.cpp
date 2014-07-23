@@ -258,6 +258,10 @@ void SceneManager::processLights()
 	//Set write FBO
 	FrameBuffer* writeFBO = getFrameBuffer("lightFBO");
 	writeFBO->bindForDrawing();
+
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -273,10 +277,6 @@ void SceneManager::processLights()
 
 	//Other uniforms
 	lightShader->Uniform("cameraPos", mCurrentCamera->getPosition());
-
-	glEnable(GL_BLEND);
-	glBlendEquation(GL_FUNC_ADD);
-	glBlendFunc(GL_ONE, GL_ONE);
 	
 	tLightMap::iterator it;
 	for (it = mLightMap.begin(); it != mLightMap.end(); ++it)
@@ -304,8 +304,10 @@ void SceneManager::processLights()
 		lightVolume->getMaterial()->setShader(lightShader);
 		lightVolume->getMaterial()->mBaseColorS.mBaseColorV = it->second->getColor();
 		lightVolume->process(PVS, V);
-
+		glCullFace(GL_BACK);
 	}
+
+	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 	unbindCurrentShader();
 	writeFBO->unBind();

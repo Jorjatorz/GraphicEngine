@@ -51,9 +51,9 @@ void FrameBuffer::createGBuffer()
 	if (!deferredFBO)
 	{
 		//Color
-		addTexture(GL_RGBA);
+		addTexture(GL_RGBA8);
 		//Normal
-		addTexture(GL_RGBA);
+		addTexture(GL_RGBA8);
 		//Depth
 		GLuint depthTex;
 		glGenTextures(1, &depthTex);

@@ -59,9 +59,9 @@ void Renderer::initOpenGL()
 	//Set viewprot and clear color
 	glViewport(0.0f, 0.0f, mWindow->getWidth(),mWindow->getHeight());
 	glClearColor(0.5f, 0.5f ,0.5f ,1.0);
-	glEnable(GL_DEPTH_TEST);
 
 	//GL STATES AND ENABLES
+	glEnable(GL_DEPTH_TEST);
 }
 
 //delete this
@@ -103,17 +103,29 @@ void Renderer::renderFrame(real deltaTime)
 	Light* light1 = mSceneManager->createLight("light1");
 	light1->setColor(glm::vec3(1.0, 0.0, 0.0));
 	Light* light2 = mSceneManager->createLight("light2");
-	light2->setPosition(glm::vec3(2, 0.0, 0.0));
+	light2->setPosition(glm::vec3(-0.8, 1.1, -0.9));
 	light2->setColor(glm::vec3(0.0, 1.0, 0.0));
-
 	Light* light3 = mSceneManager->createLight("light3");
-	light2->setPosition(glm::vec3(0.0, 0.0, -1.0));
-	light2->setColor(glm::vec3(0.0, 0.0, 1.0));
+	light3->setPosition(glm::vec3(0.0, 0.0, -1.5));
+	light3->setColor(glm::vec3(0.0, 0.0, 1.0));
 
-	node->setScale(glm::vec3(0.2, 0.2, 0.2));
+	node->setScale(glm::vec3(0.2, 0.2, 0.2));;
 
 	mEnt->attachMaterial("gold.mat");
-	//mEnt2->attachMaterial("gold.mat");
+	mEnt2->attachMaterial("pruebas");
+	mEnt2->getMaterial()->mBaseColorS.mBaseColorV = glm::vec3(1.0, 1.0, 1.0);
+
+	
+	for (int i = 1; i < mSceneManager->getNumOfLights() + 1; ++i)
+	{
+		Entity* ent = mSceneManager->createEntity("entLight" + std::to_string(i), "sphere.obj");
+		ent->setWireFrame(true);
+
+		SceneNode* nod = mSceneManager->getRootSceneNode()->createChildSceneNode("entLight" + std::to_string(i));
+		nod->attachObject(ent);
+
+		nod->setPosition(mSceneManager->getLight("light" + std::to_string(i))->getPosition());
+	}
 
 	if(InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_RIGHT))
 	{
@@ -127,7 +139,7 @@ void Renderer::renderFrame(real deltaTime)
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
-
+		node->translate(glm::vec3(0.1, 0.0, 0.0));
 	}
 
 	//Bind framebuffer
@@ -135,11 +147,18 @@ void Renderer::renderFrame(real deltaTime)
 	fbo->bindForDrawing();
 
 	//clear buffers
+	glDepthMask(GL_TRUE);
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glEnable(GL_DEPTH_TEST);
+
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();
+
+	glDepthMask(GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
+
 	mSceneManager->processLights();
 
 	fbo = mSceneManager->getFrameBuffer("lightFBO");

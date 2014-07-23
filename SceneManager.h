@@ -57,6 +57,10 @@ public:
 	void deleteLight(std::string lightName);
 	Light* getLight(std::string lightName);
 	void processLights(); //Creates the specific polygon for each light, calculate things and send uniforms (deferred shading)
+	int getNumOfLights()
+	{
+		return mLightMap.size();
+	}
 
 	//Camera
 	//creates a new camera

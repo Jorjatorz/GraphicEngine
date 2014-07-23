@@ -16,7 +16,7 @@ uniform mat4 normalM;
 void main()
 {
 	uv = texCoord;	
-	vNormal = vec3(normalM * vec4(normal, 1.0)) * 0.5 + 0.5;
+	vNormal = (normalM * vec4(normal, 1.0)).xyz * 0.5 + 0.5;
 	
 	gl_Position =  MVP * vec4(position, 1.0);
 }
