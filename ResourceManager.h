@@ -46,6 +46,12 @@ public:
 	//check for modifications of the files
 	void checkForModifications();
 
+	void createScreenQuad();
+	GLuint getScreenQuadVAO()
+	{
+		return screenSquareVAO;
+	}
+
 
 private:
 	typedef std::map<std::string, GameResource<Shader*>*> tShaderMap;
@@ -58,6 +64,9 @@ private:
 	tMeshMap mMeshMap;
 	tMaterialMap mMaterialMap;
 
+
+	//Vertex and Vaos
+	GLuint screenSquareVBO, screenSquareVAO; //For the quad
 };
 
 #endif

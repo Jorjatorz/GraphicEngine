@@ -29,7 +29,6 @@ private:
 	bool depthTexture; //True if  we have a depth texture
 	bool deferredFBO; //True if this frameBufer has being created for deferred
 	bool quadSet; //Control the creation of the vertex buffers for the screen quad
-	GLuint vbo, vao; //For the quad
 
 	//Holds the textures Id's
 	std::vector<GLuint> mTexturesIdVector;

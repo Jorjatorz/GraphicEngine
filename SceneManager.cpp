@@ -15,6 +15,9 @@ SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
 	mRenderer = mCurrentRenderer;
 	mRootSceneNode = new SceneNode("RootNode", this);
+
+	//Create a screenQuad
+	ResourceManager::getSingletonPtr()->createScreenQuad();
 }
 
 
@@ -259,9 +262,12 @@ void SceneManager::processLights()
 	FrameBuffer* writeFBO = getFrameBuffer("lightFBO");
 	writeFBO->bindForDrawing();
 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
+
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -281,16 +287,50 @@ void SceneManager::processLights()
 	tLightMap::iterator it;
 	for (it = mLightMap.begin(); it != mLightMap.end(); ++it)
 	{
-		//Set the lightvolume for each type of light
-		Entity* lightVolume = createEntity(it->first + "LightVolume", "sphere.obj");
+
+
+		Entity* lightVolume;
+		switch (it->second->getType())
+		{
+			//Set the lightvolume for each type of light
+		case Light::POINTLIGHT:
+		{
+								  lightVolume = createEntity(it->first + "LightVolume", "sphere.obj");
+								  break;
+		}
+		case Light::SPOTLIGHT:
+		{
+								 lightVolume = createEntity(it->first + "LightVolume", "cone.obj");
+								// glm::mat4 mat = glm::mat4(1.0); //We modify the model matrix so we rotate over the upper cone vertex
+								 //mat = glm::translate(mat, glm::vec3(0.0, -1.0, 0.0));
+								 //lightVolume->setModelMatrix(mat);
+								 break;
+		}
+		default:
+			lightVolume = nullptr;
+			break;
+		}
 
 		//Matrices
 		glm::mat4 V = getViewMatrix();
 
 		//Transform the lightVolume
 		glm::mat4 transM = glm::mat4(1.0);
-		transM = glm::scale(transM, glm::vec3(it->second->getSize()));
-		transM = glm::translate(transM, it->second->getPosition());
+		//if (it->second->getType() == Light::SPOTLIGHT)
+		//{
+			//transM = glm::translate(transM, it->second->getPosition() + glm::vec3(0.0, 1.0, 0.0));
+		//}
+		//else
+		//{
+			transM = glm::translate(transM, it->second->getPosition());
+	//	}
+		if (it->second->getType() == Light::SPOTLIGHT)
+		{
+			transM = glm::rotate(transM, it->second->getDirection().x * 90.0f, glm::vec3(0.0, 0.0, 1.0));
+			transM = glm::rotate(transM, it->second->getDirection().y * 180.0f * 0.5f + 0.5f, glm::vec3(1.0, 0.0, 0.0));
+			transM = glm::rotate(transM, it->second->getDirection().z * 90.0f, glm::vec3(-1.0, 0.0, 0.0));
+		}
+		transM = glm::scale(transM, glm::vec3(it->second->getRadius()));
 		glm::mat4 PVS = mPerspectiveMatrix * V * transM; //Perspective * View * Trans
 
 		glm::vec3 pos = it->second->mParentSceneNode->getDerivedPosition();
@@ -300,11 +340,22 @@ void SceneManager::processLights()
 		it->second->process(PVS, V, pos, orient);
 
 		//Process its light volume
-		lightVolume->attachMaterial("lightVolumeMaterial");
-		lightVolume->getMaterial()->setShader(lightShader);
-		lightVolume->getMaterial()->mBaseColorS.mBaseColorV = it->second->getColor();
-		lightVolume->process(PVS, V);
-		glCullFace(GL_BACK);
+		if (it->second->getType() != Light::DIRECTIONALLIGHT)
+		{
+			lightVolume->attachMaterial("lightVolumeMaterial");
+			lightVolume->getMaterial()->setShader(lightShader);
+			lightVolume->getMaterial()->mBaseColorS.mBaseColorV = it->second->getColor();
+			lightVolume->process(PVS, V);
+		}
+		else
+		{
+			lightShader->UniformMatrix("MVP", glm::mat4(1.0));
+
+			//We dont bind the shader because is already binded
+			glBindVertexArray(ResourceManager::getSingletonPtr()->getScreenQuadVAO());
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glBindVertexArray(0);
+		}
 	}
 
 	glDisable(GL_CULL_FACE);

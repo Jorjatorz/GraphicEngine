@@ -20,7 +20,10 @@ public:
 	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient);
 
 	void setPosition(glm::vec3 newPos);
+	void setDirection(glm::vec3 newDir);
 	void setColor(glm::vec3 newColor);
+	void setRadius(float newRadius);
+	void setType(tLightTypeEnum newType);
 	//Set orientation, color, size...
 
 	glm::vec3 getPosition()
@@ -31,17 +34,26 @@ public:
 	{
 		return mColor;
 	}
-	float getSize()
+	glm::vec3 getDirection()
 	{
-		return mSize;
+		return mDirection;
+	}
+	float getRadius()
+	{
+		return mRadius;
+	}
+	tLightTypeEnum getType()
+	{
+		return mType;
 	}
 
 private:
 	tLightTypeEnum mType;
 	glm::vec3 mPosition;
-	glm::vec3 mOrientation; //for directional and spot
+	glm::vec3 mDirection; //for directional and spot
 	glm::vec3 mColor;
-	float mSize; //pointlight
+	float mRadius; //pointlight
+	float mCutOff; //Spotlight
 
 	/*
 	//inheritated

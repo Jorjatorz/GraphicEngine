@@ -11,9 +11,10 @@ Light::Light(std::string name, SceneManager* newSceneManager)
 
 	mType = POINTLIGHT;
 	mPosition = glm::vec3(0.0, 0.0, 0.0);
-	mOrientation = glm::vec3(0.0, 0.0, 0.0);
+	mDirection = glm::vec3(0.0, -1.0, 0.0);
 	mColor = glm::vec3(1.0, 0.0, 0.0);
-	mSize = 1.0;
+	mRadius = 1.0;
+	mCutOff = 0.5;
 	mParentSceneNode = NULL;
 	mAttachedToNode = false;
 	visible = true;
@@ -30,7 +31,7 @@ Light::~Light(void)
 void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient)
 {
 	glm::vec3 mDerivedPos = parentPos + mPosition;
-	glm::vec3 mDerivedOrientation = parentOrient + mOrientation;
+	glm::vec3 mDerivedDirection = parentOrient + mDirection;
 
 	switch (mType)
 	{
@@ -40,15 +41,27 @@ void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, g
 			//Send uniforms
 						   mSceneManager->getCurrentShader()->Uniform("lightType", mType);
 						   mSceneManager->getCurrentShader()->Uniform("lightPos", mDerivedPos);
+						   mSceneManager->getCurrentShader()->Uniform("lightRadius", mRadius);
 						   mSceneManager->getCurrentShader()->Uniform("lightColor", mColor);
 			break;
 		}
 		case DIRECTIONALLIGHT:
 		{
+							//Send uniforms
+							mSceneManager->getCurrentShader()->Uniform("lightType", mType);
+							mSceneManager->getCurrentShader()->Uniform("lightPos", mDerivedPos);
+							mSceneManager->getCurrentShader()->Uniform("lightColor", mColor);
+							mSceneManager->getCurrentShader()->Uniform("lightDirection", mDirection);
 			break;
 		}
 		case SPOTLIGHT:
 		{
+							//Send uniforms
+							mSceneManager->getCurrentShader()->Uniform("lightType", mType);
+							mSceneManager->getCurrentShader()->Uniform("lightPos", mDerivedPos);
+							mSceneManager->getCurrentShader()->Uniform("lightColor", mColor);
+							mSceneManager->getCurrentShader()->Uniform("lightDirection", mDerivedDirection);
+							mSceneManager->getCurrentShader()->Uniform("lightCutOff", mCutOff);
 			break;
 		}
 	}
@@ -60,7 +73,22 @@ void Light::setPosition(glm::vec3 newPos)
 	mPosition = newPos;
 }
 
+void Light::setDirection(glm::vec3 newDir)
+{
+	mDirection = newDir;
+}
+
 void Light::setColor(glm::vec3 newColor)
 {
 	mColor = newColor;
+}
+
+void Light::setRadius(float newRadius)
+{
+	mRadius = newRadius;
+}
+
+void Light::setType(tLightTypeEnum newType)
+{
+	mType = newType;
 }

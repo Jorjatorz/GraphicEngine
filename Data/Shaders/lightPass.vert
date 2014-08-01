@@ -19,7 +19,7 @@ void main()
 {
 	gl_Position =  MVP * vec4(position, 1.0);
 	
-	lPos = vec4(lightPos, 1.0).xyz;
+	lPos = lightPos;
 	
 	inverseProjView = inverse(projectionM * viewM);
 }

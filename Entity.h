@@ -21,10 +21,19 @@ public:
 	void attachMaterial(std::string materialName);
 
 	void setWireFrame(bool wire);
+	void setModelMatrix(glm::mat4 matrix)
+	{
+		mModelMatrix = matrix;
+	}
 
 	Material* getMaterial()
 	{
 		return mMaterial;
+	}
+
+	glm::mat4 getModelMatrix()
+	{
+		return mModelMatrix;
 	}
 
 private:

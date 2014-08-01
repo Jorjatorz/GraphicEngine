@@ -77,7 +77,6 @@ void Renderer::initOpenGL()
 #include <time.h>
 #include "ResourceManager.h""
 //
-
 void Renderer::renderFrame(real deltaTime)
 {
 	//PRuebas
@@ -92,40 +91,31 @@ void Renderer::renderFrame(real deltaTime)
 	mSceneManager->setCurrentShader(mShader);
 
 	Entity* mEnt2 = mSceneManager->createEntity("ent2", "Hall.obj");
-	SceneNode* node2 = node->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, 0.0));
+	SceneNode* node2 = mSceneManager->getRootSceneNode()->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, -1.0));
 	node2->setOrientation(glm::vec3(0.0, -90.0, 0.0));
-	node2->setPosition(glm::vec3(-1.0, 0.0, 0.0));
-	node2->setScale(glm::vec3(9.0, 9.0, 9.0));
+	node2->setPosition(glm::vec3(-1.0, -0.25, 0.0));
+	node2->setScale(glm::vec3(2.0, 2.0, 2.0));
 	node2->attachObject(mEnt2);
 	node->attachObject(mEnt);
 
 	mSceneManager->setCurrentCamera(mCam);
 	Light* light1 = mSceneManager->createLight("light1");
-	light1->setColor(glm::vec3(1.0, 0.0, 0.0));
+	light1->setColor(glm::vec3(0.98, 1.0, 0.0));
 	Light* light2 = mSceneManager->createLight("light2");
 	light2->setPosition(glm::vec3(-0.8, 1.1, -0.9));
-	light2->setColor(glm::vec3(0.0, 1.0, 0.0));
+	light2->setColor(glm::vec3(1.0, 0.0, 0.49));
 	Light* light3 = mSceneManager->createLight("light3");
-	light3->setPosition(glm::vec3(0.0, 0.0, -1.5));
-	light3->setColor(glm::vec3(0.0, 0.0, 1.0));
+	light3->setColor(glm::vec3(0.0, 0.98, 1.0));
+	light3->setType(Light::SPOTLIGHT);
+	light3->setPosition(glm::vec3(0.0, 0.0, 0.0));
+	//light3->setDirection(glm::vec3(0.0, 0.0, -1.0));
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));;
 
 	mEnt->attachMaterial("gold.mat");
 	mEnt2->attachMaterial("pruebas");
-	mEnt2->getMaterial()->mBaseColorS.mBaseColorV = glm::vec3(1.0, 1.0, 1.0);
+	//mEnt2->getMaterial()->mBaseColorS.mBaseColorV = glm::vec3(1.0, 1.0, 1.0);
 
-	
-	for (int i = 1; i < mSceneManager->getNumOfLights() + 1; ++i)
-	{
-		Entity* ent = mSceneManager->createEntity("entLight" + std::to_string(i), "sphere.obj");
-		ent->setWireFrame(true);
-
-		SceneNode* nod = mSceneManager->getRootSceneNode()->createChildSceneNode("entLight" + std::to_string(i));
-		nod->attachObject(ent);
-
-		nod->setPosition(mSceneManager->getLight("light" + std::to_string(i))->getPosition());
-	}
 
 	if(InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_RIGHT))
 	{
@@ -139,7 +129,31 @@ void Renderer::renderFrame(real deltaTime)
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
-		node->translate(glm::vec3(0.1, 0.0, 0.0));
+		float a, b, c;
+		std::cin >> a >> b >> c;
+		light3->setDirection(glm::vec3(a, b, c));
+	}
+
+	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
+	{
+		light3->setPosition(glm::vec3(0.5, 0.0, -1.0));
+	}
+
+
+	for (int i = 1; i < mSceneManager->getNumOfLights() + 1; ++i)
+	{
+		Entity* ent = mSceneManager->createEntity("entLight" + std::to_string(i), "cone.obj");
+		ent->setWireFrame(true);
+		glm::mat4 a = glm::mat4(1.0);
+		a = glm::translate(a, glm::vec3(0.0, -1.0, 0.0));
+		ent->setModelMatrix(a);
+
+		SceneNode* nod = mSceneManager->getRootSceneNode()->createChildSceneNode("entLight" + std::to_string(i));
+		nod->attachObject(ent);
+
+		nod->setPosition(mSceneManager->getLight("light" + std::to_string(i))->getPosition() + glm::vec3(0.0, 1.0, 0.0));
+		nod->setOrientation(glm::degrees(mSceneManager->getLight("light" + std::to_string(i))->getDirection()));
+		//nod->setScale(glm::vec3(mSceneManager->getLight("light" + std::to_string(i))->getRadius()));
 	}
 
 	//Bind framebuffer
@@ -151,13 +165,13 @@ void Renderer::renderFrame(real deltaTime)
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();
 
-	glDepthMask(GL_FALSE);
-	glDisable(GL_DEPTH_TEST);
+	//glDepthMask(GL_FALSE);
+	//glDisable(GL_DEPTH_TEST);
 
 	mSceneManager->processLights();
 

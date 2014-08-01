@@ -39,6 +39,10 @@ ResourceManager::~ResourceManager(void)
 		delete meshIterator->second;
 	}
 	mMeshMap.clear();
+
+	//Delete VBO and VAO
+	glDeleteVertexArrays(1, &screenSquareVAO);
+	glDeleteBuffers(1, &screenSquareVBO);
 }
 
 Shader* ResourceManager::loadShader(std::string shaderName, std::string shaderPath)
@@ -303,3 +307,32 @@ void ResourceManager::checkForModifications()
 	}
 }
 
+void ResourceManager::createScreenQuad()
+{
+	//vertices
+	const GLfloat vertex_positions[] =
+	{
+		-1.0f, 1.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, -1.0f, 1.0f, 0.0f,
+
+		1.0f, -1.0f, 1.0f, 0.0f,
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		-1.0f, 1.0f, 0.0f, 1.0f
+	};
+
+	glGenVertexArrays(1, &screenSquareVAO);
+	glBindVertexArray(screenSquareVAO);
+
+	glGenBuffers(1, &screenSquareVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, screenSquareVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(Shader::VERTEXPOSITION, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+	glVertexAttribPointer(Shader::VERTEXTEXCOORD, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(2);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}

@@ -16,7 +16,7 @@ Camera::Camera(SceneManager* newSceneManager)
 	mDerivedOrientation = mOrientation;
 	mName = "Unnamed Camera";
 	mCurrentControlType = NOCONTROLER;
-	movementSpeed = 1.0;
+	movementSpeed = 2.0;
 	mouseSpeed = 0.2;
 
 	//Pointing to 0, 0, -1
@@ -36,7 +36,7 @@ Camera::Camera(std::string& name, SceneManager* newSceneManager)
 	mDerivedPosition = mPosition;
 	mName = name;
 	mCurrentControlType = NOCONTROLER;
-	movementSpeed = 1.0;
+	movementSpeed = 2.0;
 	mouseSpeed = 0.002;
 
 	//Pointing to 0, 0, -1

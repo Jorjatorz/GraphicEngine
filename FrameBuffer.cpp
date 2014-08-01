@@ -120,7 +120,7 @@ void FrameBuffer::bindForReading()
 
 void FrameBuffer::bindForRendering()
 {
-	if (!quadSet)
+	/*if (!quadSet)
 	{
 		//vertices
 		const GLfloat vertex_positions[] =
@@ -153,8 +153,8 @@ void FrameBuffer::bindForRendering()
 	}
 
 	// Bind default framebuffer and draw contents of our framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindVertexArray(vao);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
+	glBindVertexArray(ResourceManager::getSingletonPtr()->getScreenQuadVAO());
 	glDisable(GL_DEPTH_TEST);
 
 	mCurrentSceneManager->bindShader(mCurrentSceneManager->createShader("deferredSecond", "deferredSecond"));

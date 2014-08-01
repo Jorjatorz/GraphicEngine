@@ -109,7 +109,7 @@ void Entity::sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm:
 	glm::mat4 normalM;
 	if (mParentSceneNode != NULL)
 	{
-		normalM = glm::transpose(mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
+		normalM = glm::inverseTranspose(mParentSceneNode->getSceneNodeMatrix() * mModelMatrix);
 	}
 	else
 	{
