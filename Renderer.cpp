@@ -97,6 +97,8 @@ void Renderer::renderFrame(real deltaTime)
 	node2->setScale(glm::vec3(2.0, 2.0, 2.0));
 	node2->attachObject(mEnt2);
 	node->attachObject(mEnt);
+	glm::mat4 a = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -1.0, 0.0));
+	mEnt->setModelMatrix(a);
 
 	mSceneManager->setCurrentCamera(mCam);
 	Light* light1 = mSceneManager->createLight("light1");
@@ -108,7 +110,7 @@ void Renderer::renderFrame(real deltaTime)
 	light3->setColor(glm::vec3(0.0, 0.98, 1.0));
 	light3->setType(Light::SPOTLIGHT);
 	light3->setPosition(glm::vec3(0.0, 0.0, 0.0));
-	//light3->setDirection(glm::vec3(0.0, 0.0, -1.0));
+	light3->setDirection(glm::vec3(0.0, 0.0, -1.0));
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));;
 

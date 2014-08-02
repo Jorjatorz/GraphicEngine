@@ -47,6 +47,10 @@ public:
 	{
 		return mOrientation;
 	}
+	glm::vec3 getUpVector()
+	{
+		return mUpVector;
+	}
 	std::string getName()
 	{
 		return mName;

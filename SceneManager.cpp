@@ -301,9 +301,9 @@ void SceneManager::processLights()
 		case Light::SPOTLIGHT:
 		{
 								 lightVolume = createEntity(it->first + "LightVolume", "cone.obj");
-								// glm::mat4 mat = glm::mat4(1.0); //We modify the model matrix so we rotate over the upper cone vertex
-								 //mat = glm::translate(mat, glm::vec3(0.0, -1.0, 0.0));
-								 //lightVolume->setModelMatrix(mat);
+								 glm::mat4 mat = glm::mat4(1.0); //We modify the model matrix so we rotate over the upper cone vertex
+								 mat = glm::translate(mat, glm::vec3(0.0, -1.0, 0.0));
+								 lightVolume->setModelMatrix(mat);
 								 break;
 		}
 		default:
@@ -316,19 +316,35 @@ void SceneManager::processLights()
 
 		//Transform the lightVolume
 		glm::mat4 transM = glm::mat4(1.0);
-		//if (it->second->getType() == Light::SPOTLIGHT)
-		//{
-			//transM = glm::translate(transM, it->second->getPosition() + glm::vec3(0.0, 1.0, 0.0));
-		//}
-		//else
-		//{
-			transM = glm::translate(transM, it->second->getPosition());
-	//	}
 		if (it->second->getType() == Light::SPOTLIGHT)
 		{
-			transM = glm::rotate(transM, it->second->getDirection().x * 90.0f, glm::vec3(0.0, 0.0, 1.0));
+			transM = glm::translate(transM, it->second->getPosition());
+		}
+		else
+		{
+			transM = glm::translate(transM, it->second->getPosition());
+		}
+		if (it->second->getType() == Light::SPOTLIGHT)
+		{
+			/*transM = glm::rotate(transM, it->second->getDirection().x * 90.0f, glm::vec3(0.0, 0.0, 1.0));
 			transM = glm::rotate(transM, it->second->getDirection().y * 180.0f * 0.5f + 0.5f, glm::vec3(1.0, 0.0, 0.0));
-			transM = glm::rotate(transM, it->second->getDirection().z * 90.0f, glm::vec3(-1.0, 0.0, 0.0));
+			transM = glm::rotate(transM, it->second->getDirection().z * 90.0f, glm::vec3(-1.0, 0.0, 0.0));*/
+
+			glm::vec3 a = glm::normalize(glm::vec3(0.0, -1.0, 0.0));
+			glm::vec3 b = glm::normalize(it->second->getDirection());
+			float cosa = glm::dot(a, b);
+			glm::clamp(cosa, -1.0f, 1.0f);
+			glm::vec3 axis = glm::cross(a, b);
+			if (axis == glm::vec3(0.0))
+			{
+				axis = glm::vec3(1.0, 0.0, 0.0);
+			}
+			float angle = glm::degrees(glm::acos(cosa));
+			if (angle != 0)
+			{
+				glm::mat4 rotate_matrix = glm::rotate(glm::mat4(1.0), angle, axis);
+				transM = transM * rotate_matrix;
+			}
 		}
 		transM = glm::scale(transM, glm::vec3(it->second->getRadius()));
 		glm::mat4 PVS = mPerspectiveMatrix * V * transM; //Perspective * View * Trans

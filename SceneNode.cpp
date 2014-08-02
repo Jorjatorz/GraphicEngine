@@ -7,7 +7,8 @@
 SceneNode::SceneNode(void)
 {
 	mParent = NULL;
-	mPosition = mOrientation = glm::vec3(0.0);
+	mPosition = glm::vec3(0.0);
+	mOrientation = glm::vec3(0.0, 90.0, 0.0); //In degrees
 	mScale = glm::vec3(1.0);
 	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
 	mDerivedScale = glm::vec3(1.0);
@@ -20,7 +21,8 @@ SceneNode::SceneNode(void)
 SceneNode::SceneNode(std::string sceneNodeName, SceneManager* newSceneManager)
 {
 	mParent = NULL;
-	mPosition = mOrientation = glm::vec3(0.0);
+	mPosition = glm::vec3(0.0);
+	mOrientation = glm::vec3(0.0, 90.0, 0.0); //In degrees
 	mScale = glm::vec3(1.0);
 	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
 	mDerivedScale = glm::vec3(1.0);
@@ -33,7 +35,8 @@ SceneNode::SceneNode(std::string sceneNodeName, SceneManager* newSceneManager)
 SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneManager* newSceneManager)
 {
 	mParent = nodeParent;
-	mPosition = mOrientation = glm::vec3(0.0);
+	mPosition = glm::vec3(0.0);
+	mOrientation = glm::vec3(0.0, 90.0, 0.0); //In degreees
 	mScale = glm::vec3(1.0);
 	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
 	mDerivedScale = glm::vec3(1.0);
@@ -203,9 +206,9 @@ void SceneNode::updateFromParent()
 		updateChildrens();
 		//update matrix
 		mSceneNodeMatrix = glm::translate(mSceneNodeMatrix, mDerivedPosition);
-		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.x, glm::vec3(1.0, 0.0, 0.0));
 		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.y, glm::vec3(0.0, 1.0, 0.0));
 		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.z, glm::vec3(0.0, 0.0, 1.0));
+		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.x, glm::vec3(1.0, 0.0, 0.0));
 		mSceneNodeMatrix = glm::scale(mSceneNodeMatrix, mDerivedScale);
 	}
 
@@ -333,6 +336,35 @@ void SceneNode::rotate(glm::vec3 rot)
 	mOrientation += rot * mSceneManager->mDeltaTime;
 
 	hasChanged = true;
+}
+void SceneNode::lookAt(glm::vec3 lookAtPoint)
+{
+	glm::vec3 a = glm::normalize(glm::vec3(0.0, 0.0, 90.0));
+	glm::vec3 b;
+	if (lookAtPoint != glm::vec3(0.0))
+		b = glm::normalize(lookAtPoint);
+	else
+		b = lookAtPoint;
+
+	float cosa = glm::dot(a, b);
+	glm::clamp(cosa, -1.0f, 1.0f);
+	glm::vec3 axis = glm::cross(a, b);
+
+	//If the axis is NULL we can choose any axis
+	if (axis == glm::vec3(0.0))
+	{
+		real temp = a.x;
+		a.x = a.z;
+		a.y = a.x;
+		a.z = a.y;
+		axis = a;
+	}
+
+	float angle = glm::degrees(glm::acos(cosa));
+	if (angle != 0)
+	{
+		mOrientation = angle * axis;
+	}
 }
 void SceneNode::setPosition(glm::vec3 newPos)
 {

@@ -99,7 +99,7 @@ void main()
 	 
 	 
 		// inside the cone?
-		if (dot(-L, D) > 0.86f) {
+		if (dot(-L, D) > 0.91f) {
 	 
 			intensity = max(dot(normal,L), 0.0);
 	 
@@ -113,7 +113,7 @@ void main()
 			}
 		}
 	 
-		outDiff = vec4(lightColor, 1.0);
+		outDiff = vec4(lightColor * intensity * atten, 1.0);
 		outSpecular = spec * atten;
 	}
 	

@@ -43,6 +43,7 @@ public:
 	void setPosition(glm::vec3 newPos);
 	void setOrientation(glm::vec3 newOrientation);
 	void setScale(glm::vec3 newScale);
+	void lookAt(glm::vec3 lookAtPoint);
 
 	//returns
 	glm::mat4 getSceneNodeMatrix()
