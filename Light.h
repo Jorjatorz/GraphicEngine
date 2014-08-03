@@ -17,7 +17,7 @@ public:
 		SPOTLIGHT
 	} tLightTypeEnum;
 
-	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient);
+	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient);
 
 	void setPosition(glm::vec3 newPos);
 	void setDirection(glm::vec3 newDir);

@@ -39,9 +39,9 @@ public:
 
 	//transformations functions
 	void translate(glm::vec3 trans);
-	void rotate(glm::vec3 rot);
+	void rotate(glm::vec3 axis, real angle);
 	void setPosition(glm::vec3 newPos);
-	void setOrientation(glm::vec3 newOrientation);
+	void setOrientation(glm::quat newOrientation);
 	void setScale(glm::vec3 newScale);
 	void lookAt(glm::vec3 lookAtPoint);
 
@@ -55,7 +55,7 @@ public:
 	{
 		return mPosition;
 	}
-	glm::vec3 getOrientation()
+	glm::quat getOrientation()
 	{
 		return mOrientation;
 	}
@@ -67,7 +67,7 @@ public:
 	{
 		return mDerivedPosition;
 	}
-	glm::vec3 getDerivedOrientation()
+	glm::quat getDerivedOrientation()
 	{
 		return mDerivedOrientation;
 	}
@@ -80,9 +80,11 @@ private:
 	//scenenode model matrix (derived from parent)
 	glm::mat4 mSceneNodeMatrix;
 	//scenenode position, orientation and scale
-	glm::vec3 mPosition, mOrientation, mScale;
+	glm::vec3 mPosition, mScale;
+	glm::quat mOrientation;
 	//derived scenenode position, orientation and scale
-	glm::vec3 mDerivedPosition, mDerivedOrientation, mDerivedScale;
+	glm::vec3 mDerivedPosition, mDerivedScale;
+	glm::quat  mDerivedOrientation;
 
 	//true if the node has changed
 	bool hasChanged;

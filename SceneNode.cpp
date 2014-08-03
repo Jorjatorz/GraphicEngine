@@ -8,9 +8,10 @@ SceneNode::SceneNode(void)
 {
 	mParent = NULL;
 	mPosition = glm::vec3(0.0);
-	mOrientation = glm::vec3(0.0, 90.0, 0.0); //In degrees
+	mOrientation = glm::quat();
 	mScale = glm::vec3(1.0);
-	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
+	mDerivedPosition = glm::vec3(0.0);
+	mDerivedOrientation = glm::quat();
 	mDerivedScale = glm::vec3(1.0);
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
@@ -22,9 +23,10 @@ SceneNode::SceneNode(std::string sceneNodeName, SceneManager* newSceneManager)
 {
 	mParent = NULL;
 	mPosition = glm::vec3(0.0);
-	mOrientation = glm::vec3(0.0, 90.0, 0.0); //In degrees
+	mOrientation = glm::quat();
 	mScale = glm::vec3(1.0);
-	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
+	mDerivedPosition = glm::vec3(0.0);
+	mDerivedOrientation = glm::quat();
 	mDerivedScale = glm::vec3(1.0);
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
@@ -36,9 +38,10 @@ SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneMana
 {
 	mParent = nodeParent;
 	mPosition = glm::vec3(0.0);
-	mOrientation = glm::vec3(0.0, 90.0, 0.0); //In degreees
+	mOrientation = glm::quat();
 	mScale = glm::vec3(1.0);
-	mDerivedPosition = mDerivedOrientation = glm::vec3(0.0);
+	mDerivedPosition = glm::vec3(0.0);
+	mDerivedOrientation = glm::quat();
 	mDerivedScale = glm::vec3(1.0);
 	mSceneNodeMatrix = glm::mat4(1.0);
 	hasChanged = true;
@@ -206,9 +209,7 @@ void SceneNode::updateFromParent()
 		updateChildrens();
 		//update matrix
 		mSceneNodeMatrix = glm::translate(mSceneNodeMatrix, mDerivedPosition);
-		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.y, glm::vec3(0.0, 1.0, 0.0));
-		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.z, glm::vec3(0.0, 0.0, 1.0));
-		mSceneNodeMatrix = glm::rotate(mSceneNodeMatrix, mDerivedOrientation.x, glm::vec3(1.0, 0.0, 0.0));
+		mSceneNodeMatrix = mSceneNodeMatrix * glm::toMat4(mOrientation);
 		mSceneNodeMatrix = glm::scale(mSceneNodeMatrix, mDerivedScale);
 	}
 
@@ -331,40 +332,43 @@ void SceneNode::translate(glm::vec3 trans)
 	hasChanged = true;
 }
 
-void SceneNode::rotate(glm::vec3 rot)
+void SceneNode::rotate(glm::vec3 axis, real angle)
 {
-	mOrientation += rot * mSceneManager->mDeltaTime;
+	glm::quat q;
+	q = glm::angleAxis(angle, axis); //Suppose angle is in degrees
+	glm::normalize(q); //Normalize to avoid drift
+
+	mOrientation = q; //Order is important
 
 	hasChanged = true;
 }
 void SceneNode::lookAt(glm::vec3 lookAtPoint)
 {
-	glm::vec3 a = glm::normalize(glm::vec3(0.0, 0.0, 90.0));
-	glm::vec3 b;
-	if (lookAtPoint != glm::vec3(0.0))
-		b = glm::normalize(lookAtPoint);
-	else
-		b = lookAtPoint;
+	glm::vec3 lookVector = lookAtPoint;
+	assert(lookVector != mPosition);
+	
+	glm::vec3 direction = glm::normalize(lookVector - mPosition);
+	float dot = glm::dot(glm::vec3(0.0, 0.0, 1.0), direction);
 
-	float cosa = glm::dot(a, b);
-	glm::clamp(cosa, -1.0f, 1.0f);
-	glm::vec3 axis = glm::cross(a, b);
-
-	//If the axis is NULL we can choose any axis
-	if (axis == glm::vec3(0.0))
-	{
-		real temp = a.x;
-		a.x = a.z;
-		a.y = a.x;
-		a.z = a.y;
-		axis = a;
+	glm::quat rotation;
+	if (fabs(dot - (-1.0f)) < 0.000001f) {
+		rotation = glm::angleAxis((real)glm::degrees(M_PI), glm::vec3(0.0, 1.0, 0.0));
+		mOrientation = rotation;
+		return;
+	}
+	else if (fabs(dot - (1.0f)) < 0.000001f) {
+		rotation = glm::quat();
+		mOrientation = rotation;
+		return;
 	}
 
-	float angle = glm::degrees(glm::acos(cosa));
-	if (angle != 0)
-	{
-		mOrientation = angle * axis;
-	}
+	float angle = glm::degrees(acosf(dot));
+
+	glm::vec3 cross = glm::normalize(glm::cross(glm::vec3(0.0, 0.0, 1.0), direction));
+	rotation = glm::normalize(glm::angleAxis(angle, cross));
+
+	mOrientation = rotation;
+
 }
 void SceneNode::setPosition(glm::vec3 newPos)
 {
@@ -372,7 +376,7 @@ void SceneNode::setPosition(glm::vec3 newPos)
 
 	hasChanged = true;
 }
-void SceneNode::setOrientation(glm::vec3 newOrientation)
+void SceneNode::setOrientation(glm::quat newOrientation)
 {
 	mOrientation = newOrientation;
 
@@ -384,3 +388,4 @@ void SceneNode::setScale(glm::vec3 newScale)
 
 	hasChanged = true;
 }
+

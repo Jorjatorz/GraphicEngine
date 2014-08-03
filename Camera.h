@@ -20,7 +20,7 @@ public:
 		DEFAULT
 	} tControlerType;
 
-	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient); //inheritated
+	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient); //inheritated
 
 	void handleMouseMove(InputManager* inputMInstance, int x, int y);
 

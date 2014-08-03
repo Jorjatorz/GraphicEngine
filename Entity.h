@@ -13,7 +13,7 @@ public:
 	Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager);
 	~Entity(void);
 
-	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos = glm::vec3(0.0), glm::vec3 parentOrient = glm::vec3(0.0)); //inheritated
+	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos = glm::vec3(0.0), glm::quat parentOrient = glm::quat()); //inheritated
 
 	void attachMesh(std::string meshName);
 	void deAttachMesh();

@@ -350,7 +350,7 @@ void SceneManager::processLights()
 		glm::mat4 PVS = mPerspectiveMatrix * V * transM; //Perspective * View * Trans
 
 		glm::vec3 pos = it->second->mParentSceneNode->getDerivedPosition();
-		glm::vec3 orient = it->second->mParentSceneNode->getDerivedOrientation();
+		glm::quat orient = it->second->mParentSceneNode->getDerivedOrientation();
 
 		//Process the light
 		it->second->process(PVS, V, pos, orient);
@@ -440,7 +440,8 @@ void SceneManager::setCurrentCamera(Camera* newCamera)
 void SceneManager::processViewMatrix()
 {
 	//compute the new camera matrix
-	glm::vec3 pos, orient;
+	glm::vec3 pos;
+	glm::quat orient;
 	pos = mCurrentCamera->mParentSceneNode->getDerivedPosition();
 	orient = mCurrentCamera->mParentSceneNode->getDerivedOrientation();
 

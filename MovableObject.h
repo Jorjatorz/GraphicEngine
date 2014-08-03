@@ -34,7 +34,7 @@ public:
 	void setAttached(bool att);
 	void setAttached(bool att, SceneNode* newNode);
 
-	virtual void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient) = 0;
+	virtual void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient) = 0;
 
 	SceneManager* mSceneManager;
 	SceneNode* mParentSceneNode;

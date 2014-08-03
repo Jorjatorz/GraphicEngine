@@ -50,10 +50,10 @@ Camera::~Camera(void)
 {
 }
 
-void Camera::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient)
+void Camera::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)
 {
 	mDerivedPosition = parentPos;
-	//Need to set the derived orientation??
+	//Need to set the derived orientation
 
 	updateCamera();
 }

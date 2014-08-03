@@ -28,10 +28,10 @@ Light::~Light(void)
 }
 
 
-void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient)
+void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)
 {
 	glm::vec3 mDerivedPos = parentPos + mPosition;
-	glm::vec3 mDerivedDirection = parentOrient + mDirection;
+	glm::vec3 mDerivedDirection = glm::eulerAngles(parentOrient) + mDirection;
 
 	switch (mType)
 	{
@@ -51,7 +51,7 @@ void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, g
 							mSceneManager->getCurrentShader()->Uniform("lightType", mType);
 							mSceneManager->getCurrentShader()->Uniform("lightPos", mDerivedPos);
 							mSceneManager->getCurrentShader()->Uniform("lightColor", mColor);
-							mSceneManager->getCurrentShader()->Uniform("lightDirection", mDirection);
+							mSceneManager->getCurrentShader()->Uniform("lightDirection", mDerivedDirection);
 			break;
 		}
 		case SPOTLIGHT:

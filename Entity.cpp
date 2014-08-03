@@ -43,7 +43,7 @@ Entity::~Entity(void)
 {
 }
 
-void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::vec3 parentOrient)
+void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)
 {
 	render(perspectiveViewSceneNodeM, viewMatrix);
 }

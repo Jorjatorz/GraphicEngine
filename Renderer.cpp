@@ -92,13 +92,20 @@ void Renderer::renderFrame(real deltaTime)
 
 	Entity* mEnt2 = mSceneManager->createEntity("ent2", "Hall.obj");
 	SceneNode* node2 = mSceneManager->getRootSceneNode()->createChildSceneNode("nod2", glm::vec3(2.0, 0.0, -1.0));
-	node2->setOrientation(glm::vec3(0.0, -90.0, 0.0));
+	//node2->rotate(glm::vec3(0.0, 1.0, 0.0), 1.0);
 	node2->setPosition(glm::vec3(-1.0, -0.25, 0.0));
 	node2->setScale(glm::vec3(2.0, 2.0, 2.0));
 	node2->attachObject(mEnt2);
 	node->attachObject(mEnt);
 	glm::mat4 a = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -1.0, 0.0));
 	mEnt->setModelMatrix(a);
+
+	Entity* mEnt3 = mSceneManager->createEntity("ent3", "sphere.obj");
+	SceneNode* node3 = mSceneManager->getRootSceneNode()->createChildSceneNode("node3", glm::vec3(0.5, 0.5, -1.0));
+	node3->setScale(glm::vec3(0.25, 0.25, 0.25));
+	node3->attachObject(mEnt3);
+
+	node->lookAt(mCam->getPosition());
 
 	mSceneManager->setCurrentCamera(mCam);
 	Light* light1 = mSceneManager->createLight("light1");
@@ -133,7 +140,7 @@ void Renderer::renderFrame(real deltaTime)
 	{
 		float a, b, c;
 		std::cin >> a >> b >> c;
-		light3->setDirection(glm::vec3(a, b, c));
+		node->rotate(glm::vec3(a, b, 0), c);
 	}
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
@@ -142,7 +149,7 @@ void Renderer::renderFrame(real deltaTime)
 	}
 
 
-	for (int i = 1; i < mSceneManager->getNumOfLights() + 1; ++i)
+	/*for (int i = 1; i < mSceneManager->getNumOfLights() + 1; ++i)
 	{
 		Entity* ent = mSceneManager->createEntity("entLight" + std::to_string(i), "cone.obj");
 		ent->setWireFrame(true);
@@ -156,7 +163,7 @@ void Renderer::renderFrame(real deltaTime)
 		nod->setPosition(mSceneManager->getLight("light" + std::to_string(i))->getPosition() + glm::vec3(0.0, 1.0, 0.0));
 		nod->setOrientation(glm::degrees(mSceneManager->getLight("light" + std::to_string(i))->getDirection()));
 		//nod->setScale(glm::vec3(mSceneManager->getLight("light" + std::to_string(i))->getRadius()));
-	}
+	}*/
 
 	//Bind framebuffer
 	FrameBuffer* fbo = mSceneManager->getFrameBuffer("deferredFBO");
