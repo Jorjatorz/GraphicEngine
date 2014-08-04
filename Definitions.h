@@ -34,6 +34,7 @@ class FrameBuffer;
 class InputManager;
 class Light;
 class Material;
+class Math;
 class Mesh;
 class MovableObject;
 class Renderer;

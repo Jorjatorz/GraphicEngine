@@ -43,7 +43,7 @@ public:
 	void setPosition(glm::vec3 newPos);
 	void setOrientation(glm::quat newOrientation);
 	void setScale(glm::vec3 newScale);
-	void lookAt(glm::vec3 lookAtPoint);
+	void lookAt(glm::vec3 lookAtPoint, glm::vec3 objectFacing = glm::vec3(0.0, 0.0, 1.0)); //Rotate the objectec so it face the new point, objectFacing is the object direction that is facing at the origin (i.e the initial orientation of the mesh)
 
 	//returns
 	glm::mat4 getSceneNodeMatrix()

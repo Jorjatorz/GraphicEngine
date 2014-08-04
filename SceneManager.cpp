@@ -250,7 +250,7 @@ Light* SceneManager::getLight(std::string lightName)
 	//if not found
 	return NULL;
 }
-
+#include "Math.h"
 void SceneManager::processLights()
 {
 
@@ -316,21 +316,16 @@ void SceneManager::processLights()
 
 		//Transform the lightVolume
 		glm::mat4 transM = glm::mat4(1.0);
-		if (it->second->getType() == Light::SPOTLIGHT)
-		{
-			transM = glm::translate(transM, it->second->getPosition());
-		}
-		else
-		{
-			transM = glm::translate(transM, it->second->getPosition());
-		}
+
+		transM = glm::translate(transM, it->second->getPosition());
+
 		if (it->second->getType() == Light::SPOTLIGHT)
 		{
 			/*transM = glm::rotate(transM, it->second->getDirection().x * 90.0f, glm::vec3(0.0, 0.0, 1.0));
 			transM = glm::rotate(transM, it->second->getDirection().y * 180.0f * 0.5f + 0.5f, glm::vec3(1.0, 0.0, 0.0));
 			transM = glm::rotate(transM, it->second->getDirection().z * 90.0f, glm::vec3(-1.0, 0.0, 0.0));*/
 
-			glm::vec3 a = glm::normalize(glm::vec3(0.0, -1.0, 0.0));
+			/*glm::vec3 a = glm::normalize(glm::vec3(0.0, -1.0, 0.0));
 			glm::vec3 b = glm::normalize(it->second->getDirection());
 			float cosa = glm::dot(a, b);
 			glm::clamp(cosa, -1.0f, 1.0f);
@@ -344,7 +339,9 @@ void SceneManager::processLights()
 			{
 				glm::mat4 rotate_matrix = glm::rotate(glm::mat4(1.0), angle, axis);
 				transM = transM * rotate_matrix;
-			}
+			}*/
+			Math aux;
+			transM = transM * aux.lookAt(it->second->getDirection(), it->second->getPosition(), glm::vec3(0.0, -1.0, 0.0));
 		}
 		transM = glm::scale(transM, glm::vec3(it->second->getRadius()));
 		glm::mat4 PVS = mPerspectiveMatrix * V * transM; //Perspective * View * Trans

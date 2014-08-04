@@ -84,7 +84,7 @@ void main()
 	{
 		//We check if the fragment is inside the lighVolume, if its not Discard.
 		float dist = length(lPos - pos);
-		float atten = 1.0 /(1.0 + 0.1*dist + 0.01*dist*dist);
+		float atten = 1.0 - clamp(dist / 2.0, 0.0, 1.0);
 		
 		if(atten == 0.0)
 		{
@@ -99,7 +99,7 @@ void main()
 	 
 	 
 		// inside the cone?
-		if (dot(-L, D) > 0.91f) {
+		if (dot(-L, D) > lightCutOff) {
 	 
 			intensity = max(dot(normal,L), 0.0);
 	 

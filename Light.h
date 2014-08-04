@@ -22,8 +22,9 @@ public:
 	void setPosition(glm::vec3 newPos);
 	void setDirection(glm::vec3 newDir);
 	void setColor(glm::vec3 newColor);
-	void setRadius(float newRadius);
+	void setRadius(real newRadius);
 	void setType(tLightTypeEnum newType);
+	void setAttenuationRadius(real nRadius);
 	//Set orientation, color, size...
 
 	glm::vec3 getPosition()
@@ -38,9 +39,13 @@ public:
 	{
 		return mDirection;
 	}
-	float getRadius()
+	real getRadius()
 	{
 		return mRadius;
+	}
+	real getAttenuationRadius()
+	{
+		return mAttenuationRadius;
 	}
 	tLightTypeEnum getType()
 	{
@@ -52,8 +57,9 @@ private:
 	glm::vec3 mPosition;
 	glm::vec3 mDirection; //for directional and spot
 	glm::vec3 mColor;
-	float mRadius; //pointlight
-	float mCutOff; //Spotlight
+	real mRadius; //pointlight
+	real mOuterAngle; //Spotlight
+	real mAttenuationRadius;
 
 	/*
 	//inheritated

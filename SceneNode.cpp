@@ -334,17 +334,25 @@ void SceneNode::translate(glm::vec3 trans)
 
 void SceneNode::rotate(glm::vec3 axis, real angle)
 {
-	glm::quat q;
+	/*glm::quat q;
 	q = glm::angleAxis(angle, axis); //Suppose angle is in degrees
 	glm::normalize(q); //Normalize to avoid drift
 
-	mOrientation = q; //Order is important
+	mOrientation = q; //Order is */
+
+	glm::mat4 rotationM;
+	if (axis != glm::vec3(0.0)) //Just in case
+	{
+		rotationM = glm::rotate(glm::mat4(1.0), angle, axis);
+	}
+
+	mOrientation = glm::quat(rotationM);
 
 	hasChanged = true;
 }
-void SceneNode::lookAt(glm::vec3 lookAtPoint)
+void SceneNode::lookAt(glm::vec3 lookAtPoint, glm::vec3 objectFacing)
 {
-	glm::vec3 lookVector = lookAtPoint;
+	/*glm::vec3 lookVector = lookAtPoint;
 	assert(lookVector != mPosition);
 	
 	glm::vec3 direction = glm::normalize(lookVector - mPosition);
@@ -367,7 +375,17 @@ void SceneNode::lookAt(glm::vec3 lookAtPoint)
 	glm::vec3 cross = glm::normalize(glm::cross(glm::vec3(0.0, 0.0, 1.0), direction));
 	rotation = glm::normalize(glm::angleAxis(angle, cross));
 
-	mOrientation = rotation;
+	mOrientation = mOrientation * rotation;*/
+
+	glm::vec3 targetVec = glm::normalize(lookAtPoint - mPosition);
+	glm::vec3 mDir = objectFacing;
+	glm::vec3 mAxis = glm::cross(targetVec, mDir);
+	real angle = glm::acos(glm::dot(targetVec, mDir));
+
+	if (mAxis != glm::vec3(0.0))
+	{
+		rotate(mAxis, -glm::degrees(angle));
+	}
 
 }
 void SceneNode::setPosition(glm::vec3 newPos)
@@ -388,4 +406,3 @@ void SceneNode::setScale(glm::vec3 newScale)
 
 	hasChanged = true;
 }
-
