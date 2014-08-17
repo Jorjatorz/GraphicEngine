@@ -11,8 +11,12 @@ Math::~Math()
 }
 
 
-glm::mat4 Math::lookAt(glm::vec3 lookAtPoint, glm::vec3 origin, glm::vec3 objectFacing)
+glm::mat4 Math::lookAt(glm::vec3 lookAtPoint, glm::vec3 origin, glm::vec3 objectFacing, bool isDirection)
 {
+	if (isDirection)
+	{
+		lookAtPoint *= glm::vec3(9999.9);//We multipy by large values because the direction is from 0 to +-1 so we convert it to "world" positions very far away
+	}
 	glm::vec3 targetVec = glm::normalize(lookAtPoint - origin);
 	glm::vec3 mDir = objectFacing;
 	glm::vec3 mAxis = glm::cross(targetVec, mDir);

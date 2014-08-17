@@ -83,6 +83,7 @@ void Renderer::renderFrame(real deltaTime)
 	mSceneManager->mDeltaTime = deltaTime;
 
 	Entity* mEnt = mSceneManager->createEntity("cube", "guard.obj");
+	mEnt->showAABB(true);
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -1.0));
 	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.01);
@@ -109,10 +110,12 @@ void Renderer::renderFrame(real deltaTime)
 
 	mSceneManager->setCurrentCamera(mCam);
 	Light* light1 = mSceneManager->createLight("light1");
-	light1->setColor(glm::vec3(0.98, 1.0, 0.0));
+	light1->setType(Light::DIRECTIONALLIGHT);
+	light1->setDirection(glm::vec3(0.0, -0.5, -1.0));
+	light1->setColor(glm::vec3(1.0, 1.0, 1.0));
 	Light* light2 = mSceneManager->createLight("light2");
-	light2->setPosition(glm::vec3(-0.8, 1.1, -0.9));
-	light2->setColor(glm::vec3(1.0, 0.0, 0.49));
+	light2->setPosition(glm::vec3(0.0, 0.1, -2.0));
+	light2->setColor(glm::vec3(0.98, 1.0, 0.0));
 	Light* light3 = mSceneManager->createLight("light3");
 	light3->setColor(glm::vec3(0.0, 0.98, 1.0));
 	light3->setType(Light::SPOTLIGHT);
@@ -148,7 +151,7 @@ void Renderer::renderFrame(real deltaTime)
 		light3->setPosition(glm::vec3(0.5, 0.0, -1.0));
 	}
 
-	
+	/*
 	for (int i = 1; i < mSceneManager->getNumOfLights() + 1; ++i)
 	{
 		Entity* ent = mSceneManager->createEntity("entLight" + std::to_string(i), "cone.obj");
@@ -172,8 +175,10 @@ void Renderer::renderFrame(real deltaTime)
 		}
 		float angle = glm::degrees(glm::acos(cosa));
 		nod->lookAt(mSceneManager->getLight("light" + std::to_string(i))->getDirection(), glm::vec3(0.0, -1.0, 0.0));
-		nod->setScale(glm::vec3(mSceneManager->getLight("light" + std::to_string(i))->getRadius()));
-	}
+		glm::vec3 e = glm::vec3(glm::vec3(0.0, 1.0, 0.0) * (mSceneManager->getLight("light" + std::to_string(i))->getAttenuationRadius() * 0.5f));
+		glm::vec3 f =  glm::vec3(1.0, 0.0, 1.0) * (mSceneManager->getLight("light" + std::to_string(i))->getAttenuationRadius() * glm::tan(glm::radians(mSceneManager->getLight("light" + std::to_string(i))->getOuterAngle())));
+		nod->setScale(e + f);
+	}*/
 	
 	//Bind framebuffer
 	FrameBuffer* fbo = mSceneManager->getFrameBuffer("deferredFBO");

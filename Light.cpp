@@ -14,8 +14,8 @@ Light::Light(std::string name, SceneManager* newSceneManager)
 	mDirection = glm::vec3(0.0, -1.0, 0.0);
 	mColor = glm::vec3(1.0, 0.0, 0.0);
 	mRadius = 1.0;
-	mAttenuationRadius = 1.0;
-	mOuterAngle = 26.565;
+	mAttenuationRadius = 2.0;
+	mOuterAngle = 30.0;
 	mParentSceneNode = NULL;
 	mAttachedToNode = false;
 	visible = true;
@@ -63,7 +63,7 @@ void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, g
 							mSceneManager->getCurrentShader()->Uniform("lightColor", mColor);
 							mSceneManager->getCurrentShader()->Uniform("lightDirection", mDerivedDirection);
 							mSceneManager->getCurrentShader()->Uniform("lightCutOff", glm::cos(glm::radians(mOuterAngle)));
-							mSceneManager->getCurrentShader()->Uniform("attenuationRadius", mAttenuationRadius);
+							mSceneManager->getCurrentShader()->Uniform("lightAttenuationRadius", mAttenuationRadius);
 			break;
 		}
 	}

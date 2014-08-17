@@ -21,6 +21,7 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	meshAttached = false;
 	
 	wireFrame = false;
+	drawAABB = false;
 
 	mTypeOfMovableObject = tTypeEnum::Entity;
 }
@@ -98,6 +99,12 @@ void Entity::render(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix)
 			mMesh->unbindMeshArray();
 
 		}
+
+		if (drawAABB)
+		{
+			mSceneManager->bindShader(mSceneManager->createShader("AABBshader", "AABB"));
+			mMesh->renderAABB(mModelMatrix, perspectiveViewSceneNodeM);
+		}
 	}
 }
 
@@ -150,4 +157,14 @@ void Entity::attachMaterial(std::string materialName)
 void Entity::setWireFrame(bool wire)
 {
 	wireFrame = wire;
+}
+
+void Entity::setModelMatrix(glm::mat4 matrix)
+{
+	mModelMatrix = matrix;
+}
+
+void Entity::showAABB(bool show)
+{
+	drawAABB = show;
 }

@@ -36,6 +36,9 @@ Mesh::~Mesh(void)
 		glDeleteBuffers(1, &mMeshComponentsVector[i].indexBuffer);
 		glDeleteVertexArrays(1, &mMeshComponentsVector[i].vertexArrayObject);
 	}
+
+	glDeleteBuffers(1, &AABBvbo);
+	glDeleteBuffers(1, &AABBibo);
 }
 
 
@@ -214,6 +217,8 @@ void Mesh::loadMesh(std::string meshPath)
 			}
 		}
 
+		calculateAABB(scene);
+		createAABB();
 	}
 }
 
@@ -232,19 +237,86 @@ void Mesh::calculateAABB(const aiScene* mScene)
 	{
 		for(int j = 0; j < mScene->mMeshes[i]->mNumVertices; ++j)
 		{
-			if(AABBmaxVector.x < mScene->mMeshes[i]->mVertices->x)
-				AABBmaxVector.x = mScene->mMeshes[i]->mVertices->x;
-			if(AABBmaxVector.y < mScene->mMeshes[i]->mVertices->y)
-				AABBmaxVector.y = mScene->mMeshes[i]->mVertices->y;
-			if(AABBmaxVector.z < mScene->mMeshes[i]->mVertices->z)
-				AABBmaxVector.z = mScene->mMeshes[i]->mVertices->z;
+			if (AABBmaxVector.x < mScene->mMeshes[i]->mVertices[j].x)
+				AABBmaxVector.x = mScene->mMeshes[i]->mVertices[j].x;
+			if (AABBmaxVector.y < mScene->mMeshes[i]->mVertices[j].y)
+				AABBmaxVector.y = mScene->mMeshes[i]->mVertices[j].y;
+			if (AABBmaxVector.z < mScene->mMeshes[i]->mVertices[j].z)
+				AABBmaxVector.z = mScene->mMeshes[i]->mVertices[j].z;
 
-			if(AABBminVector.x > mScene->mMeshes[i]->mVertices->x)
-				AABBminVector.x = mScene->mMeshes[i]->mVertices->x;
-			if(AABBminVector.y > mScene->mMeshes[i]->mVertices->y)
-				AABBminVector.y = mScene->mMeshes[i]->mVertices->y;
-			if(AABBminVector.z > mScene->mMeshes[i]->mVertices->z)
-				AABBminVector.z = mScene->mMeshes[i]->mVertices->z;
+			if (AABBminVector.x > mScene->mMeshes[i]->mVertices[j].x)
+				AABBminVector.x = mScene->mMeshes[i]->mVertices[j].x;
+			if (AABBminVector.y > mScene->mMeshes[i]->mVertices[j].y)
+				AABBminVector.y = mScene->mMeshes[i]->mVertices[j].y;
+			if (AABBminVector.z > mScene->mMeshes[i]->mVertices[j].z)
+				AABBminVector.z = mScene->mMeshes[i]->mVertices[j].z;
 		}
 	}
+}
+
+
+void Mesh::createAABB()
+{
+	// Cube 1x1x1, centered on origin
+	GLfloat vertices[] = {
+		-0.5, -0.5, -0.5, 1.0,
+		0.5, -0.5, -0.5, 1.0,
+		0.5, 0.5, -0.5, 1.0,
+		-0.5, 0.5, -0.5, 1.0,
+		-0.5, -0.5, 0.5, 1.0,
+		0.5, -0.5, 0.5, 1.0,
+		0.5, 0.5, 0.5, 1.0,
+		-0.5, 0.5, 0.5, 1.0,
+	};
+
+
+	glGenBuffers(1, &AABBvbo);
+	glBindBuffer(GL_ARRAY_BUFFER, AABBvbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	GLushort elements[] = {
+		0, 1, 2, 3,
+		4, 5, 6, 7,
+		0, 4, 1, 5, 2, 6, 3, 7
+	};
+
+	glGenBuffers(1, &AABBibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, AABBibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+	glm::vec3 AABBsize = glm::vec3(AABBmaxVector.x - AABBminVector.x, AABBmaxVector.y - AABBminVector.y, AABBmaxVector.z - AABBminVector.z);
+	glm::vec3 AABBcenter = glm::vec3((AABBminVector.x + AABBmaxVector.x) / 2.0, (AABBminVector.y + AABBmaxVector.y) / 2.0, (AABBminVector.z + AABBmaxVector.z) / 2.0);
+	AABBmatrix = glm::translate(glm::mat4(1), AABBcenter) * glm::scale(glm::mat4(1), AABBsize);
+}
+
+void Mesh::renderAABB(glm::mat4 modelMatrix, glm::mat4 projectionViewM)
+{
+	/* Apply object's transformation matrix */
+	glm::mat4 finalAABBMat = modelMatrix * AABBmatrix;
+
+	Shader* mShader = mCurrentSceneManager->getCurrentShader();
+
+	mShader->UniformMatrix("MVP", projectionViewM * finalAABBMat);
+
+	glBindBuffer(GL_ARRAY_BUFFER, AABBvbo);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(
+		0,  // attribute
+		4,                  // number of elements per vertex, here (x,y,z,w)
+		GL_FLOAT,           // the type of each element
+		GL_FALSE,           // take our values as-is
+		0,                  // no extra data between each position
+		0                   // offset of first element
+		);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, AABBibo);
+	glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
+	glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

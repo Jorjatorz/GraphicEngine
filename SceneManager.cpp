@@ -10,6 +10,7 @@
 #include "Light.h"
 #include "FrameBuffer.h"
 #include "Material.h"
+#include "Math.h"
 
 SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
@@ -250,24 +251,23 @@ Light* SceneManager::getLight(std::string lightName)
 	//if not found
 	return NULL;
 }
-#include "Math.h"
+
 void SceneManager::processLights()
 {
 
 	//Set read FBO
 	FrameBuffer* readFBO = getFrameBuffer("deferredFBO");
 	readFBO->bindForReading();
-
 	//Set write FBO
 	FrameBuffer* writeFBO = getFrameBuffer("lightFBO");
 	writeFBO->bindForDrawing();
 
+	//Opengl functions
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
-
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -280,19 +280,18 @@ void SceneManager::processLights()
 	lightShader->UniformTexture("diffuseTex", 0);
 	lightShader->UniformTexture("normalTex", 1);
 	lightShader->UniformTexture("depthTex", 2);
-
 	//Other uniforms
 	lightShader->Uniform("cameraPos", mCurrentCamera->getPosition());
 	
+	//Process all the lights
 	tLightMap::iterator it;
 	for (it = mLightMap.begin(); it != mLightMap.end(); ++it)
 	{
 
-
+		//Set the lightvolume for each type of light
 		Entity* lightVolume;
 		switch (it->second->getType())
 		{
-			//Set the lightvolume for each type of light
 		case Light::POINTLIGHT:
 		{
 								  lightVolume = createEntity(it->first + "LightVolume", "sphere.obj");
@@ -317,39 +316,31 @@ void SceneManager::processLights()
 		//Transform the lightVolume
 		glm::mat4 transM = glm::mat4(1.0);
 
-		transM = glm::translate(transM, it->second->getPosition());
-
+		transM = glm::translate(transM, it->second->getPosition()); //First translate it
+		//Rotate it if Spotlight
 		if (it->second->getType() == Light::SPOTLIGHT)
 		{
-			/*transM = glm::rotate(transM, it->second->getDirection().x * 90.0f, glm::vec3(0.0, 0.0, 1.0));
-			transM = glm::rotate(transM, it->second->getDirection().y * 180.0f * 0.5f + 0.5f, glm::vec3(1.0, 0.0, 0.0));
-			transM = glm::rotate(transM, it->second->getDirection().z * 90.0f, glm::vec3(-1.0, 0.0, 0.0));*/
-
-			/*glm::vec3 a = glm::normalize(glm::vec3(0.0, -1.0, 0.0));
-			glm::vec3 b = glm::normalize(it->second->getDirection());
-			float cosa = glm::dot(a, b);
-			glm::clamp(cosa, -1.0f, 1.0f);
-			glm::vec3 axis = glm::cross(a, b);
-			if (axis == glm::vec3(0.0))
-			{
-				axis = glm::vec3(1.0, 0.0, 0.0);
-			}
-			float angle = glm::degrees(glm::acos(cosa));
-			if (angle != 0)
-			{
-				glm::mat4 rotate_matrix = glm::rotate(glm::mat4(1.0), angle, axis);
-				transM = transM * rotate_matrix;
-			}*/
 			Math aux;
-			transM = transM * aux.lookAt(it->second->getDirection(), it->second->getPosition(), glm::vec3(0.0, -1.0, 0.0));
+			transM = transM * aux.lookAt(it->second->getDirection(), it->second->getPosition(), glm::vec3(0.0, -1.0, 0.0), true); 
 		}
-		transM = glm::scale(transM, glm::vec3(it->second->getRadius()));
-		glm::mat4 PVS = mPerspectiveMatrix * V * transM; //Perspective * View * Trans
+		//Scale it
+		if (it->second->getType() == Light::SPOTLIGHT)
+		{
+			glm::vec3 a = glm::vec3(0.0, 1.0, 0.0) * (it->second->getAttenuationRadius() * 0.5f);
+			glm::vec3 b = glm::vec3(1.0, 0.0, 1.0) * (it->second->getAttenuationRadius() * glm::tan(glm::radians(it->second->getOuterAngle())));
 
+			transM = glm::scale(transM, a + b);
+		}
+		else
+		{
+			transM = glm::scale(transM, glm::vec3(it->second->getRadius()));
+		}
+		//Compute final information for rendering
+		glm::mat4 PVS = mPerspectiveMatrix * V * transM; //Perspective * View * Trans
 		glm::vec3 pos = it->second->mParentSceneNode->getDerivedPosition();
 		glm::quat orient = it->second->mParentSceneNode->getDerivedOrientation();
 
-		//Process the light
+		//Process the light (Send uniforms)
 		it->second->process(PVS, V, pos, orient);
 
 		//Process its light volume

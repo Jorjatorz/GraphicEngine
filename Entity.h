@@ -21,10 +21,8 @@ public:
 	void attachMaterial(std::string materialName);
 
 	void setWireFrame(bool wire);
-	void setModelMatrix(glm::mat4 matrix)
-	{
-		mModelMatrix = matrix;
-	}
+	void setModelMatrix(glm::mat4 matrix);
+	void showAABB(bool show);
 
 	Material* getMaterial()
 	{
@@ -48,6 +46,7 @@ private:
 	void sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm::mat4 viewMatrix);
 
 	bool wireFrame;
+	bool drawAABB;
 
 	/*
 	//inheritated

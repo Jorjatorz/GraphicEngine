@@ -47,6 +47,10 @@ public:
 	{
 		return mAttenuationRadius;
 	}
+	real getOuterAngle()
+	{
+		return mOuterAngle;
+	}
 	tLightTypeEnum getType()
 	{
 		return mType;

@@ -14,6 +14,7 @@ uniform float lightRadius;
 uniform float lightCutOff;
 uniform int lightType;
 uniform vec3 lightDirection;
+uniform float lightAttenuationRadius;
 
 
 in mat4 inverseProjView;
@@ -84,7 +85,7 @@ void main()
 	{
 		//We check if the fragment is inside the lighVolume, if its not Discard.
 		float dist = length(lPos - pos);
-		float atten = 1.0 - clamp(dist / 2.0, 0.0, 1.0);
+		float atten = 1.0 - clamp(dist / lightAttenuationRadius, 0.0, 1.0);
 		
 		if(atten == 0.0)
 		{

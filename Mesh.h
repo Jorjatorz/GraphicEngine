@@ -39,6 +39,8 @@ public:
 	void bindMeshArray(const tMeshStruct &mComp);
 	void unbindMeshArray();
 
+	void renderAABB(glm::mat4 modelMatrix, glm::mat4 projectionViewM);
+
 	//number of vertices and indices the mesh have
 	GLuint numberOfVertices;
 	GLuint numberOfFaces;
@@ -52,7 +54,10 @@ private:
 	void genBuffers(tMeshStruct &meshToGen); //Generates all the buffers of that mesh
 
 	void calculateAABB(const aiScene* mScene); //Get the AABB vertices and generate buffers
+	void createAABB();
 	glm::vec3 AABBmaxVector, AABBminVector; //Holds AABB vertex positions
+	GLuint AABBvbo, AABBibo;
+	glm::mat4 AABBmatrix;
 
 
 	//controls if the vertex and index buffers where already created (thus (if wanted to be loaded) it was succesfully loaded from file)
