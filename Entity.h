@@ -15,12 +15,22 @@ public:
 
 	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos = glm::vec3(0.0), glm::quat parentOrient = glm::quat()); //inheritated
 
+	//Mesh
 	void attachMesh(std::string meshName);
 	void deAttachMesh();
 
-	void attachMaterial(std::string materialName);
+	//Physics
+	void makeRigidBody();
+	RigidBody* getRigidBody()
+	{
+		return mRigidBody;
+	}
 
+	//Material
+	void attachMaterial(std::string materialName);
 	void setWireFrame(bool wire);
+
+	//Others
 	void setModelMatrix(glm::mat4 matrix);
 	void showAABB(bool show);
 
@@ -37,6 +47,8 @@ public:
 private:
 	Mesh* mMesh; //mesh pointer
 	Material* mMaterial; //Material attached to this entity
+	RigidBody* mRigidBody; //RigidBody pointer
+
 	bool meshAttached; //is any mesh attached?
 
 	std::string mMeshName; //mesh name

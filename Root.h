@@ -19,6 +19,7 @@ public:
 	//singletons
 	InputManager* mInput;
 	ResourceManager* mResourceManager;
+	PhysicsManager* mPhysicsManager;
 
 	//classes
 	Renderer* mRenderer; //will be a list

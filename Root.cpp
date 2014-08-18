@@ -4,6 +4,7 @@
 #include "InputManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "PhysicsManager.h"
 #include "SceneManager.h"
 
 Root::Root(void)
@@ -29,6 +30,8 @@ void Root::initEngine()
 	mResourceManager = new ResourceManager();
 	//create new input manager
 	mInput = new InputManager();
+	//Create new physics manager
+	mPhysicsManager = new PhysicsManager();
 	//--------------------------------
 	//create a new renderer
 	mRenderer = new Renderer();

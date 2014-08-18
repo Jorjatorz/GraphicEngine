@@ -75,7 +75,8 @@ void Renderer::initOpenGL()
 #include "Light.h"
 #include <string>
 #include <time.h>
-#include "ResourceManager.h""
+#include "ResourceManager.h"
+#include "RigidBody.h"
 //
 void Renderer::renderFrame(real deltaTime)
 {
@@ -102,6 +103,8 @@ void Renderer::renderFrame(real deltaTime)
 	mEnt->setModelMatrix(a);
 
 	Entity* mEnt3 = mSceneManager->createEntity("ent3", "box.obj");
+	mEnt3->makeRigidBody();
+	mEnt3->getRigidBody()->setCollisionShape_Box(glm::vec3(1.0, 1.0, 1.0));
 	SceneNode* node3 = mSceneManager->getRootSceneNode()->createChildSceneNode("node3", glm::vec3(0.5, 0.5, -1.0));
 	node3->setScale(glm::vec3(0.25, 0.25, 0.25));
 	node3->attachObject(mEnt3);

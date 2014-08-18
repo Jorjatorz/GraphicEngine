@@ -8,17 +8,20 @@
 #include "SceneNode.h"
 #include "Root.h"
 #include "Material.h"
+#include "RigidBody.h"
+#include "PhysicsManager.h"
 
 Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 {
 	//apart from movableobject constructor
 	mName = mNewName;
 	mModelMatrix = glm::mat4(1.0); //identity
-	mMesh = NULL;
+	mMesh = nullptr;
 	mMeshName = "NULL";
-	mMaterial = NULL; 
+	mMaterial = nullptr;
 	mSceneManager = newSceneManager;
 	meshAttached = false;
+	mRigidBody = nullptr;
 	
 	wireFrame = false;
 	drawAABB = false;
@@ -32,7 +35,8 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 	mModelMatrix = glm::mat4(1.0); //identity
 	mSceneManager = newSceneManager;
 	meshAttached = false;
-	mMaterial = NULL; 
+	mMaterial = nullptr;
+	mRigidBody = nullptr;
 
 	mTypeOfMovableObject = tTypeEnum::Entity;
 
@@ -167,4 +171,9 @@ void Entity::setModelMatrix(glm::mat4 matrix)
 void Entity::showAABB(bool show)
 {
 	drawAABB = show;
+}
+
+void Entity::makeRigidBody()
+{
+	mRigidBody = PhysicsManager::getSingletonPtr()->createRigidBody(mName);
 }
