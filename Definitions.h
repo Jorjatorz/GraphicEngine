@@ -27,6 +27,7 @@
 //BULLET
 #include <btBulletDynamicsCommon.h>
 #include <BulletCollision\Gimpact\btGImpactCollisionAlgorithm.h>
+#include<BulletCollision\NarrowPhaseCollision\btRaycastCallback.h>
 
 //custom type for decimals, default: float
 typedef float real;
@@ -45,6 +46,7 @@ class Math;
 class Mesh;
 class MovableObject;
 class PhysicsManager;
+class RayCast;
 class Renderer;
 class ResourceManager;
 class RigidBody;

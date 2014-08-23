@@ -18,6 +18,10 @@ public:
 	//Mesh
 	void attachMesh(std::string meshName);
 	void deAttachMesh();
+	Mesh* getMesh()
+	{
+		return mMesh;
+	}
 
 	//Physics
 	void makeRigidBody();
@@ -33,6 +37,10 @@ public:
 	//Others
 	void setModelMatrix(glm::mat4 matrix);
 	void showAABB(bool show);
+	bool isAABBshowed()
+	{
+		return drawAABB;
+	}
 
 	Material* getMaterial()
 	{
@@ -42,6 +50,12 @@ public:
 	glm::mat4 getModelMatrix()
 	{
 		return mModelMatrix;
+	}
+	SceneNode* getAttachedSceneNode()
+	{
+		assert(mParentSceneNode != nullptr);
+
+		return mParentSceneNode;
 	}
 
 private:

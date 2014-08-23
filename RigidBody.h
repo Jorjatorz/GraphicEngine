@@ -18,8 +18,31 @@ public:
 	void setCollisionShape_Plane(glm::vec3& normal, real origin);
 	void setCollisionShape_ConvexHull(Mesh* model);
 
+	Entity* getUserPointer()
+	{
+		return static_cast<Entity*>(mBulletRigidBody->getUserPointer());
+	}
+	void getWorldTransform(btTransform& trans)
+	{
+		return mBulletMotionState->getWorldTransform(trans);
+	}
+	real getMass()
+	{
+		return mMass;
+	}
+
+	void setLinearVelocity(glm::vec3& a)
+	{
+		mBulletRigidBody->setLinearVelocity(btVector3(a.x, a.y, a.z));
+	}
+
 private:
 	std::string mName;
+
+	real mMass;
+
+	bool rigidBodySetUp_;
+	bool collisionShapeSetUp_;
 
 	//for box shape
 	glm::vec3 mBoxDimensions;

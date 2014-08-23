@@ -11,7 +11,7 @@ Mesh::Mesh(void)
 	numberOfVertices = numberOfFaces = 0;
 	//the mesh buffers are not filled not loaded
 	buffersLoaded = false;
-	AABBmaxVector = AABBminVector = glm::vec3(0.0);
+	AABBmaxVector = AABBminVector = AABBsize = glm::vec3(0.0);
 
 }
 
@@ -287,9 +287,10 @@ void Mesh::createAABB()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 
-	glm::vec3 AABBsize = glm::vec3(AABBmaxVector.x - AABBminVector.x, AABBmaxVector.y - AABBminVector.y, AABBmaxVector.z - AABBminVector.z);
+	AABBsize = AABBmaxVector - AABBminVector;
 	glm::vec3 AABBcenter = glm::vec3((AABBminVector.x + AABBmaxVector.x) / 2.0, (AABBminVector.y + AABBmaxVector.y) / 2.0, (AABBminVector.z + AABBmaxVector.z) / 2.0);
 	AABBmatrix = glm::translate(glm::mat4(1), AABBcenter) * glm::scale(glm::mat4(1), AABBsize);
+
 }
 
 void Mesh::renderAABB(glm::mat4 modelMatrix, glm::mat4 projectionViewM)

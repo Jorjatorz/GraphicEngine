@@ -94,15 +94,17 @@ public:
 	//sets the perspectiveMAtrix
 	void setPerspectiveMatrix(real FOV, real width, real height, real zNear, real zFar = 0);
 	//return the perspective matrix
-	glm::mat4 getPerspectiveMatrix()
+	glm::mat4 getProjectionMatrix()
 	{
-		return mPerspectiveMatrix;
+		return mProjectionMatrix;
 	}
 	//return the rootSceneNode
 	SceneNode* getRootSceneNode()
 	{
 		return mRootSceneNode;
 	}
+	//return the world position of the current mouse position
+	glm::vec3 getWorldMouseDirection();
 
 	//Timer
 	real mDeltaTime;
@@ -127,8 +129,8 @@ private:
 	tMaterialMap mMaterialMap;
 	tFrameBufferMap mFrameBufferMap;
 
-	//perspective matrix
-	glm::mat4 mPerspectiveMatrix;
+	//projection matrix
+	glm::mat4 mProjectionMatrix;
 
 	//root sceneNode
 	SceneNode* mRootSceneNode;

@@ -15,7 +15,7 @@
 SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
 	mRenderer = mCurrentRenderer;
-	mRootSceneNode = new SceneNode("RootNode", this);
+	mRootSceneNode = new SceneNode("RootNode", nullptr, this);
 
 	//Create a screenQuad
 	ResourceManager::getSingletonPtr()->createScreenQuad();
@@ -336,7 +336,7 @@ void SceneManager::processLights()
 			transM = glm::scale(transM, glm::vec3(it->second->getRadius()));
 		}
 		//Compute final information for rendering
-		glm::mat4 PVS = mPerspectiveMatrix * V * transM; //Perspective * View * Trans
+		glm::mat4 PVS = mProjectionMatrix * V * transM; //Perspective * View * Trans
 		glm::vec3 pos = it->second->mParentSceneNode->getDerivedPosition();
 		glm::quat orient = it->second->mParentSceneNode->getDerivedOrientation();
 
@@ -447,11 +447,11 @@ void SceneManager::setPerspectiveMatrix(real FOV, real width, real height, real 
 {
 	if(zFar > 0)
 	{
-		mPerspectiveMatrix = glm::perspective(FOV, width/height, zNear, zFar);
+		mProjectionMatrix = glm::perspective(FOV, width/height, zNear, zFar);
 	}
 	else
 	{
-		mPerspectiveMatrix = glm::infinitePerspective(FOV, width/height, zNear);
+		mProjectionMatrix = glm::infinitePerspective(FOV, width/height, zNear);
 	}
 }
 
@@ -537,4 +537,29 @@ FrameBuffer* SceneManager::getFrameBuffer(std::string name)
 	{
 		return NULL;
 	}
+}
+#include "InputManager.h"
+#include "Window.h"
+glm::vec3 SceneManager::getWorldMouseDirection()
+{
+	int mouseX, mouseY;
+	InputManager::getSingletonPtr()->getMousePosition(mouseX, mouseY);
+	int windowH, windowW;
+	windowW = mRenderer->getCurrentWindow()->getWidth();
+	windowH = mRenderer->getCurrentWindow()->getHeight();
+
+
+	real x = (2.0f * mouseX) / windowW - 1.0f;
+	real y = 1.0f - (2.0f * mouseY) / windowH;
+	real z = 1.0f;
+	glm::vec3 dir_NDS = glm::vec3(x, y, z);
+
+	glm::vec4 dir_clip = glm::vec4(dir_NDS.x, dir_NDS.y, -1.0, 1.0);
+	glm::vec4 dir_eye = glm::inverse(mProjectionMatrix) * dir_clip;
+	dir_eye = glm::vec4(dir_eye.x, dir_eye.y, -1.0, 0.0);
+
+	glm::vec3 dir_wor = glm::vec3(glm::inverse(getViewMatrix()) * dir_eye);
+	dir_wor = glm::normalize(dir_wor);
+
+	return dir_wor;
 }

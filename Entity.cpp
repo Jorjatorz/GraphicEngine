@@ -21,7 +21,6 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	mMaterial = nullptr;
 	mSceneManager = newSceneManager;
 	meshAttached = false;
-	mRigidBody = nullptr;
 	
 	wireFrame = false;
 	drawAABB = false;
@@ -38,6 +37,7 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 	mMaterial = nullptr;
 	mRigidBody = nullptr;
 
+
 	mTypeOfMovableObject = tTypeEnum::Entity;
 
 	attachMesh(meshName); //load mesh
@@ -50,7 +50,10 @@ Entity::~Entity(void)
 
 void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)
 {
-	render(perspectiveViewSceneNodeM, viewMatrix);
+	if (visible)
+	{
+		render(perspectiveViewSceneNodeM, viewMatrix);
+	}
 }
 
 void Entity::render(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix)
@@ -127,7 +130,7 @@ void Entity::sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm:
 		normalM = glm::inverseTranspose(mModelMatrix);
 	}
 	currentShader->UniformMatrix("MVP", finalMatrix);
-	currentShader->UniformMatrix("projectionM", mSceneManager->getPerspectiveMatrix());
+	currentShader->UniformMatrix("projectionM", mSceneManager->getProjectionMatrix());
 	currentShader->UniformMatrix("viewM", viewMatrix);
 	currentShader->UniformMatrix("normalM", normalM);
 	currentShader->UniformMatrix("modelM", mModelMatrix);
@@ -139,7 +142,6 @@ void Entity::attachMesh(std::string meshName)
 
 	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr(); //resourcemanager pointer
 	mMesh = mResourceManager->loadMesh(mMeshName, mMeshName, mSceneManager); //allocate new mesh
-
 
 	mModelMatrix = mMesh->meshMatrix;
 

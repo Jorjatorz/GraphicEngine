@@ -21,7 +21,7 @@ Light::Light(std::string name, SceneManager* newSceneManager)
 	visible = true;
 	castShadows = true;
 
-	mTypeOfMovableObject = tTypeEnum::Entity;
+	mTypeOfMovableObject = tTypeEnum::Light;
 }
 
 Light::~Light(void)

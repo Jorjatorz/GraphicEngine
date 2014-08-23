@@ -11,8 +11,6 @@
 class SceneNode
 {
 public:
-	SceneNode(void);
-	SceneNode(std::string sceneNodeName, SceneManager* newSceneManager);
 	SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneManager* newSceneManager);
 	~SceneNode(void);
 
@@ -65,14 +63,17 @@ public:
 	}
 	glm::vec3 getDerivedPosition()
 	{
+		processDerivedPosition();
 		return mDerivedPosition;
 	}
 	glm::quat getDerivedOrientation()
 	{
+		processDerivedOrientation();
 		return mDerivedOrientation;
 	}
 	glm::vec3 getDerivedScale()
 	{
+		processDerivedScale();
 		return mDerivedScale;
 	}
 

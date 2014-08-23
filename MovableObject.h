@@ -11,6 +11,14 @@ public:
 	MovableObject(void);
 	~MovableObject(void);
 
+	//type enumeration for detecting what inherit class it is
+	typedef enum
+	{
+		Entity,
+		Light,
+		Camera
+	} tTypeEnum;
+
 	std::string getName()
 	{
 		return mName;
@@ -24,6 +32,11 @@ public:
 	bool isVisible()
 	{
 		return visible;
+	}
+
+	tTypeEnum getType()
+	{
+		return mTypeOfMovableObject;
 	}
 
 	void setVisible(bool vis)
@@ -44,14 +57,6 @@ protected:
 	bool visible;
 	bool castShadows;
 	bool mAttachedToNode; //is attached to a scenode?
-
-	//type enumeration for detecting what inherit class it is
-	typedef enum
-	{
-		Entity,
-		Light,
-		Camera
-	} tTypeEnum;
 
 	tTypeEnum mTypeOfMovableObject;
 };

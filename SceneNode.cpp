@@ -4,36 +4,6 @@
 #include "SceneManager.h"
 #include "Camera.h"
 
-SceneNode::SceneNode(void)
-{
-	mParent = NULL;
-	mPosition = glm::vec3(0.0);
-	mOrientation = glm::quat();
-	mScale = glm::vec3(1.0);
-	mDerivedPosition = glm::vec3(0.0);
-	mDerivedOrientation = glm::quat();
-	mDerivedScale = glm::vec3(1.0);
-	mSceneNodeMatrix = glm::mat4(1.0);
-	hasChanged = true;
-	mName = "Unknown";
-	mSceneManager = NULL;
-}
-
-SceneNode::SceneNode(std::string sceneNodeName, SceneManager* newSceneManager)
-{
-	mParent = NULL;
-	mPosition = glm::vec3(0.0);
-	mOrientation = glm::quat();
-	mScale = glm::vec3(1.0);
-	mDerivedPosition = glm::vec3(0.0);
-	mDerivedOrientation = glm::quat();
-	mDerivedScale = glm::vec3(1.0);
-	mSceneNodeMatrix = glm::mat4(1.0);
-	hasChanged = true;
-	mName = sceneNodeName;
-	mSceneManager = newSceneManager;
-}
-
 SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneManager* newSceneManager)
 {
 	mParent = nodeParent;
@@ -47,6 +17,8 @@ SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneMana
 	hasChanged = true;
 	mName = sceneNodeName;
 	mSceneManager = newSceneManager;
+
+	updateFromParent();
 }
 
 SceneNode::~SceneNode(void)
@@ -202,7 +174,7 @@ void SceneNode::updateFromParent()
 	processDerivedScale();
 
 	//if the node position has changed or the derived positon (thus the parent) has changed modify the sceneNodeMatrix
-	if(hasChanged)
+	if(hasChanged || mParent->hasChanged)
 	{
 		mSceneNodeMatrix = glm::mat4(1.0); //set identity
 		//update childs
@@ -232,12 +204,7 @@ void SceneNode::processDerivedPosition()
 	//if we have parent
 	if(mParent != NULL)
 	{
-		if(mParent->hasChanged)
-		{
 			mDerivedPosition = mParent->mDerivedPosition + mPosition;
-
-			hasChanged = true;
-		}
 	}
 	else
 	{
@@ -249,12 +216,7 @@ void SceneNode::processDerivedOrientation()
 		//if we have parent
 	if(mParent != NULL)
 	{
-		if(mParent->hasChanged)
-		{
 			mDerivedOrientation = mParent->mDerivedOrientation + mOrientation;
-			
-			hasChanged = true;
-		}
 	}
 	else
 	{
@@ -266,12 +228,7 @@ void SceneNode::processDerivedScale()
 		//if we have parent
 	if(mParent != NULL)
 	{
-		if(mParent->hasChanged)
-		{
 			mDerivedScale = mParent->mDerivedScale * mScale;
-
-			hasChanged = true;
-		}
 	}
 	else
 	{
@@ -288,7 +245,7 @@ void SceneNode::processRootSceneNode()
 	mSceneManager->processViewMatrix();
 
 	//calculate perspective and viewmatrix multiplyed matrix
-	glm::mat4 perspectiveViewM = mSceneManager->getPerspectiveMatrix() * mSceneManager->getViewMatrix();
+	glm::mat4 perspectiveViewM = mSceneManager->getProjectionMatrix() * mSceneManager->getViewMatrix();
 
 	//go through all the childs
 	processChilds(perspectiveViewM);

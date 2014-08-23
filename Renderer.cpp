@@ -16,7 +16,21 @@ Renderer::~Renderer(void)
 {
 	delete mWindow;
 }
-
+//delete this
+#include "Shader.h"
+#include "Entity.h"
+#include "SceneNode.h"
+#include "Camera.h"
+#include "InputManager.h"
+#include "Mesh.h"
+#include "Material.h"
+#include "Light.h"
+#include <string>
+#include <time.h>
+#include "ResourceManager.h"
+#include "RigidBody.h"
+#include "PhysicsManager.h"
+#include "RayCast.h"
 void Renderer::createRenderer(std::string windowName, int width, int height, bool fullscreen)
 {
 	//inits components of SDL
@@ -42,6 +56,8 @@ void Renderer::createRenderer(std::string windowName, int width, int height, boo
 	fbo1->addTexture(GL_RGBA);
 	fbo1->addTexture(GL_RGBA);
 
+
+
 }
 
 void Renderer::initOpenGL()
@@ -64,54 +80,54 @@ void Renderer::initOpenGL()
 	glEnable(GL_DEPTH_TEST);
 }
 
-//delete this
-#include "Shader.h"
-#include "Entity.h"
-#include "SceneNode.h"
-#include "Camera.h"
-#include "InputManager.h"
-#include "Mesh.h"
-#include "Material.h"
-#include "Light.h"
-#include <string>
-#include <time.h>
-#include "ResourceManager.h"
-#include "RigidBody.h"
+
 //
 void Renderer::renderFrame(real deltaTime)
 {
 	//PRuebas
 	mSceneManager->mDeltaTime = deltaTime;
 
+
+	Camera* mCam = mSceneManager->createCamera("camera1");
+	mSceneManager->setCurrentCamera(mCam);
+
 	Entity* mEnt = mSceneManager->createEntity("cube", "guard.obj");
-	mEnt->showAABB(true);
 	Shader* mShader = mSceneManager->createShader("basic", "basic");
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode("nod", glm::vec3(0.0, 0.0, -1.0));
-	mSceneManager->setPerspectiveMatrix(60,  mWindow->getWidth(), mWindow->getHeight(), 0.01);
-	Camera* mCam = mSceneManager->createCamera("camera1");
+	mSceneManager->setPerspectiveMatrix(60, mWindow->getWidth(), mWindow->getHeight(), 0.01);
+
 	//mCam->setControler(Camera::DEFAULT);
 	mSceneManager->setCurrentShader(mShader);
 
 	Entity* mEnt2 = mSceneManager->createEntity("ent2", "plane.obj");
-	SceneNode* node2 = mSceneManager->getRootSceneNode()->createChildSceneNode("nod2", glm::vec3(2.0, -1.0, -1.0));
+	SceneNode* node2 = mSceneManager->getRootSceneNode()->createChildSceneNode("nod2");
 	//node2->rotate(glm::vec3(0.0, 1.0, 0.0), 1.0);
 	node2->setPosition(glm::vec3(-1.0, -0.25, 0.0));
 	node2->setScale(glm::vec3(2.0, 2.0, 2.0));
 	node2->attachObject(mEnt2);
+	mEnt2->makeRigidBody();
+	mEnt2->getRigidBody()->setCollisionShape_Box(mEnt2->getMesh()->getAABBsize() * 2.0f);
+	mEnt2->getRigidBody()->setUpRigidBody(0.0, node2, mEnt2);
 	node->attachObject(mEnt);
-	glm::mat4 a = glm::translate(glm::mat4(1.0), glm::vec3(0.0, -1.0, 0.0));
-	mEnt->setModelMatrix(a);
+	mEnt->setModelMatrix(glm::translate(glm::mat4(1.0), glm::vec3(0.0, -0.76, 0.0)));
+	mEnt->makeRigidBody();
+	mEnt->getRigidBody()->setCollisionShape_Box((mEnt->getMesh()->getAABBsize() / 5.0f));
+	mEnt->getRigidBody()->setUpRigidBody(1.0, node, mEnt);
 
 	Entity* mEnt3 = mSceneManager->createEntity("ent3", "box.obj");
 	mEnt3->makeRigidBody();
-	mEnt3->getRigidBody()->setCollisionShape_Box(glm::vec3(1.0, 1.0, 1.0));
+	mEnt3->getRigidBody()->setCollisionShape_Box(glm::vec3(0.5, 0.5, 0.5));
 	SceneNode* node3 = mSceneManager->getRootSceneNode()->createChildSceneNode("node3", glm::vec3(0.5, 0.5, -1.0));
 	node3->setScale(glm::vec3(0.25, 0.25, 0.25));
 	node3->attachObject(mEnt3);
+	mEnt3->getRigidBody()->setUpRigidBody(1.0, node3, mEnt3);
 
-	node->lookAt(mCam->getPosition());
 
-	mSceneManager->setCurrentCamera(mCam);
+	node->setScale(glm::vec3(0.2, 0.2, 0.2));;
+
+	mEnt->attachMaterial("gold.mat");
+	mEnt2->attachMaterial("pruebas");
+
 	Light* light1 = mSceneManager->createLight("light1");
 	light1->setType(Light::DIRECTIONALLIGHT);
 	light1->setDirection(glm::vec3(0.0, -0.5, -1.0));
@@ -125,12 +141,7 @@ void Renderer::renderFrame(real deltaTime)
 	//light3->setPosition(glm::vec3(0.0, 0.75, 0.0));
 	light3->setDirection(glm::vec3(0.0, -1.0, 0.0));
 
-	node->setScale(glm::vec3(0.2, 0.2, 0.2));;
-
-	mEnt->attachMaterial("gold.mat");
-	mEnt2->attachMaterial("pruebas");
 	//mEnt2->getMaterial()->mBaseColorS.mBaseColorV = glm::vec3(1.0, 1.0, 1.0);
-
 
 	if(InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_RIGHT))
 	{
@@ -141,17 +152,16 @@ void Renderer::renderFrame(real deltaTime)
 		mCam->setControler(Camera::NOCONTROLER);
 	}
 
-
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
-		float a, b, c;
-		std::cin >> a ;
-		light3->setPosition(glm::vec3(0.0, a, 0.0));
+		glm::vec3 a = mSceneManager->getWorldMouseDirection();
+		RayCast b;
+		b.executeRaySelectionCast(mCam->getPosition(), a * 1000.0f);
 	}
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
-		light3->setPosition(glm::vec3(0.5, 0.0, -1.0));
+		mEnt->getRigidBody()->setLinearVelocity(glm::vec3(0.0, 1.0, 0.0));
 	}
 
 	/*
@@ -197,13 +207,17 @@ void Renderer::renderFrame(real deltaTime)
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();
 
-	//glDepthMask(GL_FALSE);
-	//glDisable(GL_DEPTH_TEST);
+	mSceneManager->bindShader(mSceneManager->createShader("old", "old"));
+	mSceneManager->getCurrentShader()->UniformMatrix("PV", mSceneManager->getProjectionMatrix() * mSceneManager->getViewMatrix());
+	PhysicsManager::getSingletonPtr()->draw();
 
+	//Process the lights
 	mSceneManager->processLights();
 
+	//Render the combined buffer
 	fbo = mSceneManager->getFrameBuffer("lightFBO");
 	fbo->bindForRendering();
+
 
 	//swap the buffers
 	mWindow->swapBuffers(true);

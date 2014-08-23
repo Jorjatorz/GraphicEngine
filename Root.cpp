@@ -18,6 +18,7 @@ Root::~Root(void)
 {
 	deleteAllTimers();
 	deleteAllSceneManagers();
+	delete mPhysicsManager;
 	delete mRenderer;
 	delete mInput;
 	delete mResourceManager;
@@ -33,9 +34,12 @@ void Root::initEngine()
 	//Create new physics manager
 	mPhysicsManager = new PhysicsManager();
 	//--------------------------------
+
+	//Create physics world
+	mPhysicsManager->initPhysicsWorld();
 	//create a new renderer
 	mRenderer = new Renderer();
-	mRenderer->createRenderer("Pruebas", 1280, 720, false);
+	mRenderer->createRenderer("Pruebas", 1080, 520, false);
 
 	//MAIN LOOP
 	bool running = true;
@@ -55,6 +59,9 @@ void Root::initEngine()
 
 		//Get input
 		mInput->getFrameInput(running);
+
+
+		mPhysicsManager->processPhysicsWorld((mTimer->mStartTime - lastTime) * 0.001);
 
 		//Render a frame
 		timer2->start();

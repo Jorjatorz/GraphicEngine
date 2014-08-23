@@ -44,12 +44,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\SDK\SDL\include;D:\SDK\ASSIMP\include;D:\SDK\BULLET\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\SDK\SDL\include;C:\SDK\ASSIMP\include;C:\SDK\BULLET\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\SDK\SDL\lib\x86;D:\SDK\ASSIMP\lib\x86;D:\SDK\BULLET\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\SDK\SDL\lib\x86;C:\SDK\ASSIMP\lib\x86;C:\SDK\BULLET\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;opengl32.lib;assimp.lib;BulletCollision_debug.lib;BulletDynamics_debug.lib;LinearMath_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -76,6 +76,8 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GameResource.h" />
+    <ClInclude Include="GLDebugDrawer.h" />
+    <ClInclude Include="GLDebugFont.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
@@ -83,6 +85,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MovableObject.h" />
     <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="RayCast.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RigidBody.h" />
@@ -100,6 +103,8 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GameResource.cpp" />
+    <ClCompile Include="GLDebugDrawer.cpp" />
+    <ClCompile Include="GLDebugFont.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
@@ -108,6 +113,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MovableObject.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
+    <ClCompile Include="RayCast.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RigidBody.cpp" />

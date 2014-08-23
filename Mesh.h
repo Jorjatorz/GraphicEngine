@@ -40,6 +40,10 @@ public:
 	void unbindMeshArray();
 
 	void renderAABB(glm::mat4 modelMatrix, glm::mat4 projectionViewM);
+	glm::vec3 getAABBsize()
+	{
+		return AABBsize;
+	}
 
 	//number of vertices and indices the mesh have
 	GLuint numberOfVertices;
@@ -56,6 +60,7 @@ private:
 	void calculateAABB(const aiScene* mScene); //Get the AABB vertices and generate buffers
 	void createAABB();
 	glm::vec3 AABBmaxVector, AABBminVector; //Holds AABB vertex positions
+	glm::vec3 AABBsize; //AABBmax - min
 	GLuint AABBvbo, AABBibo;
 	glm::mat4 AABBmatrix;
 
