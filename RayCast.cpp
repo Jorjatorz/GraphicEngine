@@ -29,7 +29,7 @@ void RayCast::executeRaySelectionCast(glm::vec3 start, glm::vec3 end)
 
 		mHitObject = static_cast<Entity*>(rayCallBack.m_collisionObject->getUserPointer());
 
-		mHitObject->showAABB(!mHitObject->isAABBshowed());
+		std::cout << mHitObject->getName() << std::endl;
 	}
 	else
 	{

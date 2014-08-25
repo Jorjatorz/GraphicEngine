@@ -93,6 +93,9 @@
     <ClInclude Include="RayCast.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -168,6 +171,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RayCast.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

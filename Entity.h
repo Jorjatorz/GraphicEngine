@@ -24,11 +24,17 @@ public:
 	}
 
 	//Physics
-	void makeRigidBody();
+	void makeRigidBody(SceneNode* node);
+	//void makeCollisionObject(SceneNode* node);
+	void setRigidBodyTransforms(SceneNode* node);
 	RigidBody* getRigidBody()
 	{
 		return mRigidBody;
 	}
+	/*CollisionObject* getCollisionObject()
+	{
+		return mCollisionObject;
+	}*/
 
 	//Material
 	void attachMaterial(std::string materialName);
@@ -61,7 +67,9 @@ public:
 private:
 	Mesh* mMesh; //mesh pointer
 	Material* mMaterial; //Material attached to this entity
+	//Physics
 	RigidBody* mRigidBody; //RigidBody pointer
+	//CollisionObject* mCollisionObject; //Collision object pointer
 
 	bool meshAttached; //is any mesh attached?
 
