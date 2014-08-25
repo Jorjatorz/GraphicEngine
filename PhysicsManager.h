@@ -20,7 +20,8 @@ public:
 
 	void processPhysicsWorld(real deltaTime);
 
-	RigidBody* createRigidBody(std::string name);
+	RigidBody* createRigidBody(std::string name, SceneNode* node, Entity* ent);
+	CollisionObject* createCollisionObject(std::string name, SceneNode* node, Entity* ent);
 
 	btDiscreteDynamicsWorld* getDynamicWorld()
 	{
@@ -39,6 +40,9 @@ private:
 	//Rigid bodies
 	typedef std::map<std::string, RigidBody*> tRigidBodiesMap;
 	tRigidBodiesMap mRigidBodiesMap;
+	//Collision object
+	typedef std::map<std::string, CollisionObject*> tCollisionObjectsMap;
+	tCollisionObjectsMap mCollisionMap;
 };
 
 #endif

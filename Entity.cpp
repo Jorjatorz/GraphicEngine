@@ -9,6 +9,7 @@
 #include "Root.h"
 #include "Material.h"
 #include "RigidBody.h"
+#include "CollisionObject.h"
 #include "PhysicsManager.h"
 
 Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
@@ -50,6 +51,12 @@ Entity::~Entity(void)
 
 void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)
 {
+	//If its a "real" entity (i.e not a light volume)
+	if (mParentSceneNode != nullptr)
+	{
+		mRigidBody->setTransforms(mParentSceneNode);
+	}
+
 	if (visible)
 	{
 		render(perspectiveViewSceneNodeM, viewMatrix);
@@ -175,7 +182,17 @@ void Entity::showAABB(bool show)
 	drawAABB = show;
 }
 
-void Entity::makeRigidBody()
+void Entity::makeRigidBody(SceneNode* node)
 {
-	mRigidBody = PhysicsManager::getSingletonPtr()->createRigidBody(mName);
+	mRigidBody = PhysicsManager::getSingletonPtr()->createRigidBody(mName, node, this);
 }
+
+void Entity::setRigidBodyTransforms(SceneNode* node)
+{
+	mRigidBody->setTransforms(node);
+}
+/*
+void Entity::makeCollisionObject(SceneNode* node)
+{
+	mCollisionObject = PhysicsManager::getSingletonPtr()->createCollisionObject(mName, node, this);
+}*/

@@ -8,52 +8,28 @@
 class RigidBody
 {
 public:
-	RigidBody(std::string name, btDiscreteDynamicsWorld* theWorld);
+	RigidBody(std::string name, SceneNode* node, Entity* ent);
 	~RigidBody();
 
-	void setUpRigidBody(real mass, SceneNode* node, Entity* ent);
+	//Properties
+	void setMass(real mass);
+	real getMass();
+	void setLinearVelocity(glm::vec3& vel);
 
-	void setCollisionShape_Box(glm::vec3& boxDimensions);
-	void setCollisionShape_Sphere(real radius);
-	void setCollisionShape_Plane(glm::vec3& normal, real origin);
-	void setCollisionShape_ConvexHull(Mesh* model);
-
-	Entity* getUserPointer()
+	//Transforms
+	void setTransforms(SceneNode* node); //Just for kinetic objects
+	void getTransforms(btTransform& trans)
 	{
-		return static_cast<Entity*>(mBulletRigidBody->getUserPointer());
-	}
-	void getWorldTransform(btTransform& trans)
-	{
-		return mBulletMotionState->getWorldTransform(trans);
-	}
-	real getMass()
-	{
-		return mMass;
+		mBulletMotionState->getWorldTransform(trans);
 	}
 
-	void setLinearVelocity(glm::vec3& a)
-	{
-		mBulletRigidBody->setLinearVelocity(btVector3(a.x, a.y, a.z));
-	}
+	Entity* getUserPointer();
 
 private:
 	std::string mName;
 
-	real mMass;
-
-	bool rigidBodySetUp_;
-	bool collisionShapeSetUp_;
-
-	//for box shape
-	glm::vec3 mBoxDimensions;
-	//for sphere shape
-	real mRadius;
-	//for plane shape
-	glm::vec3 mNormal;
-	real mOrigin;
-
 	//Bullet staff
-	btDiscreteDynamicsWorld* mCurrentDynamicWorld; //Ptr to the dynamic world
+	btDiscreteDynamicsWorld* mDynamicWorld; //Ptr to the dynamic world
 	btCollisionShape* mBulletCollisionShape;
 	btDefaultMotionState* mBulletMotionState;
 	btRigidBody* mBulletRigidBody;

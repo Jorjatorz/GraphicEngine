@@ -37,6 +37,7 @@ typedef float real;
 //forward declarations of classes
 //allow declaration of pointers to them
 class Camera;
+class CollisionObject;
 class Entity;
 class FrameBuffer;
 class InputManager;

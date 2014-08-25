@@ -72,6 +72,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CollisionObject.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FrameBuffer.h" />
@@ -100,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CollisionObject.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GameResource.cpp" />
