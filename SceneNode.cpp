@@ -3,8 +3,6 @@
 #include "MovableObject.h"
 #include "SceneManager.h"
 #include "Camera.h"
-#include "Entity.h"
-#include "RigidBody.h"
 
 SceneNode::SceneNode(std::string sceneNodeName, SceneNode* nodeParent, SceneManager* newSceneManager)
 {
@@ -141,23 +139,11 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 		//Attach object to new node
 		mObjectsMap.insert(std::pair<std::string, MovableObject*>(mNewObject->getName(), mNewObject));
 		mNewObject->setAttached(true, this);
-
-		//Update the transforms with the new node
-		if (mNewObject->getType() == MovableObject::Entity)
-		{
-			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
-		}
 	}
 	else
 	{
 		mObjectsMap.insert(std::pair<std::string, MovableObject*>(mNewObject->getName(), mNewObject));
 		mNewObject->setAttached(true, this);
-
-		//First time, create collision object
-		if (mNewObject->getType() == MovableObject::Entity)
-		{
-			static_cast<Entity*>(mNewObject)->makeRigidBody(this);
-		}
 	}
 }
 

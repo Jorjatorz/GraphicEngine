@@ -81,7 +81,7 @@ void Renderer::initOpenGL()
 }
 
 
-int gh = 0;
+//
 void Renderer::renderFrame(real deltaTime)
 {
 	//PRuebas
@@ -105,22 +105,22 @@ void Renderer::renderFrame(real deltaTime)
 	node2->setPosition(glm::vec3(-1.0, -0.25, 0.0));
 	node2->setScale(glm::vec3(2.0, 2.0, 2.0));
 	node2->attachObject(mEnt2);
-	//mEnt2->makeRigidBody();
-	//mEnt2->getRigidBody()->setCollisionShape_Box(mEnt2->getMesh()->getAABBsize() * 2.0f);
-	//mEnt2->getRigidBody()->setUpRigidBody(0.0, node2, mEnt2);
+	mEnt2->makeRigidBody();
+	mEnt2->getRigidBody()->setCollisionShape_Box(mEnt2->getMesh()->getAABBsize() * 2.0f);
+	mEnt2->getRigidBody()->setUpRigidBody(0.0, node2, mEnt2);
 	node->attachObject(mEnt);
 	mEnt->setModelMatrix(glm::translate(glm::mat4(1.0), glm::vec3(0.0, -0.76, 0.0)));
-	//Ent->makeRigidBody();
-	//mEnt->getRigidBody()->setCollisionShape_Box((mEnt->getMesh()->getAABBsize() / 5.0f));
-	//mEnt->getRigidBody()->setUpRigidBody(1.0, node, mEnt);
+	mEnt->makeRigidBody();
+	mEnt->getRigidBody()->setCollisionShape_Box((mEnt->getMesh()->getAABBsize() / 5.0f));
+	mEnt->getRigidBody()->setUpRigidBody(1.0, node, mEnt);
 
 	Entity* mEnt3 = mSceneManager->createEntity("ent3", "box.obj");
-	//mEnt3->makeRigidBody();
-	//mEnt3->getRigidBody()->setCollisionShape_Box(glm::vec3(0.5, 0.5, 0.5));
+	mEnt3->makeRigidBody();
+	mEnt3->getRigidBody()->setCollisionShape_Box(glm::vec3(0.5, 0.5, 0.5));
 	SceneNode* node3 = mSceneManager->getRootSceneNode()->createChildSceneNode("node3", glm::vec3(0.5, 0.5, -1.0));
 	node3->setScale(glm::vec3(0.25, 0.25, 0.25));
 	node3->attachObject(mEnt3);
-	//mEnt3->getRigidBody()->setUpRigidBody(1.0, node3, mEnt3);
+	mEnt3->getRigidBody()->setUpRigidBody(1.0, node3, mEnt3);
 
 
 	node->setScale(glm::vec3(0.2, 0.2, 0.2));;
@@ -154,21 +154,14 @@ void Renderer::renderFrame(real deltaTime)
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
-		Entity* ent = mSceneManager->createEntity("as" + std::to_string(gh), "guard.obj");
-		SceneNode* nodes = mSceneManager->getRootSceneNode()->createChildSceneNode("nodes" + std::to_string(gh), mCam->getPosition());
-		nodes->setScale(glm::vec3(0.05, 0.05, 0.05));
-		nodes->attachObject(ent);
-		ent->getRigidBody()->setMass(1.0);
-		ent->getRigidBody()->setLinearVelocity(mCam->getOrientation() * 2.0f);
-
-		gh++;
-
-		std::cout << "gh: " << gh << std::endl;
+		glm::vec3 a = mSceneManager->getWorldMouseDirection();
+		RayCast b;
+		b.executeRaySelectionCast(mCam->getPosition(), a * 1000.0f);
 	}
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
-		mEnt3->getRigidBody()->setMass(1.0);
+		mEnt->getRigidBody()->setLinearVelocity(glm::vec3(0.0, 1.0, 0.0));
 	}
 
 	/*
