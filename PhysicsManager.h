@@ -20,7 +20,11 @@ public:
 
 	void processPhysicsWorld(real deltaTime);
 
+	//Rigidbodies
 	RigidBody* createRigidBody(std::string name, SceneNode* node, Entity* ent);
+	void deleteRigidBody(std::string name);
+
+	//Collisionobjects
 	CollisionObject* createCollisionObject(std::string name, SceneNode* node, Entity* ent);
 
 	btDiscreteDynamicsWorld* getDynamicWorld()

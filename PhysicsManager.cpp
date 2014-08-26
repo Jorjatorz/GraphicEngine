@@ -71,6 +71,16 @@ RigidBody* PhysicsManager::createRigidBody(std::string name, SceneNode* node, En
 	return newRigidBody;
 }
 
+void PhysicsManager::deleteRigidBody(std::string name)
+{
+	tRigidBodiesMap::iterator it = mRigidBodiesMap.find(name);
+	if (it != mRigidBodiesMap.end()) //If we find the rigidbody delete it
+	{
+		delete it->second;
+		mRigidBodiesMap.erase(it);
+	}
+}
+
 CollisionObject* PhysicsManager::createCollisionObject(std::string name, SceneNode* node, Entity* ent)
 {
 	tCollisionObjectsMap::iterator it = mCollisionMap.find(name);
@@ -87,8 +97,9 @@ CollisionObject* PhysicsManager::createCollisionObject(std::string name, SceneNo
 
 void PhysicsManager::processPhysicsWorld(real deltaTime)
 {
+	//Simulate the world
 	mBulletDynamicWorld->stepSimulation(deltaTime, 10.0);
-	//mBulletDynamicWorld->debugDrawWorld(); Sacar de los demos de bullet
+
 
 	tRigidBodiesMap::iterator it;
 	for (it = mRigidBodiesMap.begin(); it != mRigidBodiesMap.end(); ++it)

@@ -10,9 +10,17 @@ class RigidBody
 public:
 	RigidBody(std::string name, SceneNode* node, Entity* ent);
 	~RigidBody();
+	
+	//Types
+	typedef enum
+	{
+		DYNAMIC,
+		KINETIC,
+		STATIC
+	} tRigidBodyType;
 
 	//Properties
-	void setMass(real mass);
+	void setMass(real mass, bool setStatic = false); //This function sets the mass of the rigidbody, this means that it transforms the body into kinetic, static or dynamic object
 	real getMass();
 	void setLinearVelocity(glm::vec3& vel);
 
@@ -23,10 +31,17 @@ public:
 		mBulletMotionState->getWorldTransform(trans);
 	}
 
+	
 	Entity* getUserPointer();
 
 private:
 	std::string mName;
+	tRigidBodyType mRigidBodyType;
+
+	//Type changers
+	void setType_Dynamic();
+	void setType_Kinetic();
+	void setType_Static();
 
 	//Bullet staff
 	btDiscreteDynamicsWorld* mDynamicWorld; //Ptr to the dynamic world

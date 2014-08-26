@@ -105,6 +105,7 @@ void Renderer::renderFrame(real deltaTime)
 	node2->setPosition(glm::vec3(-1.0, -0.25, 0.0));
 	node2->setScale(glm::vec3(2.0, 2.0, 2.0));
 	node2->attachObject(mEnt2);
+	//mEnt2->getRigidBody()->setMass(0.0, true);
 	//mEnt2->makeRigidBody();
 	//mEnt2->getRigidBody()->setCollisionShape_Box(mEnt2->getMesh()->getAABBsize() * 2.0f);
 	//mEnt2->getRigidBody()->setUpRigidBody(0.0, node2, mEnt2);
@@ -138,7 +139,7 @@ void Renderer::renderFrame(real deltaTime)
 	Light* light3 = mSceneManager->createLight("light3");
 	light3->setColor(glm::vec3(0.0, 0.98, 1.0));
 	light3->setType(Light::SPOTLIGHT);
-	//light3->setPosition(glm::vec3(0.0, 0.75, 0.0));
+	light3->setPosition(glm::vec3(0.0, 0.75, 0.0));
 	light3->setDirection(glm::vec3(0.0, -1.0, 0.0));
 
 	//mEnt2->getMaterial()->mBaseColorS.mBaseColorV = glm::vec3(1.0, 1.0, 1.0);
@@ -154,7 +155,7 @@ void Renderer::renderFrame(real deltaTime)
 
 	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
-		Entity* ent = mSceneManager->createEntity("as" + std::to_string(gh), "guard.obj");
+		Entity* ent = mSceneManager->createEntity("as" + std::to_string(gh), "box.obj");
 		SceneNode* nodes = mSceneManager->getRootSceneNode()->createChildSceneNode("nodes" + std::to_string(gh), mCam->getPosition());
 		nodes->setScale(glm::vec3(0.05, 0.05, 0.05));
 		nodes->attachObject(ent);
@@ -168,7 +169,7 @@ void Renderer::renderFrame(real deltaTime)
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
-		mEnt3->getRigidBody()->setMass(1.0);
+		mEnt2->getRigidBody()->setMass(0.0, true);
 	}
 
 	/*

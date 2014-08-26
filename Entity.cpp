@@ -47,6 +47,8 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 
 Entity::~Entity(void)
 {
+	//Rigidbody has the same name as entity
+	PhysicsManager::getSingletonPtr()->deleteRigidBody(mName);
 }
 
 void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)

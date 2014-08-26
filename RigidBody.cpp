@@ -31,8 +31,7 @@ RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 	//Create knitec body
 	btRigidBody::btRigidBodyConstructionInfo btConstructionInfo(0.0, mBulletMotionState, mBulletCollisionShape, btVector3(0.0, 0.0, 0.0));
 	mBulletRigidBody = new btRigidBody(btConstructionInfo);
-	mBulletRigidBody->setCollisionFlags(mBulletRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT); 
-	mBulletRigidBody->setActivationState(DISABLE_DEACTIVATION); //Disable the desactivation
+	setType_Kinetic(); //Default state
 
 	//Set user pointer
 	mBulletRigidBody->setUserPointer(ent);
@@ -50,8 +49,30 @@ RigidBody::~RigidBody()
 	delete mBulletMotionState;
 	delete mBulletCollisionShape;
 }
+void RigidBody::setType_Dynamic()
+{
+	//Set the activation type
+	mBulletRigidBody->forceActivationState(ACTIVE_TAG);
+	mBulletRigidBody->setCollisionFlags(0);
 
+	mRigidBodyType = DYNAMIC;
+}
+void RigidBody::setType_Kinetic()
+{
+	//Set the activation type
+	mBulletRigidBody->setActivationState(DISABLE_DEACTIVATION);
+	mBulletRigidBody->setCollisionFlags(mBulletRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
 
+	mRigidBodyType = KINETIC;
+}
+void RigidBody::setType_Static()
+{
+	//Set the activation type
+	mBulletRigidBody->forceActivationState(ACTIVE_TAG);
+	mBulletRigidBody->setCollisionFlags(0);
+
+	mRigidBodyType = STATIC;
+}
 void RigidBody::setTransforms(SceneNode* node)
 {
 	glm::vec3 position = node->getDerivedPosition();
@@ -67,34 +88,45 @@ void RigidBody::setTransforms(SceneNode* node)
 
 	mBulletCollisionShape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 }
-
-void RigidBody::setMass(real mass)
+void RigidBody::setMass(real mass, bool setStatic)
 {
-	if (mBulletRigidBody->getInvMass() == 0.0)
+	if (mass != 0.0)
 	{
-		btVector3 inertia = btVector3(0.0, 0.0, 0.0);
-		if (mass != 0.0)
-		{
-			mBulletCollisionShape->calculateLocalInertia(mass, inertia);
-		}
-
 		mDynamicWorld->removeRigidBody(mBulletRigidBody);
+		
+		btVector3 inertia;
+		mBulletCollisionShape->calculateLocalInertia(mass, inertia);
 		mBulletRigidBody->setMassProps(mass, inertia);
-		mBulletRigidBody->setCollisionFlags(0); //Remove kinetic object property because the mass is positive
-		Entity* ent = static_cast<Entity*>(mBulletRigidBody->getUserPointer());
+		setType_Dynamic();
+
 		mDynamicWorld->addRigidBody(mBulletRigidBody);
+	}
+	else
+	{
+		if (setStatic)
+		{
+			mDynamicWorld->removeRigidBody(mBulletRigidBody);
+			mBulletRigidBody->setMassProps(0.0, btVector3(0.0, 0.0, 0.0));
+			setType_Static();
+			mDynamicWorld->addRigidBody(mBulletRigidBody);
+		}
+		else
+		{
+			mDynamicWorld->removeRigidBody(mBulletRigidBody);
+			mBulletRigidBody->setMassProps(0.0, btVector3(0.0, 0.0, 0.0));
+			setType_Kinetic();
+			mDynamicWorld->addRigidBody(mBulletRigidBody);
+		}
 	}
 }
 real RigidBody::getMass()
 {
 	return mBulletRigidBody->getInvMass();
 }
-
 Entity* RigidBody::getUserPointer()
 {
 	return static_cast<Entity*>(mBulletRigidBody->getUserPointer());
 }
-
 void RigidBody::setLinearVelocity(glm::vec3& vel)
 {
 	mBulletRigidBody->setLinearVelocity(btVector3(vel.x, vel.y, vel.z));

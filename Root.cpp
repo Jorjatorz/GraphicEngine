@@ -47,6 +47,7 @@ void Root::initEngine()
 	//Pruebas
 	Timer* mTimer = createTimer("fpsTimer");
 	Timer* timer2 = createTimer("renderTimer");
+	Timer* timer3 = createTimer("physicsTimer");
 	int frames = 0;
 	int miliSeconds = 0;
 	int framesPerSecond = 1000/60;
@@ -60,8 +61,9 @@ void Root::initEngine()
 		//Get input
 		mInput->getFrameInput(running);
 
-
+		timer3->start();
 		mPhysicsManager->processPhysicsWorld((mTimer->mStartTime - lastTime) * 0.001);
+		timer3->stop();
 
 		//Render a frame
 		timer2->start();
@@ -79,9 +81,11 @@ void Root::initEngine()
 		if (miliSeconds > 1000)
 		{
 			std::cout << "Renderer: " << (float)timer2->mToltalTime / frames << std::endl;
+			std::cout << "Physics: " << (real)timer3->mToltalTime / frames << std::endl;
 			std::cout << "Total: " << (float)mTimer->mToltalTime / frames << std::endl;
 			mTimer->mToltalTime = 0;
 			timer2->reset();
+			timer3->reset();
 			std::cout << frames << std::endl;
 			frames = 0;
 			miliSeconds = 0;

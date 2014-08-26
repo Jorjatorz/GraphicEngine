@@ -203,6 +203,8 @@ void SceneManager::deleteEntity(std::string entityName)
 	tEntityMap::iterator it = mEntityMap.find(entityName);
 	if(it != mEntityMap.end())
 	{
+		//First delete it from node
+		it->second->getAttachedSceneNode()->detachObject(it->second);
 		delete it->second;
 		mEntityMap.erase(it);
 	}

@@ -11,6 +11,12 @@ public:
 
 	void executeRaySelectionCast(glm::vec3 start, glm::vec3 end); //End can be used as direction multiplaying the direction by a high number
 
+	//Return the closes hit object
+	Entity* getHitObject()
+	{
+		return mHitObject;
+	}
+
 	bool hasHits;
 
 private:
