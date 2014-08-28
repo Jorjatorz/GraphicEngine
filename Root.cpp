@@ -39,7 +39,7 @@ void Root::initEngine()
 	mPhysicsManager->initPhysicsWorld();
 	//create a new renderer
 	mRenderer = new Renderer();
-	mRenderer->createRenderer("Pruebas", 1080, 520, false);
+	mRenderer->createRenderer("Pruebas", 1280, 720, false);
 
 	//MAIN LOOP
 	bool running = true;

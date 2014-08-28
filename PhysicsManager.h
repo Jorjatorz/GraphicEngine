@@ -15,10 +15,11 @@ public:
 	~PhysicsManager();
 
 	void initPhysicsWorld();
+	void processPhysicsWorld(real deltaTime);
 
+	//DEbug draw
 	void draw();
 
-	void processPhysicsWorld(real deltaTime);
 
 	//Rigidbodies
 	RigidBody* createRigidBody(std::string name, SceneNode* node, Entity* ent);

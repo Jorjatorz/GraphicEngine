@@ -57,6 +57,7 @@ class SceneNode;
 class Shader;
 class Texture;
 class Timer;
+class UIManager;
 class Window;
 
 //Not included

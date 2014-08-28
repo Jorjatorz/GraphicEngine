@@ -159,7 +159,7 @@ void Renderer::renderFrame(real deltaTime)
 		SceneNode* nodes = mSceneManager->getRootSceneNode()->createChildSceneNode("nodes" + std::to_string(gh), mCam->getPosition());
 		nodes->setScale(glm::vec3(0.05, 0.05, 0.05));
 		nodes->attachObject(ent);
-		ent->getRigidBody()->setMass(1.0);
+		ent->getRigidBody()->setMass(10.0);
 		ent->getRigidBody()->setLinearVelocity(mCam->getOrientation() * 2.0f);
 
 		gh++;
@@ -170,6 +170,8 @@ void Renderer::renderFrame(real deltaTime)
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
 		mEnt2->getRigidBody()->setMass(0.0, true);
+		mEnt->getRigidBody()->setMass(0.0, true);
+		node3->setPosition(glm::vec3(0.0, 10.0, 0.0));
 	}
 
 	/*

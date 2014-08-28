@@ -23,7 +23,7 @@ in vec3 lPos;
 
 void main()
 {
-	vec3 pos = vec3(gl_FragCoord.x / 1080, gl_FragCoord.y / 520, 0.0);	
+	vec3 pos = vec3(gl_FragCoord.x / 1280, gl_FragCoord.y / 720, 0.0);	
 	pos.z = texture(depthTex, pos.xy).r;
 	
 	vec3 normal = normalize(texture(normalTex, pos.xy).xyz * 2.0 - 1.0);

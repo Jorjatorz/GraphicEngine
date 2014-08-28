@@ -13,6 +13,7 @@ RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 	glm::vec3 AABBsize = ent->getMesh()->getAABBsize();
 	AABBsize /= 2.0f; //Bullet halfsize
 	mBulletCollisionShape = new btBoxShape(btVector3(AABBsize.x, AABBsize.y, AABBsize.z));
+	mRigidBodyShape = BOX_SHAPE_;
 
 	//Bullet motion state
 	glm::vec3 position = node->getDerivedPosition();
@@ -31,7 +32,11 @@ RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 	//Create knitec body
 	btRigidBody::btRigidBodyConstructionInfo btConstructionInfo(0.0, mBulletMotionState, mBulletCollisionShape, btVector3(0.0, 0.0, 0.0));
 	mBulletRigidBody = new btRigidBody(btConstructionInfo);
-	setType_Kinetic(); //Default state
+	//Trying---- Continuos collision detection
+	mBulletRigidBody->setCcdMotionThreshold(1);
+	mBulletRigidBody->setCcdSweptSphereRadius(0.8);
+	//----
+	setType_Static(); //Default state
 
 	//Set user pointer
 	mBulletRigidBody->setUserPointer(ent);
@@ -130,4 +135,37 @@ Entity* RigidBody::getUserPointer()
 void RigidBody::setLinearVelocity(glm::vec3& vel)
 {
 	mBulletRigidBody->setLinearVelocity(btVector3(vel.x, vel.y, vel.z));
+}
+void RigidBody::setShape_Box(glm::vec3& boxDimensions)
+{
+	if (mRigidBodyShape == SPHERE_SHAPE_)
+	{
+		delete mBulletCollisionShape; //delete the old shape
+
+		boxDimensions /= 2.0f; //Bullet half-size
+		mBulletCollisionShape = new btBoxShape(btVector3(boxDimensions.x, boxDimensions.y, boxDimensions.z));
+		mRigidBodyShape = BOX_SHAPE_;
+	}
+	else //If the shape is the box return
+	{
+		return;
+	}
+
+	mBulletRigidBody->setCollisionShape(mBulletCollisionShape);
+}
+void RigidBody::setShape_Sphere(real radius)
+{
+	if (mRigidBodyShape == BOX_SHAPE_)
+	{
+		delete mBulletCollisionShape; //delete the old shape
+
+		mBulletCollisionShape = new btSphereShape(radius);
+		mRigidBodyShape = SPHERE_SHAPE_;
+	}
+	else //If the shape is the spehre return
+	{
+		return;
+	}
+
+	mBulletRigidBody->setCollisionShape(mBulletCollisionShape);
 }
