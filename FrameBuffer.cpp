@@ -105,7 +105,7 @@ void FrameBuffer::bindForDrawing()
 	}
 }
 
-void FrameBuffer::bindForReading()
+void FrameBuffer::bindForReading(int idStart)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -113,47 +113,13 @@ void FrameBuffer::bindForReading()
 
 	for (int i = 0; i < mTexturesIdVector.size(); ++i)
 	{
-		glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(GL_TEXTURE0 + i + idStart);
 		glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(i));
 	}
 }
 
 void FrameBuffer::bindForRendering()
 {
-	/*if (!quadSet)
-	{
-		//vertices
-		const GLfloat vertex_positions[] =
-		{
-			-1.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, 1.0f, 1.0f, 1.0f,
-			1.0f, -1.0f, 1.0f, 0.0f,
-
-			1.0f, -1.0f, 1.0f, 0.0f,
-			-1.0f, -1.0f, 0.0f, 0.0f,
-			-1.0f, 1.0f, 0.0f, 1.0f
-		};
-
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_positions), vertex_positions, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(Shader::VERTEXPOSITION, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-		glVertexAttribPointer(Shader::VERTEXTEXCOORD, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)(2 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(2);
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		quadSet = true;
-	}
-
-	// Bind default framebuffer and draw contents of our framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
 	glBindVertexArray(ResourceManager::getSingletonPtr()->getScreenQuadVAO());
 	glDisable(GL_DEPTH_TEST);
 
@@ -161,12 +127,13 @@ void FrameBuffer::bindForRendering()
 
 	mCurrentSceneManager->getFrameBuffer("deferredFBO")->bindForReading();
 	mCurrentSceneManager->getCurrentShader()->Uniform("diffTex", 0);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(0));
+	mCurrentSceneManager->getFrameBuffer("lightFBO")->bindForReading(1);
 	mCurrentSceneManager->getCurrentShader()->UniformTexture("lightTex", 1);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(1));
 	mCurrentSceneManager->getCurrentShader()->UniformTexture("specTex", 2);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(0));
+	mCurrentSceneManager->getCurrentShader()->UniformTexture("uiTex", 3);
+
 	/*glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, mTexturesIdVector.at(2));
 	mCurrentSceneManager->getCurrentShader()->UniformTexture("normalTex",2);*/

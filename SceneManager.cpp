@@ -11,13 +11,23 @@
 #include "FrameBuffer.h"
 #include "Material.h"
 #include "Math.h"
+#include "InputManager.h"
+#include "Window.h"
+#include "UIDisplayer.h"
+#include "UIManager.h"
+#include "Root.h"
 
 SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
 	mRenderer = mCurrentRenderer;
 	mRootSceneNode = new SceneNode("RootNode", nullptr, this);
 
-	//Create a screenQuad
+	//Init pointers
+	mCurrentCamera = nullptr;
+	mCurrentShader = nullptr;
+	mCurrentUIDisplayer = nullptr;
+
+	//Create a screenQuad for FBOS
 	ResourceManager::getSingletonPtr()->createScreenQuad();
 }
 
@@ -540,8 +550,7 @@ FrameBuffer* SceneManager::getFrameBuffer(std::string name)
 		return NULL;
 	}
 }
-#include "InputManager.h"
-#include "Window.h"
+
 glm::vec3 SceneManager::getWorldMouseDirection()
 {
 	int mouseX, mouseY;
@@ -564,4 +573,65 @@ glm::vec3 SceneManager::getWorldMouseDirection()
 	dir_wor = glm::normalize(dir_wor);
 
 	return dir_wor;
+}
+
+void SceneManager::renderUI()
+{
+	if (mCurrentUIDisplayer != nullptr)
+	{
+		Shader* shad = createShader("UIShader", "UIShader");
+		bindShader(shad);
+		mCurrentUIDisplayer->drawDisplayer(shad); //Will change this so can use other shaders
+	}
+}
+UIDisplayer* SceneManager::createUIDisplayer(std::string name)
+{
+	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
+	if (it != mUiDisplayersMap.end())
+	{
+		mCurrentUIDisplayer = it->second; //Set current
+		return it->second;
+	}
+
+	UIManager* manager = Root::getSingletonPtr()->mUIManager;
+	UIDisplayer* newUiDisplayer = manager->createDisplayer(name);
+	mCurrentUIDisplayer = newUiDisplayer;
+
+	mUiDisplayersMap.insert(std::pair<std::string, UIDisplayer*>(name, newUiDisplayer));
+	return newUiDisplayer;
+}
+void SceneManager::deleteUIDisplayer(std::string name)
+{
+	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
+	if (it != mUiDisplayersMap.end())
+	{
+		if (it->second == mCurrentUIDisplayer)
+		{
+			mCurrentUIDisplayer = nullptr;
+		}
+		delete it->second;
+		mUiDisplayersMap.erase(it);
+	}
+}
+UIDisplayer* SceneManager::getUIDisplayer(std::string name)
+{
+	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
+	if (it != mUiDisplayersMap.end())
+	{
+		mCurrentUIDisplayer = it->second; //Set current
+		return it->second;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+void SceneManager::setCurrentUIDisplayer(std::string name)
+{
+	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
+	if (it != mUiDisplayersMap.end())
+	{
+		mCurrentUIDisplayer = it->second; //Set current
+	}
 }

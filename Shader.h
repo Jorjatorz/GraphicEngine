@@ -24,7 +24,7 @@ public:
 	GLuint getShaderProgram();
 
 	// Communication with shader
-	void UniformTexture(const std::string& uniformName, GLint textureId);
+	void UniformTexture(const std::string& uniformName, GLint activeTextureSlot);
 	void Uniform(const std::string& uniformName, GLint value);
 	void Uniform(const std::string& uniformName, GLfloat value);
 	void Uniform(const std::string& uniformName, const glm::vec2& value);

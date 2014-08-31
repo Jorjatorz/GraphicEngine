@@ -314,9 +314,9 @@ void Mesh::renderAABB(glm::mat4 modelMatrix, glm::mat4 projectionViewM)
 		);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, AABBibo);
-	glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
-	glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort)));
-	glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort)));
+	glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0); //Front face
+	glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4 * sizeof(GLushort))); //Back face
+	glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8 * sizeof(GLushort))); //Joint lines
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

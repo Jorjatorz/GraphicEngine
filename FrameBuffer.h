@@ -16,7 +16,7 @@ public:
 	void addTexture(int format);
 	void createGBuffer();
 	void bindForDrawing();
-	void bindForReading();
+	void bindForReading(int idStart = 0); //Idstart is the start of the active texture (i.e if u bind several buffers at the same time this prevents the textures to use the same location)
 	void bindForRendering();
 	void unBind();
 

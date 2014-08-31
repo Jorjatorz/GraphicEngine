@@ -52,9 +52,11 @@ void Renderer::createRenderer(std::string windowName, int width, int height, boo
 	//Create FBO
 	FrameBuffer* fbo = mSceneManager->createFrameBuffer("deferredFBO", mWindow->getWidth(), mWindow->getHeight());
 	FrameBuffer* fbo1 = mSceneManager->createFrameBuffer("lightFBO", mWindow->getWidth(), mWindow->getHeight());
+	FrameBuffer* fbo2 = mSceneManager->createFrameBuffer("finalFBO", mWindow->getWidth(), mWindow->getHeight());
 	fbo->createGBuffer();
 	fbo1->addTexture(GL_RGBA);
 	fbo1->addTexture(GL_RGBA);
+	fbo2->addTexture(GL_RGBA);
 
 
 
@@ -80,6 +82,8 @@ void Renderer::initOpenGL()
 	glEnable(GL_DEPTH_TEST);
 }
 
+#include "UIWindow.h"
+#include "UIDisplayer.h"
 
 int gh = 0;
 void Renderer::renderFrame(real deltaTime)
@@ -143,7 +147,7 @@ void Renderer::renderFrame(real deltaTime)
 	light3->setDirection(glm::vec3(0.0, -1.0, 0.0));
 
 	//mEnt2->getMaterial()->mBaseColorS.mBaseColorV = glm::vec3(1.0, 1.0, 1.0);
-
+	UIWindow* wind = mSceneManager->createUIDisplayer("ui")->createWindow("lala");
 	if(InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_RIGHT))
 	{
 		mCam->setControler(Camera::DEFAULT);
@@ -169,9 +173,13 @@ void Renderer::renderFrame(real deltaTime)
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
-		mEnt2->getRigidBody()->setMass(0.0, true);
-		mEnt->getRigidBody()->setMass(0.0, true);
-		node3->setPosition(glm::vec3(0.0, 10.0, 0.0));
+		int x, y;
+		InputManager::getSingletonPtr()->getMousePosition(x, y);
+		wind->setPosition(glm::vec2(x / 1280.0f * 2 - 1, 1 -  y / 720.0f * 2));
+		wind->setSize(glm::vec2(0.25, 1.5));
+		wind->setTexture(mSceneManager->createTexture("ulvida", false, GL_RGBA, "Ulvida.jpg"));
+
+		std::cout << wind->getPosition().x << " " << wind->getPosition().y << std::endl;
 	}
 
 	/*
@@ -216,7 +224,7 @@ void Renderer::renderFrame(real deltaTime)
 
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();
-
+	//PHYSICS DEBUG DRAWER
 	mSceneManager->bindShader(mSceneManager->createShader("old", "old"));
 	mSceneManager->getCurrentShader()->UniformMatrix("PV", mSceneManager->getProjectionMatrix() * mSceneManager->getViewMatrix());
 	PhysicsManager::getSingletonPtr()->draw();
@@ -224,10 +232,13 @@ void Renderer::renderFrame(real deltaTime)
 	//Process the lights
 	mSceneManager->processLights();
 
-	//Render the combined buffer
-	fbo = mSceneManager->getFrameBuffer("lightFBO");
+
+	//Render the UI and the combined buffer
+	fbo = mSceneManager->getFrameBuffer("finalFBO");
 	fbo->bindForRendering();
 
+	glClear(GL_DEPTH_BUFFER_BIT);
+	mSceneManager->renderUI();
 
 	//swap the buffers
 	mWindow->swapBuffers(true);

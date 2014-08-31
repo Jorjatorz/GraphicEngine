@@ -6,11 +6,13 @@
 #include "ResourceManager.h"
 #include "PhysicsManager.h"
 #include "SceneManager.h"
+#include "UIManager.h"
+#include "Timer.h"
 
 Root::Root(void)
 {
-	mRenderer = 0;
-	mCurrentSceneManager = NULL;
+	mRenderer = nullptr;
+	mCurrentSceneManager = nullptr;
 }
 
 
@@ -23,7 +25,7 @@ Root::~Root(void)
 	delete mInput;
 	delete mResourceManager;
 }
-#include "Timer.h"
+
 void Root::initEngine()
 {
 	//Create singletons---------------
@@ -37,6 +39,8 @@ void Root::initEngine()
 
 	//Create physics world
 	mPhysicsManager->initPhysicsWorld();
+	//create uimanager
+	mUIManager = new UIManager();
 	//create a new renderer
 	mRenderer = new Renderer();
 	mRenderer->createRenderer("Pruebas", 1280, 720, false);

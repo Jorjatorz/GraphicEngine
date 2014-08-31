@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+#include <FreeImage.h>
 
 Texture::Texture(void)
 {

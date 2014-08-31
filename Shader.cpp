@@ -142,7 +142,7 @@ void Shader::unBind()
 }
 
 // sent texture value
-void Shader::UniformTexture(const std::string& uniformName, GLint textureId)
+void Shader::UniformTexture(const std::string& uniformName, GLint activeTextureSlot)
 {
 	//glActiveTexture(GL_TEXTURE0+slot);
 	GLuint id = glGetUniformLocation(mProgram, uniformName.c_str());
@@ -150,7 +150,7 @@ void Shader::UniformTexture(const std::string& uniformName, GLint textureId)
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
 	#endif
-	glUniform1i(id, textureId);
+	glUniform1i(id, activeTextureSlot);
 }
 
 // sent int value
@@ -205,7 +205,7 @@ void Shader::Uniform(const std::string& uniformName, const glm::vec4& value)
 	if(id == -1)
 		std::cout << mName << " Couldn't get uniform location of " << uniformName << std::endl;
 	#endif
-	glUniform3fvARB(id, 1, glm::value_ptr(value));
+	glUniform4fvARB(id, 1, glm::value_ptr(value));
 }
 
 void Shader::UniformMatrix(const std::string& uniformName, const glm::mat4& value)

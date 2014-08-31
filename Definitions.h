@@ -57,7 +57,10 @@ class SceneNode;
 class Shader;
 class Texture;
 class Timer;
+class UIDisplayer;
 class UIManager;
+class UIObject;
+class UIWindow;
 class Window;
 
 //Not included

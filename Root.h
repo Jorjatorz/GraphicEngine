@@ -23,6 +23,7 @@ public:
 
 	//classes
 	Renderer* mRenderer; //will be a list
+	UIManager* mUIManager;
 
 	//SceneManager creator and destructors
 	SceneManager* createSceneManager(std::string name, Renderer* callingRenderer);

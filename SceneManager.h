@@ -106,6 +106,13 @@ public:
 	//return the world position of the current mouse position
 	glm::vec3 getWorldMouseDirection();
 
+	//UI
+	void renderUI();
+	UIDisplayer* createUIDisplayer(std::string name);
+	void deleteUIDisplayer(std::string name);
+	UIDisplayer* getUIDisplayer(std::string name);
+	void setCurrentUIDisplayer(std::string name);
+
 	//Timer
 	real mDeltaTime;
 
@@ -119,6 +126,7 @@ private:
 	typedef std::map<std::string, Light*> tLightMap;
 	typedef std::map<std::string, Material*> tMaterialMap;
 	typedef std::map<std::string, FrameBuffer*> tFrameBufferMap;
+	typedef std::map<std::string, UIDisplayer*> tUIDisplayersMap;
 
 	//define maps
 	tShaderMap mShaderMap;
@@ -128,6 +136,7 @@ private:
 	tLightMap mLightMap;
 	tMaterialMap mMaterialMap;
 	tFrameBufferMap mFrameBufferMap;
+	tUIDisplayersMap mUiDisplayersMap;
 
 	//projection matrix
 	glm::mat4 mProjectionMatrix;
@@ -142,6 +151,10 @@ private:
 	//camera private members
 	//current active camera
 	Camera* mCurrentCamera;
+
+	//UI private members
+	//current active displayer
+	UIDisplayer* mCurrentUIDisplayer;
 
 	//Pointer to renderer
 	Renderer* mRenderer;
