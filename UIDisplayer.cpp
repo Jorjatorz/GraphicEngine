@@ -1,9 +1,10 @@
 #include "UIDisplayer.h"
 #include "UIWindow.h"
 
-UIDisplayer::UIDisplayer(std::string name)
+UIDisplayer::UIDisplayer(std::string name, SceneManager* manager)
 {
 	mName = name;
+	mCurrentSceneManager = manager;
 }
 
 
@@ -25,7 +26,7 @@ UIWindow* UIDisplayer::createWindow(std::string name)
 		return it->second;
 	}
 
-	UIWindow* newWindow = new UIWindow(name);
+	UIWindow* newWindow = new UIWindow(name, mCurrentSceneManager);
 
 	mWindowsMap.insert(std::pair<std::string, UIWindow*>(name, newWindow));
 	return newWindow;
@@ -48,7 +49,7 @@ UIWindow* UIDisplayer::getWindow(std::string name)
 	}
 	else
 	{
-		return nullptr;
+		return NULL;
 	}
 }
 
@@ -59,4 +60,21 @@ void UIDisplayer::drawDisplayer(Shader* UIShader)
 	{
 		it->second->drawObject(UIShader);
 	}
+}
+#include <iostream>
+
+UIWindow* UIDisplayer::selectWindow_byCoords(glm::vec2 mouseCoords)
+{
+	tWindowsMap::iterator it;
+	for (it = mWindowsMap.begin(); it != mWindowsMap.end(); ++it)
+	{
+		//If we are inside the AABB
+		if (it->second->rayTestToObject(mouseCoords))
+		{
+			it->second->setSelected(true);
+			return it->second;
+		}
+	}
+
+	return NULL;
 }

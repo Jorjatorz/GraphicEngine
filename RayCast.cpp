@@ -7,7 +7,7 @@ RayCast::RayCast()
 	mCurrentDynamicWolrd = PhysicsManager::getSingletonPtr()->getDynamicWorld();
 
 	hasHits = false;
-	mHitObject = nullptr;
+	mHitObject = NULL;
 }
 
 
@@ -34,6 +34,6 @@ void RayCast::executeRaySelectionCast(glm::vec3 start, glm::vec3 end)
 	else
 	{
 		hasHits = false;
-		mHitObject = nullptr;
+		mHitObject = NULL;
 	}
 }

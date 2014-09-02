@@ -7,7 +7,9 @@ UIObject::UIObject()
 {
 	generateBuffers();
 
-	visible = true;
+	visible_ = true;
+	movable_ = true;
+	mSelected = false;
 
 	//Transformations
 	mPosition = mParentPosition = glm::vec3(0.0);
@@ -17,7 +19,7 @@ UIObject::UIObject()
 
 	//Rendering
 	mColor = glm::vec4(0.1, 0.5, 0.9, 1.0);
-	mTexture = nullptr;
+	mTexture = NULL;
 }
 
 
@@ -60,8 +62,11 @@ void UIObject::generateBuffers()
 
 void UIObject::drawObject(Shader* UIShader)
 {
-	if (visible)
+	if (visible_)
 	{
+		//update
+		update();
+
 		//Transformations
 		setTransforms();
 
@@ -109,6 +114,11 @@ void UIObject::sendUniforms(Shader* UIShader)
 
 void UIObject::setColor(glm::vec3& newColor)
 {
+	if (isTextured())
+	{
+		mTexture = NULL;
+	}
+
 	mColor = glm::vec4(newColor, mColor.w);
 }
 void UIObject::setTexture(Texture* newTex)
@@ -117,5 +127,28 @@ void UIObject::setTexture(Texture* newTex)
 }
 bool UIObject::isTextured()
 {
-	return mTexture == nullptr ? false : true;
+	return mTexture == NULL ? false : true;
+}
+
+void UIObject::setSelected(bool sel)
+{
+	mSelected = sel;
+}
+
+bool UIObject::rayTestToObject(glm::vec2 rayCoords)
+{
+	//AABB
+	glm::vec2 topVertices = glm::vec2(mPosition + (mSize / 2.0f)); //we divide size by 2 because the position is in the middle
+	glm::vec2 lowVertices = glm::vec2(mPosition - (mSize / 2.0f)); //we divide size by 2 because the position is in the middle
+
+	glm::vec2 resultTop = rayCoords - topVertices;
+	glm::vec2 resultLow = rayCoords - lowVertices;
+
+	//If we are inside the AABB
+	if (glm::compMax(resultTop) < 0.0 && glm::compMin(resultLow) > 0.0)
+	{
+		return true;
+	}
+
+	return false;
 }

@@ -9,10 +9,13 @@
 class UIWindow: public UIObject
 {
 public:
-	UIWindow(std::string name);
+	UIWindow(std::string name, SceneManager* manager);
 	~UIWindow();
 
+	void update();
+
 private:
+	glm::vec2 lastMouse;
 
 };
 

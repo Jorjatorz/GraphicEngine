@@ -20,12 +20,12 @@
 SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
 	mRenderer = mCurrentRenderer;
-	mRootSceneNode = new SceneNode("RootNode", nullptr, this);
+	mRootSceneNode = new SceneNode("RootNode", NULL, this);
 
 	//Init pointers
-	mCurrentCamera = nullptr;
-	mCurrentShader = nullptr;
-	mCurrentUIDisplayer = nullptr;
+	mCurrentCamera = NULL;
+	mCurrentShader = NULL;
+	mCurrentUIDisplayer = NULL;
 
 	//Create a screenQuad for FBOS
 	ResourceManager::getSingletonPtr()->createScreenQuad();
@@ -154,7 +154,7 @@ Texture* SceneManager::createTexture(std::string textureName, bool mipmap, GLint
 	if (texturePath != "NULL")
 	{
 		//load it into disc (if its not already loaded
-		mTexture = mResourceManager->loadTexture(textureName, mipmap, format, texturePath);
+		mTexture = mResourceManager->loadTexture(texturePath, mipmap, format);
 	}
 	else
 	{
@@ -318,7 +318,7 @@ void SceneManager::processLights()
 								 break;
 		}
 		default:
-			lightVolume = nullptr;
+			lightVolume = NULL;
 			break;
 		}
 
@@ -551,7 +551,22 @@ FrameBuffer* SceneManager::getFrameBuffer(std::string name)
 	}
 }
 
-glm::vec3 SceneManager::getWorldMouseDirection()
+glm::vec2 SceneManager::getMousePosition_NDC()
+{
+	int mouseX, mouseY;
+	InputManager::getSingletonPtr()->getMousePosition(mouseX, mouseY);
+	int windowH, windowW;
+	windowW = mRenderer->getCurrentWindow()->getWidth();
+	windowH = mRenderer->getCurrentWindow()->getHeight();
+
+
+	real x = (2.0f * mouseX) / windowW - 1.0f;
+	real y = 1.0f - (2.0f * mouseY) / windowH;
+	
+	return glm::vec2(x, y);
+}
+
+glm::vec3 SceneManager::getMousePosition_WorldSpace()
 {
 	int mouseX, mouseY;
 	InputManager::getSingletonPtr()->getMousePosition(mouseX, mouseY);
@@ -577,7 +592,7 @@ glm::vec3 SceneManager::getWorldMouseDirection()
 
 void SceneManager::renderUI()
 {
-	if (mCurrentUIDisplayer != nullptr)
+	if (mCurrentUIDisplayer != NULL)
 	{
 		Shader* shad = createShader("UIShader", "UIShader");
 		bindShader(shad);
@@ -589,12 +604,14 @@ UIDisplayer* SceneManager::createUIDisplayer(std::string name)
 	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
 	if (it != mUiDisplayersMap.end())
 	{
+		UIManager* manager = Root::getSingletonPtr()->mUIManager;
 		mCurrentUIDisplayer = it->second; //Set current
+		manager->setCurrentDisplayer(mCurrentUIDisplayer);
 		return it->second;
 	}
 
 	UIManager* manager = Root::getSingletonPtr()->mUIManager;
-	UIDisplayer* newUiDisplayer = manager->createDisplayer(name);
+	UIDisplayer* newUiDisplayer = manager->createDisplayer(name, this);
 	mCurrentUIDisplayer = newUiDisplayer;
 
 	mUiDisplayersMap.insert(std::pair<std::string, UIDisplayer*>(name, newUiDisplayer));
@@ -607,7 +624,7 @@ void SceneManager::deleteUIDisplayer(std::string name)
 	{
 		if (it->second == mCurrentUIDisplayer)
 		{
-			mCurrentUIDisplayer = nullptr;
+			mCurrentUIDisplayer = NULL;
 		}
 		delete it->second;
 		mUiDisplayersMap.erase(it);
@@ -618,12 +635,11 @@ UIDisplayer* SceneManager::getUIDisplayer(std::string name)
 	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
 	if (it != mUiDisplayersMap.end())
 	{
-		mCurrentUIDisplayer = it->second; //Set current
 		return it->second;
 	}
 	else
 	{
-		return nullptr;
+		return NULL;
 	}
 }
 
@@ -633,5 +649,7 @@ void SceneManager::setCurrentUIDisplayer(std::string name)
 	if (it != mUiDisplayersMap.end())
 	{
 		mCurrentUIDisplayer = it->second; //Set current
+		UIManager* manager = Root::getSingletonPtr()->mUIManager;
+		manager->setCurrentDisplayer(mCurrentUIDisplayer);
 	}
 }

@@ -34,11 +34,24 @@ public:
 		return glm::vec2(mSize);
 	}
 
+	//Others
+	std::string getName()
+	{
+		return mName;
+	}
+	bool rayTestToObject(glm::vec2 rayCoords);
+	void setSelected(bool sel);
+
 protected:
 	std::string mName;
+	SceneManager* mCurrentSceneManager;
+
+	//Special properties
+	bool mSelected; //true if the windows is selected
+	bool movable_;
 
 	//Rendering properties
-	bool visible;
+	bool visible_;
 	glm::vec4 mColor; //Alpha included
 	Texture* mTexture; //Just if its textured
 
@@ -50,6 +63,7 @@ protected:
 
 	//Others
 	void sendUniforms(Shader* UIShader);
+	virtual void update() = 0;
 
 
 	//OpenGL properties

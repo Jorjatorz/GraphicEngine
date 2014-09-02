@@ -22,7 +22,7 @@ public:
 
 	//Textures
 	//load texture
-	Texture* loadTexture(std::string textureName, bool mipmap, GLint format, std::string texturePath);
+	Texture* loadTexture(std::string texturePath, bool mipmap, GLint format);
 	//Create a new Texture without loading it from any file
 	Texture* createTexture(std::string textureName, int width, int height, bool mipmap, GLuint format);
 	//return the texture

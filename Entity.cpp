@@ -17,9 +17,9 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	//apart from movableobject constructor
 	mName = mNewName;
 	mModelMatrix = glm::mat4(1.0); //identity
-	mMesh = nullptr;
+	mMesh = NULL;
 	mMeshName = "NULL";
-	mMaterial = nullptr;
+	mMaterial = NULL;
 	mSceneManager = newSceneManager;
 	meshAttached = false;
 	
@@ -35,8 +35,8 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 	mModelMatrix = glm::mat4(1.0); //identity
 	mSceneManager = newSceneManager;
 	meshAttached = false;
-	mMaterial = nullptr;
-	mRigidBody = nullptr;
+	mMaterial = NULL;
+	mRigidBody = NULL;
 
 
 	mTypeOfMovableObject = tTypeEnum::Entity;
@@ -54,7 +54,7 @@ Entity::~Entity(void)
 void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)
 {
 	//If its a "real" entity (i.e not a light volume)
-	if (mParentSceneNode != nullptr)
+	if (mParentSceneNode != NULL)
 	{
 		mRigidBody->setTransforms(mParentSceneNode);
 	}

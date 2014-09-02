@@ -5,7 +5,8 @@
 //external includes
 //SLD
 #include <SDL.h>
-#include <SDL_image.h>
+//FreeImage
+#include <FreeImage.h>
 //OPENGL
 #include <gl\glew.h>
 #include <gl\gl.h>
@@ -18,6 +19,7 @@
 #include <glm\gtc\quaternion.hpp>
 #include <glm\gtx\quaternion.hpp>
 #include <glm\gtx\norm.hpp>
+#include <glm\gtx\component_wise.hpp>
 //ASSIMP
 #include <assimp\Importer.hpp>
 #include <assimp\postprocess.h>

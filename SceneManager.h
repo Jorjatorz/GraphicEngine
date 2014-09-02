@@ -104,7 +104,8 @@ public:
 		return mRootSceneNode;
 	}
 	//return the world position of the current mouse position
-	glm::vec3 getWorldMouseDirection();
+	glm::vec2 getMousePosition_NDC();
+	glm::vec3 getMousePosition_WorldSpace();
 
 	//UI
 	void renderUI();

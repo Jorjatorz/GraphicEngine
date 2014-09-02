@@ -1,5 +1,13 @@
 #include "InputManager.h"
 
+#include "ResourceManager.h"
+#include "Root.h"
+#include "SceneManager.h"
+#include "Renderer.h"
+#include "Window.h"
+#include "Camera.h"
+#include "UIManager.h"
+#include "UIDisplayer.h"
 
 InputManager::InputManager(void)
 {
@@ -22,12 +30,6 @@ InputManager::~InputManager(void)
 {
 }
 
-#include "ResourceManager.h"
-#include "Root.h"
-#include "SceneManager.h"
-#include "Renderer.h"
-#include "Window.h"
-#include "Camera.h"
 
 void InputManager::getFrameInput(bool &running)
 {
@@ -64,6 +66,8 @@ void InputManager::getFrameInput(bool &running)
 		if(mEvent.type == SDL_MOUSEBUTTONDOWN)
 		{
 			mMousePressedArray[mEvent.button.button - 1] = true; //-1 to pass from sdl encoding to array acces encoding
+			//Select ui
+			Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->selectWindow_byCoords(Root::getSingletonPtr()->getCurrentSceneManager()->getMousePosition_NDC());
 		}
 
 		if(mEvent.type == SDL_MOUSEBUTTONUP)

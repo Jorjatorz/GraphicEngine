@@ -11,8 +11,8 @@
 
 Root::Root(void)
 {
-	mRenderer = nullptr;
-	mCurrentSceneManager = nullptr;
+	mRenderer = NULL;
+	mCurrentSceneManager = NULL;
 }
 
 

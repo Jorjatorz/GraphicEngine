@@ -173,13 +173,19 @@ void Renderer::renderFrame(real deltaTime)
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
-		int x, y;
+		/*int x, y;
 		InputManager::getSingletonPtr()->getMousePosition(x, y);
-		wind->setPosition(glm::vec2(x / 1280.0f * 2 - 1, 1 -  y / 720.0f * 2));
+		wind->setPosition(mSceneManager->getMousePosition_ScreenSpace());
 		wind->setSize(glm::vec2(0.25, 1.5));
 		wind->setTexture(mSceneManager->createTexture("ulvida", false, GL_RGBA, "Ulvida.jpg"));
 
-		std::cout << wind->getPosition().x << " " << wind->getPosition().y << std::endl;
+		std::cout << wind->getPosition().x << " " << wind->getPosition().y << std::endl;*/
+
+		UIWindow* m = mSceneManager->getUIDisplayer("ui")->selectWindow_byCoords(mSceneManager->getMousePosition_NDC());
+		if (m != NULL)
+		{
+			std::cout << m->getName() << " window selected" << std::endl;
+		}
 	}
 
 	/*

@@ -9,10 +9,12 @@
 class UIDisplayer
 {
 public:
-	UIDisplayer(std::string name);
+	UIDisplayer(std::string name, SceneManager* manager);
 	~UIDisplayer();
 
 	void drawDisplayer(Shader* UIShader); //Draw all windows and its elements
+
+	UIWindow* selectWindow_byCoords(glm::vec2 mouseCoords);
 
 	UIWindow* createWindow(std::string name);
 	void deleteWindow(std::string name);
@@ -23,6 +25,8 @@ private:
 
 	typedef std::map<std::string, UIWindow*> tWindowsMap;
 	tWindowsMap mWindowsMap;
+
+	SceneManager* mCurrentSceneManager;
 };
 
 #endif

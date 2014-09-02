@@ -85,11 +85,11 @@ Shader* ResourceManager::getShader(std::string shaderName)
 	return NULL;
 }
 
-Texture* ResourceManager::loadTexture(std::string textureName, bool mipmap, GLint format, std::string texturePath)
+Texture* ResourceManager::loadTexture(std::string texturePath, bool mipmap, GLint format)
 {
 
 	//search if the resource already exists
-	tTextureMap::iterator it = mTextureMap.find(textureName);
+	tTextureMap::iterator it = mTextureMap.find(texturePath);
 	//if it exist return it
 	if(it != mTextureMap.end())
 	{
@@ -109,7 +109,7 @@ Texture* ResourceManager::loadTexture(std::string textureName, bool mipmap, GLin
 	mResource->lastModificationTime[0] = getModificationTime(completePath);
 
 	//insert it into the map
-	mTextureMap.insert(std::pair<std::string, GameResource<Texture*>*>(textureName, mResource));
+	mTextureMap.insert(std::pair<std::string, GameResource<Texture*>*>(texturePath, mResource));
 
 	return mTexture;
 
@@ -288,11 +288,15 @@ void ResourceManager::checkForModifications()
 	tTextureMap::iterator textureIterator;
 	for(textureIterator = mTextureMap.begin(); textureIterator != mTextureMap.end(); ++textureIterator)
 	{
-		if(textureIterator->second->lastModificationTime[0] != getModificationTime(textureIterator->second->getFilePath()))
+		//If the texture is laoded from disk
+		if (textureIterator->second->getFilePath() != "NULL")
 		{
-			//reload the file
-			textureIterator->second->getResource()->loadTexture(textureIterator->second->getFilePath(), textureIterator->second->getResource()->isMipmap, textureIterator->second->getResource()->mFormat);
-			textureIterator->second->lastModificationTime[0] = getModificationTime(textureIterator->second->getFilePath());
+			if (textureIterator->second->lastModificationTime[0] != getModificationTime(textureIterator->second->getFilePath()))
+			{
+				//reload the file
+				textureIterator->second->getResource()->loadTexture(textureIterator->second->getFilePath(), textureIterator->second->getResource()->isMipmap, textureIterator->second->getResource()->mFormat);
+				textureIterator->second->lastModificationTime[0] = getModificationTime(textureIterator->second->getFilePath());
+			}
 		}
 	}
 

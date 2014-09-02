@@ -4,6 +4,7 @@
 
 UIManager::UIManager()
 {
+	mCurrentUIDisplayer = NULL;
 }
 
 
@@ -18,7 +19,7 @@ UIManager::~UIManager()
 }
 
 
-UIDisplayer* UIManager::createDisplayer(std::string name)
+UIDisplayer* UIManager::createDisplayer(std::string name, SceneManager* manager)
 {
 	tDisplayerMap::iterator it = mDisplayerMap.find(name);
 	if (it != mDisplayerMap.end())
@@ -26,7 +27,7 @@ UIDisplayer* UIManager::createDisplayer(std::string name)
 		return it->second;
 	}
 
-	UIDisplayer* mNewDisplayer = new UIDisplayer(name);
+	UIDisplayer* mNewDisplayer = new UIDisplayer(name, manager);
 
 	mDisplayerMap.insert(std::pair<std::string, UIDisplayer*>(name, mNewDisplayer));
 
@@ -50,6 +51,11 @@ UIDisplayer* UIManager::getDisplayer(std::string name)
 	}
 	else
 	{
-		return nullptr;
+		return NULL;
 	}
+}
+
+void UIManager::setCurrentDisplayer(UIDisplayer* disp)
+{
+	mCurrentUIDisplayer = disp;
 }

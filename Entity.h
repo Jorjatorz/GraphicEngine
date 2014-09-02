@@ -59,7 +59,7 @@ public:
 	}
 	SceneNode* getAttachedSceneNode()
 	{
-		assert(mParentSceneNode != nullptr);
+		assert(mParentSceneNode != NULL);
 
 		return mParentSceneNode;
 	}
