@@ -18,4 +18,6 @@ void main()
 	{
 		outColor = texture(UITexture, uv);
 	}
+	
+	outColor.a = 0.5;
 }

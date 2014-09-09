@@ -12,6 +12,7 @@ public:
 	~UIObject();
 
 	void drawObject(Shader* UIShader);
+	virtual void drawChildrens(Shader* UIShader);
 
 	//Rendering
 	void setColor(glm::vec3& newColor);
@@ -26,12 +27,16 @@ public:
 	void setPosition(glm::vec2& pos);
 	glm::vec2 getPosition()
 	{
-		return glm::vec2(mPosition);
+		return mPosition;
+	}
+	glm::vec2 getDerivedPosition()
+	{
+		return mParentPosition + mPosition;
 	}
 	void setSize(glm::vec2& size);
 	glm::vec2 getSize()
 	{
-		return glm::vec2(mSize);
+		return mSize;
 	}
 
 	//Others
@@ -41,6 +46,14 @@ public:
 	}
 	bool rayTestToObject(glm::vec2 rayCoords);
 	void setSelected(bool sel);
+	virtual void buttonDown(glm::vec2& mousePos)
+	{
+		return;
+	}
+	virtual void buttonUp(glm::vec2& mousePos)
+	{
+		return;
+	}
 
 protected:
 	std::string mName;
@@ -54,17 +67,30 @@ protected:
 	bool visible_;
 	glm::vec4 mColor; //Alpha included
 	Texture* mTexture; //Just if its textured
+	void renderFont();
+
+	//Text properties
+	std::string mText;
+	glm::vec3 mTextColor;
+	glm::vec2 mTextPosition;
+	glm::vec2 mTextSize;
+
+	//Freetype stuff
+	GLuint fontBitmap_;
+	GLuint fontVBO_;
+	GLuint fontVAO_;
 
 	//Transformation properties
-	glm::vec3 mPosition, mParentPosition; //Parent position not for Windows - From [-1:1]
-	glm::vec3 mSize, mParentSize; //Parent size not for Windows
+	glm::vec2 mPosition, mParentPosition; //Parent position not for Windows - From [-1:1]
+	glm::vec2 mSize, mParentSize; //Parent size not for Windows
 	glm::mat4 mTransformMatrix;
 	void setTransforms();
 
 	//Others
 	void sendUniforms(Shader* UIShader);
-	virtual void update() = 0;
+	bool mouseDown_;
 
+	virtual void update() = 0;
 
 	//OpenGL properties
 	GLuint glVBO, glVAO;

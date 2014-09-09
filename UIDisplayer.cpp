@@ -71,10 +71,26 @@ UIWindow* UIDisplayer::selectWindow_byCoords(glm::vec2 mouseCoords)
 		//If we are inside the AABB
 		if (it->second->rayTestToObject(mouseCoords))
 		{
+			if (it->second->rayTestToChilds(mouseCoords))
+			{
+			}
+			else
+			{
+				it->second->buttonDown(mouseCoords);
+			}
 			it->second->setSelected(true);
 			return it->second;
 		}
 	}
 
 	return NULL;
+}
+
+void UIDisplayer::mouseButtonUp(glm::vec2 mouseCoords)
+{
+	tWindowsMap::iterator it;
+	for (it = mWindowsMap.begin(); it != mWindowsMap.end(); ++it)
+	{
+		it->second->buttonUp(mouseCoords);
+	}
 }

@@ -3,6 +3,7 @@
 
 #include "Definitions.h"
 
+#include <iostream>
 #include <map>
 #include <string>
 
@@ -22,7 +23,9 @@ public:
 	}
 
 
-
+	//Freetype - UIManager also init fonts library
+	FT_Library mFreeTypeLibrary;
+	FT_Face mFreeTypeFace;
 private:
 	typedef std::map<std::string, UIDisplayer*> tDisplayerMap;
 	tDisplayerMap mDisplayerMap;

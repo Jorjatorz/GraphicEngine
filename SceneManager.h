@@ -21,9 +21,11 @@ public:
 	//create, bind, unbind
 	//Creates a new shader, if it already exists it return a pointer to it
 	Shader* createShader(std::string shaderName, std::string shaderPath);
-	//delete and delete from disc
+	//delete
 	//delete the shader by name (from the scene)
 	void deleteShader(std::string shaderName);
+	//return that shader by name
+	Shader* getShader(std::string shaderName);
 	//set the new currentSahder
 	void setCurrentShader(Shader* newShader);
 	//bind shader and set it to currentSahder

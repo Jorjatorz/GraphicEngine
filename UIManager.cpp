@@ -5,6 +5,19 @@
 UIManager::UIManager()
 {
 	mCurrentUIDisplayer = NULL;
+
+	//Init freetype
+	if (FT_Init_FreeType(&mFreeTypeLibrary))
+	{
+		std::cout << "Error while initiating FreeType" << std::endl;
+	}
+	//Load a font (default: arial)
+	if (FT_New_Face(mFreeTypeLibrary, "Data\\Fonts\\arial.ttf", 0, &mFreeTypeFace))
+	{
+		std::cout << "Error while loading font" << std::endl;
+	}
+
+	FT_Set_Pixel_Sizes(mFreeTypeFace, 0, 48);
 }
 
 
@@ -16,6 +29,9 @@ UIManager::~UIManager()
 		delete it->second;
 	}
 	mDisplayerMap.clear();
+
+	FT_Done_Face(mFreeTypeFace);
+	FT_Done_FreeType(mFreeTypeLibrary);
 }
 
 

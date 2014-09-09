@@ -26,8 +26,9 @@ public:
 	{
 		mSDLWindow = newWindow;
 	}
-	void InputManager::setMousePosition(int x, int y);
-	void InputManager::getMousePosition(int &x, int &y);
+	void setMousePosition(int x, int y);
+	void getMousePosition(int &x, int &y);
+	glm::vec2 getMousePosition_NDC();
 
 private:
 	//Array containing all the keys status (false if not pressed). Initialize to false, use SDL_Scancode

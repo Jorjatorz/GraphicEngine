@@ -31,6 +31,7 @@ Renderer::~Renderer(void)
 #include "RigidBody.h"
 #include "PhysicsManager.h"
 #include "RayCast.h"
+
 void Renderer::createRenderer(std::string windowName, int width, int height, bool fullscreen)
 {
 	//inits components of SDL
@@ -58,8 +59,7 @@ void Renderer::createRenderer(std::string windowName, int width, int height, boo
 	fbo1->addTexture(GL_RGBA);
 	fbo2->addTexture(GL_RGBA);
 
-
-
+	
 }
 
 void Renderer::initOpenGL()
@@ -84,8 +84,11 @@ void Renderer::initOpenGL()
 
 #include "UIWindow.h"
 #include "UIDisplayer.h"
+#include "UIButton.h"
 
 int gh = 0;
+#include "EventFunction.h"
+
 void Renderer::renderFrame(real deltaTime)
 {
 	//PRuebas
@@ -148,6 +151,7 @@ void Renderer::renderFrame(real deltaTime)
 
 	//mEnt2->getMaterial()->mBaseColorS.mBaseColorV = glm::vec3(1.0, 1.0, 1.0);
 	UIWindow* wind = mSceneManager->createUIDisplayer("ui")->createWindow("lala");
+	wind->createLabel("lalal");
 	if(InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_RIGHT))
 	{
 		mCam->setControler(Camera::DEFAULT);
@@ -181,11 +185,7 @@ void Renderer::renderFrame(real deltaTime)
 
 		std::cout << wind->getPosition().x << " " << wind->getPosition().y << std::endl;*/
 
-		UIWindow* m = mSceneManager->getUIDisplayer("ui")->selectWindow_byCoords(mSceneManager->getMousePosition_NDC());
-		if (m != NULL)
-		{
-			std::cout << m->getName() << " window selected" << std::endl;
-		}
+		wind->setTexture(mSceneManager->createTexture("a", true, GL_RGBA, "Ulvida.jpg"));
 	}
 
 	/*
@@ -244,7 +244,11 @@ void Renderer::renderFrame(real deltaTime)
 	fbo->bindForRendering();
 
 	glClear(GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	mSceneManager->renderUI();
+	glEnable(GL_DEPTH_TEST);
 
 	//swap the buffers
 	mWindow->swapBuffers(true);

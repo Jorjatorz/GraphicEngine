@@ -66,13 +66,23 @@ void InputManager::getFrameInput(bool &running)
 		if(mEvent.type == SDL_MOUSEBUTTONDOWN)
 		{
 			mMousePressedArray[mEvent.button.button - 1] = true; //-1 to pass from sdl encoding to array acces encoding
-			//Select ui
-			Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->selectWindow_byCoords(Root::getSingletonPtr()->getCurrentSceneManager()->getMousePosition_NDC());
+
+			if (mEvent.button.button == SDL_BUTTON_LEFT)
+			{
+				//Select ui
+				Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->selectWindow_byCoords(getMousePosition_NDC());
+			}
 		}
 
 		if(mEvent.type == SDL_MOUSEBUTTONUP)
 		{
 			mMousePressedArray[mEvent.button.button - 1] = false;
+
+			if (mEvent.button.button == SDL_BUTTON_LEFT)
+			{
+				//Select ui
+				Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->mouseButtonUp(getMousePosition_NDC());
+			}
 		}
 
 		if(mEvent.type == SDL_KEYDOWN)
@@ -112,4 +122,15 @@ void InputManager::getMousePosition(int &x, int &y)
 {
 	x = mouseX;
 	y = mouseY;
+}
+
+glm::vec2 InputManager::getMousePosition_NDC()
+{
+	int windowH, windowW;
+	windowW = Root::getSingletonPtr()->mRenderer->getCurrentWindow()->getWidth();
+	windowH = Root::getSingletonPtr()->mRenderer->getCurrentWindow()->getHeight();
+	real x = (2.0f * mouseX) / windowW - 1.0f;
+	real y = 1.0f - (2.0f * mouseY) / windowH;
+
+	return glm::vec2(x, y);
 }

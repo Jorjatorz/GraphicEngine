@@ -15,6 +15,7 @@ public:
 	void drawDisplayer(Shader* UIShader); //Draw all windows and its elements
 
 	UIWindow* selectWindow_byCoords(glm::vec2 mouseCoords);
+	void mouseButtonUp(glm::vec2 mouseCoords);
 
 	UIWindow* createWindow(std::string name);
 	void deleteWindow(std::string name);

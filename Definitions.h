@@ -30,6 +30,9 @@
 #include <btBulletDynamicsCommon.h>
 #include <BulletCollision\Gimpact\btGImpactCollisionAlgorithm.h>
 #include<BulletCollision\NarrowPhaseCollision\btRaycastCallback.h>
+//FreeType
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 //custom type for decimals, default: float
 typedef float real;
@@ -41,6 +44,7 @@ typedef float real;
 class Camera;
 class CollisionObject;
 class Entity;
+class EventFunction;
 class FrameBuffer;
 class InputManager;
 class Light;
@@ -59,7 +63,9 @@ class SceneNode;
 class Shader;
 class Texture;
 class Timer;
+class UIButton;
 class UIDisplayer;
+class UILabel;
 class UIManager;
 class UIObject;
 class UIWindow;

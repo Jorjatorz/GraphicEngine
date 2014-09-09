@@ -22,6 +22,8 @@ public:
 	//swap front and back buffer
 	//void swapBuffers();
 
+	void a();
+
 	Window* getCurrentWindow()
 	{
 		return mWindow;

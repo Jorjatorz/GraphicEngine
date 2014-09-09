@@ -104,6 +104,18 @@ void SceneManager::deleteShader(std::string shaderName)
 
 }
 
+Shader* SceneManager::getShader(std::string shaderName)
+{
+	//iterate through the map in search of the shader
+	tShaderMap::iterator it = mShaderMap.find(shaderName);
+	if (it != mShaderMap.end())
+	{
+		return it->second;
+	}
+
+	return NULL;
+}
+
 void SceneManager::setCurrentShader(Shader* newShader)
 {
 	mCurrentShader = newShader;
