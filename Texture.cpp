@@ -4,7 +4,7 @@
 Texture::Texture(void)
 {
 	mWidth = mHeight = 0;
-	mFormat = -1;
+	mFormat = mTextureID = -1;
 	isMipmap = false;
 }
 
@@ -72,8 +72,14 @@ void Texture::loadTexture(std::string filePath, bool mipmap, GLint format)
 		return;
 	}
 
-
-	generateTexture(width, height, format, mipmap, bits);
+	if (mTextureID = -1)
+	{
+		generateTexture(width, height, format, mipmap, bits);
+	}
+	else
+	{
+		updateTexture(width, height, format, mipmap, bits);
+	}
 
 	std::cout << "Texture loaded: " << filePath << std::endl;
 
@@ -118,4 +124,11 @@ void Texture::generateTexture(int width, int height, GLint format, bool mipmap, 
 	mHeight = height;
 
 	mTextureID = tex;
+}
+
+void Texture::updateTexture(int width, int height, GLint format, bool mipmap, const GLvoid* pixels)
+{
+	glBindTexture(GL_TEXTURE_2D, mTextureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, pixels); //Free iamge loads in BGR
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

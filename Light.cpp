@@ -20,6 +20,7 @@ Light::Light(std::string name, SceneManager* newSceneManager)
 	mAttachedToNode = false;
 	visible = true;
 	castShadows = true;
+	drawAABB = false;
 
 	mTypeOfMovableObject = tTypeEnum::Light;
 }

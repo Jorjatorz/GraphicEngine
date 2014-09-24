@@ -3,9 +3,8 @@
 
 #include "Definitions.h"
 
-#include <iostream>
-#include <map>
 #include <string>
+#include <map>
 
 class UIManager
 {
@@ -13,23 +12,33 @@ public:
 	UIManager();
 	~UIManager();
 
+	void update()
+	{
+		mAwesomiumCore->Update();
+	}
+
 	UIDisplayer* createDisplayer(std::string name, SceneManager* manager);
 	void deleteDisplayer(std::string name);
 	UIDisplayer* getDisplayer(std::string name);
-	void setCurrentDisplayer(UIDisplayer* disp); //Invoked by scenemanager
+	void setCurrentDisplayer(UIDisplayer* displayer);
 	UIDisplayer* getCurrentDisplayer()
 	{
-		return mCurrentUIDisplayer;
+		return mCurrentDisplayer;
 	}
 
+	Awesomium::WebCore* getUICore()
+	{
+		return mAwesomiumCore;
+	}
 
-	//Freetype - UIManager also init fonts library
-	FT_Library mFreeTypeLibrary;
-	FT_Face mFreeTypeFace;
 private:
 	typedef std::map<std::string, UIDisplayer*> tDisplayerMap;
 	tDisplayerMap mDisplayerMap;
-	UIDisplayer* mCurrentUIDisplayer;
+
+	UIDisplayer* mCurrentDisplayer; //Same as the scenemanager current displayer
+
+	//Awesomium
+	Awesomium::WebCore* mAwesomiumCore;
 };
 
 #endif

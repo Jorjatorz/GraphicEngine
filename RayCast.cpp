@@ -1,12 +1,13 @@
 #include "RayCast.h"
 
 #include "PhysicsManager.h"
+#include "MovableObject.h"
 
 RayCast::RayCast()
 {
 	mCurrentDynamicWolrd = PhysicsManager::getSingletonPtr()->getDynamicWorld();
 
-	hasHits = false;
+	bHits = false;
 	mHitObject = NULL;
 }
 
@@ -14,9 +15,7 @@ RayCast::RayCast()
 RayCast::~RayCast()
 {
 }
-#include <iostream>
-#include "MovableObject.h"
-#include "Entity.h"
+
 void RayCast::executeRaySelectionCast(glm::vec3 start, glm::vec3 end)
 {
 	btCollisionWorld::ClosestRayResultCallback rayCallBack(btVector3(start.x, start.y, start.z), btVector3(end.x, end.y, end.z));
@@ -25,15 +24,15 @@ void RayCast::executeRaySelectionCast(glm::vec3 start, glm::vec3 end)
 
 	if (rayCallBack.hasHit())
 	{
-		hasHits = true;
+		bHits = true;
 
-		mHitObject = static_cast<Entity*>(rayCallBack.m_collisionObject->getUserPointer());
+		mHitObject = static_cast<MovableObject*>(rayCallBack.m_collisionObject->getUserPointer());
 
-		std::cout << mHitObject->getName() << std::endl;
+		//std::cout << mHitObject->getName() << std::endl;
 	}
 	else
 	{
-		hasHits = false;
+		bHits = false;
 		mHitObject = NULL;
 	}
 }

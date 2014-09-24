@@ -92,6 +92,19 @@ public:
 	void deleteFrameBuffer(std::string name);
 	FrameBuffer* getFrameBuffer(std::string name);
 
+	//UI
+	UIDisplayer* createDisplayer(std::string name);
+	void deleteDisplayer(std::string name);
+	UIDisplayer* getDisplayer(std::string name);
+	void setCurrentDisplayer(std::string name);
+	UIDisplayer* getCurrentDisplayer()
+	{
+		return mCurrentDisplayer;
+	}
+
+	//Timer
+	real mDeltaTime;
+
 	//aux
 	//sets the perspectiveMAtrix
 	void setPerspectiveMatrix(real FOV, real width, real height, real zNear, real zFar = 0);
@@ -108,16 +121,18 @@ public:
 	//return the world position of the current mouse position
 	glm::vec2 getMousePosition_NDC();
 	glm::vec3 getMousePosition_WorldSpace();
+	glm::vec2 getMousePosition_WindowSDL();
+	//return the window width/height
+	glm::vec2 getWindowDimensions();
 
-	//UI
-	void renderUI();
-	UIDisplayer* createUIDisplayer(std::string name);
-	void deleteUIDisplayer(std::string name);
-	UIDisplayer* getUIDisplayer(std::string name);
-	void setCurrentUIDisplayer(std::string name);
+	//Editor
+	bool isEditorModeOn()
+	{
+		return editorModeOn_;
+	}
+	void injectMouseDown_WorldEditor();
+	void processWorldEditor();
 
-	//Timer
-	real mDeltaTime;
 
 private:
 
@@ -129,7 +144,6 @@ private:
 	typedef std::map<std::string, Light*> tLightMap;
 	typedef std::map<std::string, Material*> tMaterialMap;
 	typedef std::map<std::string, FrameBuffer*> tFrameBufferMap;
-	typedef std::map<std::string, UIDisplayer*> tUIDisplayersMap;
 
 	//define maps
 	tShaderMap mShaderMap;
@@ -139,10 +153,13 @@ private:
 	tLightMap mLightMap;
 	tMaterialMap mMaterialMap;
 	tFrameBufferMap mFrameBufferMap;
-	tUIDisplayersMap mUiDisplayersMap;
 
 	//projection matrix
 	glm::mat4 mProjectionMatrix;
+
+	//Editor mode
+	WorldEditor* mWorldEditor;
+	bool editorModeOn_;
 
 	//root sceneNode
 	SceneNode* mRootSceneNode;
@@ -155,9 +172,8 @@ private:
 	//current active camera
 	Camera* mCurrentCamera;
 
-	//UI private members
-	//current active displayer
-	UIDisplayer* mCurrentUIDisplayer;
+	//UI
+	UIDisplayer* mCurrentDisplayer;
 
 	//Pointer to renderer
 	Renderer* mRenderer;

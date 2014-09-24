@@ -1,96 +1,142 @@
 #include "UIDisplayer.h"
-#include "UIWindow.h"
 
-UIDisplayer::UIDisplayer(std::string name, SceneManager* manager)
+#include "UIWindow.h"
+#include "SceneManager.h"
+#include "UIManager.h"
+#include "UICallbackListener.h"
+
+UIDisplayer::UIDisplayer(std::string name, SceneManager* manager, UIManager* uiManager)
 {
 	mName = name;
-	mCurrentSceneManager = manager;
+	mCurrentManager = manager;
+	mFocusWindow = NULL;
+	mUIManager = uiManager;
 }
 
 
 UIDisplayer::~UIDisplayer()
 {
-	tWindowsMap::iterator it;
-	for (it = mWindowsMap.begin(); it != mWindowsMap.end(); ++it)
+	tWindowMap::iterator it;
+	for (it = mWindowMap.begin(); it != mWindowMap.end(); ++it)
 	{
 		delete it->second;
 	}
-	mWindowsMap.clear();
+	mWindowMap.clear();
 }
 
-UIWindow* UIDisplayer::createWindow(std::string name)
+UIWindow* UIDisplayer::createUIWindow(std::string name, real Width, real Height, std::string uiFilePath)
 {
-	tWindowsMap::iterator it = mWindowsMap.find(name);
-	if (it != mWindowsMap.end())
+	tWindowMap::iterator it = mWindowMap.find(name);
+	if (it != mWindowMap.end())
 	{
 		return it->second;
 	}
 
-	UIWindow* newWindow = new UIWindow(name, mCurrentSceneManager);
+	UIWindow* newWindow = new UIWindow(name, Width, Height, uiFilePath, mCurrentManager);
+	mFocusWindow = newWindow;
+	newWindow->mAwesomiumView->Focus();
+	mWindowMap.insert(std::pair<std::string, UIWindow*>(name, newWindow));
 
-	mWindowsMap.insert(std::pair<std::string, UIWindow*>(name, newWindow));
 	return newWindow;
+
 }
-void UIDisplayer::deleteWindow(std::string name)
+void UIDisplayer::deleteUIWindow(std::string name)
 {
-	tWindowsMap::iterator it = mWindowsMap.find(name);
-	if (it != mWindowsMap.end())
+	tWindowMap::iterator it = mWindowMap.find(name);
+	if (it != mWindowMap.end())
 	{
 		delete it->second;
-		mWindowsMap.erase(it);
+		mWindowMap.erase(it);
 	}
 }
 UIWindow* UIDisplayer::getWindow(std::string name)
 {
-	tWindowsMap::iterator it = mWindowsMap.find(name);
-	if (it != mWindowsMap.end())
+	tWindowMap::iterator it = mWindowMap.find(name);
+	if (it != mWindowMap.end())
 	{
 		return it->second;
-	}
-	else
-	{
-		return NULL;
-	}
-}
-
-void UIDisplayer::drawDisplayer(Shader* UIShader)
-{
-	tWindowsMap::iterator it;
-	for (it = mWindowsMap.begin(); it != mWindowsMap.end(); ++it)
-	{
-		it->second->drawObject(UIShader);
-	}
-}
-#include <iostream>
-
-UIWindow* UIDisplayer::selectWindow_byCoords(glm::vec2 mouseCoords)
-{
-	tWindowsMap::iterator it;
-	for (it = mWindowsMap.begin(); it != mWindowsMap.end(); ++it)
-	{
-		//If we are inside the AABB
-		if (it->second->rayTestToObject(mouseCoords))
-		{
-			if (it->second->rayTestToChilds(mouseCoords))
-			{
-			}
-			else
-			{
-				it->second->buttonDown(mouseCoords);
-			}
-			it->second->setSelected(true);
-			return it->second;
-		}
 	}
 
 	return NULL;
 }
 
-void UIDisplayer::mouseButtonUp(glm::vec2 mouseCoords)
+void UIDisplayer::renderDisplayer()
 {
-	tWindowsMap::iterator it;
-	for (it = mWindowsMap.begin(); it != mWindowsMap.end(); ++it)
+	Shader* shad = mCurrentManager->createShader("UIShader", "UIShader");
+	mCurrentManager->bindShader(shad);
+
+	//Update the core
+	mUIManager->update();
+
+	tWindowMap::iterator it;
+	for (it = mWindowMap.begin(); it != mWindowMap.end(); ++it)
 	{
-		it->second->buttonUp(mouseCoords);
+		Awesomium::WebCore::instance()->Update();
+		it->second->render(shad);
 	}
+}
+
+void UIDisplayer::setMouseMove(glm::vec2 newPos)
+{
+	tWindowMap::iterator it;
+	for (it = mWindowMap.begin(); it != mWindowMap.end(); ++it)
+	{
+		if (it->second->rayTestToQuad(mCurrentManager->getMousePosition_NDC()))
+		{
+			it->second->setMouseMove(newPos);
+			mFocusWindow = it->second;
+			mFocusWindow->mAwesomiumView->Focus();
+		}
+		else if (mFocusWindow != NULL)
+		{
+			mFocusWindow->mAwesomiumView->Unfocus();
+			mFocusWindow = NULL;
+		}
+	}
+}
+void UIDisplayer::setMouseButtonDown()
+{
+	if (mFocusWindow != NULL)
+	{
+		mFocusWindow->setMouseButtonDown();
+	}
+}
+void UIDisplayer::setMouseButtonUp()
+{
+	if (mFocusWindow != NULL)
+	{
+		mFocusWindow->setMouseButtonUp();
+	}
+}
+
+void UIDisplayer::setPropertyToWindow(std::string windowName, std::string elementName, std::string jsPropertyName, real value)
+{
+	UIWindow* wind = getWindow(windowName);
+
+	if (wind != NULL)
+	{
+		wind->getCallBackListener()->setJSValue(elementName, jsPropertyName, value);
+	}
+}
+
+void UIDisplayer::setPropertyToWindow(std::string windowName, std::string elementName, std::string jsPropertyName, std::string value)
+{
+	UIWindow* wind = getWindow(windowName);
+
+	if (wind != NULL)
+	{
+		wind->getCallBackListener()->setJSValue(elementName, jsPropertyName, value);
+	}
+}
+
+Awesomium::JSValue UIDisplayer::getPropertyFromWindow(std::string windowName, std::string elementName, std::string jsPropertyName)
+{
+	UIWindow* wind = getWindow(windowName);
+
+	if (wind != NULL)
+	{
+		return wind->getCallBackListener()->getJSValue(elementName, jsPropertyName);
+	}
+
+	return Awesomium::JSValue::Undefined();
 }

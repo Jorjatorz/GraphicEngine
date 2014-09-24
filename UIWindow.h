@@ -2,37 +2,67 @@
 #define UIWINDOW_H
 
 #include "Definitions.h"
-#include "UIObject.h"
+#include "UICallbackListener.h"
 
 #include <string>
-#include <map>
 
-class UIWindow: public UIObject
+//Doesnt use ResourceManager, its a Use - Delete class resoruces (included textures).
+class UIWindow
 {
 public:
-	UIWindow(std::string name, SceneManager* manager);
+	UIWindow(std::string name, real Width, real Height, std::string uiFilePath, SceneManager* manager);
 	~UIWindow();
 
-	void drawChildrens(Shader* UIShader);
+	void render(Shader* uiShad);
 
-	//Button
-	UIButton* createButton(std::string name);
-	//Label
-	UILabel* createLabel(std::string name);
-	void deleteLabel(std::string name);
+	//Called by the UI, swaps the resize mode ot on-off
+	void resize();
+	void checkForResize(); //Executed every frame, if true it resize the window
+	//Called by the UI, moves the window
+	void moveWindow();
+	void checkForMove(); //Executed every frame, if true it moves the window
 
-	void deleteObject(std::string name);
 
-	void update();
-	bool rayTestToChilds(glm::vec2 mouseCoords);
-	void buttonDown(glm::vec2& mousePos);
-	void buttonUp(glm::vec2& mousePos);
+	bool rayTestToQuad(glm::vec2 pointPos);
 
+	void setMouseMove(glm::vec2 mousePos);
+	void setMouseButtonDown();
+	void setMouseButtonUp();
+
+	//add a new function callback - Templates must be declare un .h
+	template<typename T>
+	void addCallbackReciver(std::string mJSCallbackFunction, void (T::*functionToExecutePtr)(), T* obj)
+	{
+		mCallbackListener.addFunctionCallback(mJSCallbackFunction, functionToExecutePtr, obj);
+	}
+	UICallbackListener* getCallBackListener()
+	{
+		return &mCallbackListener;
+	}
+
+	//Awesomium view
+	Awesomium::WebView* mAwesomiumView;
 private:
-	glm::vec2 lastMouse;
+	std::string mName;
+	real mWidth, mHeight;
+	glm::vec2 mPosition;
+	glm::vec2 mSize; //From '1 to 1
+	SceneManager* mCurrentSceneManager;
 
-	typedef std::map<std::string, UIObject*> tWindowObjectsMap;
-	tWindowObjectsMap mObjectsMap;
+	//Resize & move mode
+	bool bResize;
+	bool bMove;
+	glm::vec2 mLastMousePosition;
+
+	//Opengl
+	GLuint VAO_, VBO_;
+	void createQuad();
+
+	//Awesomium
+	Awesomium::WebCore* mAwesomiumCore;
+
+	//Callback listener
+	UICallbackListener mCallbackListener;
 };
 
 #endif

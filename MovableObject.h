@@ -44,6 +44,12 @@ public:
 		visible = vis;
 	}
 
+	void showAABB(bool show);
+	bool isAABBshowed()
+	{
+		return drawAABB;
+	}
+
 	void setAttached(bool att);
 	void setAttached(bool att, SceneNode* newNode);
 
@@ -57,6 +63,7 @@ protected:
 	bool visible;
 	bool castShadows;
 	bool mAttachedToNode; //is attached to a scenode?
+	bool drawAABB;
 
 	tTypeEnum mTypeOfMovableObject;
 };

@@ -42,11 +42,6 @@ public:
 
 	//Others
 	void setModelMatrix(glm::mat4 matrix);
-	void showAABB(bool show);
-	bool isAABBshowed()
-	{
-		return drawAABB;
-	}
 
 	Material* getMaterial()
 	{
@@ -80,7 +75,7 @@ private:
 	void sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm::mat4 viewMatrix);
 
 	bool wireFrame;
-	bool drawAABB;
+
 
 	/*
 	//inheritated

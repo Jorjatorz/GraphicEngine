@@ -19,10 +19,10 @@ public:
 	//render a frame
 	void renderFrame(real deltaTime);
 
+	void a();
+
 	//swap front and back buffer
 	//void swapBuffers();
-
-	void a();
 
 	Window* getCurrentWindow()
 	{

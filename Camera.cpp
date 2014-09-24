@@ -18,6 +18,7 @@ Camera::Camera(SceneManager* newSceneManager)
 	mCurrentControlType = NOCONTROLER;
 	movementSpeed = 2.0;
 	mouseSpeed = 0.2;
+	drawAABB = false;
 
 	//Pointing to 0, 0, -1
 	camPitch = 3.1415;

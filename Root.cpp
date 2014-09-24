@@ -6,12 +6,13 @@
 #include "ResourceManager.h"
 #include "PhysicsManager.h"
 #include "SceneManager.h"
-#include "UIManager.h"
 #include "Timer.h"
+#include "UIManager.h"
 
 Root::Root(void)
 {
 	mRenderer = NULL;
+	mUIManager = NULL;
 	mCurrentSceneManager = NULL;
 }
 
@@ -21,6 +22,7 @@ Root::~Root(void)
 	deleteAllTimers();
 	deleteAllSceneManagers();
 	delete mPhysicsManager;
+	delete mUIManager;
 	delete mRenderer;
 	delete mInput;
 	delete mResourceManager;
@@ -39,7 +41,7 @@ void Root::initEngine()
 
 	//Create physics world
 	mPhysicsManager->initPhysicsWorld();
-	//create uimanager
+	//create new ui
 	mUIManager = new UIManager();
 	//create a new renderer
 	mRenderer = new Renderer();

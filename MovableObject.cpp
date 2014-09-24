@@ -26,3 +26,8 @@ void MovableObject::setAttached(bool att, SceneNode* newNode)
 	mAttachedToNode = att;
 	mParentSceneNode = newNode;
 }
+
+void MovableObject::showAABB(bool show)
+{
+	drawAABB = show;
+}

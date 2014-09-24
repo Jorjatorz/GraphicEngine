@@ -3,31 +3,45 @@
 
 #include "Definitions.h"
 
-#include <map>
 #include <string>
+#include <map>
 
 class UIDisplayer
 {
 public:
-	UIDisplayer(std::string name, SceneManager* manager);
+	UIDisplayer(std::string name, SceneManager* manager, UIManager* uiManager);
 	~UIDisplayer();
 
-	void drawDisplayer(Shader* UIShader); //Draw all windows and its elements
-
-	UIWindow* selectWindow_byCoords(glm::vec2 mouseCoords);
-	void mouseButtonUp(glm::vec2 mouseCoords);
-
-	UIWindow* createWindow(std::string name);
-	void deleteWindow(std::string name);
+	UIWindow* createUIWindow(std::string name, real Width, real Height, std::string uiFilePath);
+	void deleteUIWindow(std::string name);
 	UIWindow* getWindow(std::string name);
+	UIWindow* getFocusWindow()
+	{
+		return mFocusWindow;
+	}
+
+	void renderDisplayer();
+
+	//JS
+	Awesomium::JSValue getPropertyFromWindow(std::string windowName, std::string elementName, std::string jsPropertyName);
+	void setPropertyToWindow(std::string windowName, std::string elementName, std::string jsPropertyName, real value);
+	void setPropertyToWindow(std::string windowName, std::string elementName, std::string jsPropertyName, std::string value);
+
+	//Input
+	void setMouseMove(glm::vec2 newPos);
+	void setMouseButtonDown();
+	void setMouseButtonUp();
+
 
 private:
 	std::string mName;
+	SceneManager* mCurrentManager;
+	UIManager *mUIManager;
 
-	typedef std::map<std::string, UIWindow*> tWindowsMap;
-	tWindowsMap mWindowsMap;
+	UIWindow* mFocusWindow;
 
-	SceneManager* mCurrentSceneManager;
+	typedef std::map<std::string, UIWindow*> tWindowMap;
+	tWindowMap mWindowMap;
 };
 
 #endif

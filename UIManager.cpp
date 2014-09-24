@@ -1,23 +1,15 @@
 #include "UIManager.h"
 
 #include "UIDisplayer.h"
+#include "UIDrawer.h"
 
 UIManager::UIManager()
 {
-	mCurrentUIDisplayer = NULL;
+	//Initiate awwesonium
+	mAwesomiumCore = Awesomium::WebCore::Initialize(Awesomium::WebConfig());
+	mAwesomiumCore->set_surface_factory(new UITextureSurfaceFactory());
 
-	//Init freetype
-	if (FT_Init_FreeType(&mFreeTypeLibrary))
-	{
-		std::cout << "Error while initiating FreeType" << std::endl;
-	}
-	//Load a font (default: arial)
-	if (FT_New_Face(mFreeTypeLibrary, "Data\\Fonts\\arial.ttf", 0, &mFreeTypeFace))
-	{
-		std::cout << "Error while loading font" << std::endl;
-	}
-
-	FT_Set_Pixel_Sizes(mFreeTypeFace, 0, 48);
+	mCurrentDisplayer = NULL;
 }
 
 
@@ -30,8 +22,7 @@ UIManager::~UIManager()
 	}
 	mDisplayerMap.clear();
 
-	FT_Done_Face(mFreeTypeFace);
-	FT_Done_FreeType(mFreeTypeLibrary);
+	Awesomium::WebCore::Shutdown();
 }
 
 
@@ -43,11 +34,10 @@ UIDisplayer* UIManager::createDisplayer(std::string name, SceneManager* manager)
 		return it->second;
 	}
 
-	UIDisplayer* mNewDisplayer = new UIDisplayer(name, manager);
+	UIDisplayer* newDisplayer = new UIDisplayer(name, manager, this);
+	mDisplayerMap.insert(std::pair<std::string, UIDisplayer*>(name, newDisplayer));
 
-	mDisplayerMap.insert(std::pair<std::string, UIDisplayer*>(name, mNewDisplayer));
-
-	return mNewDisplayer;
+	return newDisplayer;
 }
 void UIManager::deleteDisplayer(std::string name)
 {
@@ -57,6 +47,7 @@ void UIManager::deleteDisplayer(std::string name)
 		delete it->second;
 		mDisplayerMap.erase(it);
 	}
+
 }
 UIDisplayer* UIManager::getDisplayer(std::string name)
 {
@@ -65,13 +56,11 @@ UIDisplayer* UIManager::getDisplayer(std::string name)
 	{
 		return it->second;
 	}
-	else
-	{
-		return NULL;
-	}
+
+	return NULL;
 }
 
-void UIManager::setCurrentDisplayer(UIDisplayer* disp)
+void UIManager::setCurrentDisplayer(UIDisplayer* displayer)
 {
-	mCurrentUIDisplayer = disp;
+	mCurrentDisplayer = displayer;
 }

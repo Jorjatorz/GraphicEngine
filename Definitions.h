@@ -2,6 +2,9 @@
 //#define DEBUG_MESSAGES
 //#define SHADER_MESSAGES //Display shader uniform messages (not found etc)
 
+
+#include <Windows.h>
+
 //external includes
 //SLD
 #include <SDL.h>
@@ -33,6 +36,10 @@
 //FreeType
 #include <ft2build.h>
 #include FT_FREETYPE_H
+//Awesonium
+#include <Awesomium\WebCore.h>
+#include <Awesomium\BitmapSurface.h>
+#include <Awesomium\STLHelpers.h>
 
 //custom type for decimals, default: float
 typedef float real;
@@ -44,12 +51,13 @@ typedef float real;
 class Camera;
 class CollisionObject;
 class Entity;
-class EventFunction;
 class FrameBuffer;
 class InputManager;
 class Light;
+class ListenerReciver;
 class Material;
 class Math;
+//class MemberFunctionSlot; Can't put it here, template class
 class Mesh;
 class MovableObject;
 class PhysicsManager;
@@ -61,15 +69,17 @@ class Root;
 class SceneManager;
 class SceneNode;
 class Shader;
+class SlotResolver;
 class Texture;
 class Timer;
-class UIButton;
+class UICallbackListener;
 class UIDisplayer;
-class UILabel;
+class UIDrawer;
+class UITextureSurfaceFactory; //Derived from awesomium
 class UIManager;
-class UIObject;
 class UIWindow;
 class Window;
+class WorldEditor;
 
 //Not included
 //class Singleton

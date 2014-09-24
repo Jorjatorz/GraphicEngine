@@ -61,16 +61,28 @@ void InputManager::getFrameInput(bool &running)
 			{
 				mCam->handleMouseMove(this, mouseX, mouseY);
 			}
+
+			//std::cout << mouseX << " " << mouseY << std::endl;
+
+			UIDisplayer* displayer = Root::getSingletonPtr()->mUIManager->getCurrentDisplayer();
+			if (displayer != NULL)
+			{
+				displayer->setMouseMove(glm::vec2(mouseX, mouseY));
+			}
 		}
 
 		if(mEvent.type == SDL_MOUSEBUTTONDOWN)
 		{
 			mMousePressedArray[mEvent.button.button - 1] = true; //-1 to pass from sdl encoding to array acces encoding
 
-			if (mEvent.button.button == SDL_BUTTON_LEFT)
+			Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->setMouseButtonDown();
+
+			if ((Root::getSingletonPtr()->getCurrentSceneManager()->isEditorModeOn()) && (Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->getFocusWindow() == NULL))
 			{
-				//Select ui
-				Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->selectWindow_byCoords(getMousePosition_NDC());
+				if (mEvent.button.button == SDL_BUTTON_LEFT)
+				{
+					Root::getSingletonPtr()->getCurrentSceneManager()->injectMouseDown_WorldEditor();
+				}
 			}
 		}
 
@@ -78,11 +90,7 @@ void InputManager::getFrameInput(bool &running)
 		{
 			mMousePressedArray[mEvent.button.button - 1] = false;
 
-			if (mEvent.button.button == SDL_BUTTON_LEFT)
-			{
-				//Select ui
-				Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->mouseButtonUp(getMousePosition_NDC());
-			}
+			Root::getSingletonPtr()->mUIManager->getCurrentDisplayer()->setMouseButtonUp();
 		}
 
 		if(mEvent.type == SDL_KEYDOWN)
@@ -93,15 +101,15 @@ void InputManager::getFrameInput(bool &running)
 	}
 }
 
-bool InputManager::isKeyDown(short int keyCode)
+bool InputManager::isKeyDown(short int scanCode)
 {
-	return mKeyPressedArray[keyCode];
+	return mKeyPressedArray[scanCode];
 }
 
-bool InputManager::isKeyUp(short int keyCode)
+bool InputManager::isKeyUp(short int scanCode)
 {
 	//return the array negated because if the key is not pressed (false) then its up (so !false = true)
-	return !mKeyPressedArray[keyCode];
+	return !mKeyPressedArray[scanCode];
 }
 
 bool InputManager::isMouseButtonDown(short int buttonCode)
@@ -116,6 +124,11 @@ bool InputManager::isMouseButtonUp(short int buttonCode)
 void InputManager::setMousePosition(int x, int y)
 {
 	SDL_WarpMouseInWindow(mSDLWindow, x, y);
+}
+
+void InputManager::getMousePosition(glm::vec2& mousePos)
+{
+	mousePos = glm::vec2(mouseX, mouseY);
 }
 
 void InputManager::getMousePosition(int &x, int &y)

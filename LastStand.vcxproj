@@ -44,13 +44,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\SDK\SDL\include;D:\SDK\ASSIMP\include;D:\SDK\BULLET\src;D:\SDK\FREEIMAGE\Dist;D:\SDK\FREETYPE\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\SDK\SDL\include;D:\SDK\ASSIMP\include;D:\SDK\BULLET\src;D:\SDK\FREEIMAGE\Dist;D:\SDK\FREETYPE\include;D:\SDK\AWESONIUM\1.7.4.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\SDK\SDL\lib\x86;D:\SDK\ASSIMP\lib\x86;D:\SDK\BULLET\lib;D:\SDK\FREEIMAGE\Dist;D:\SDK\FREETYPE\objs\win32\vc2010;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;opengl32.lib;assimp.lib;BulletCollision_debug.lib;BulletDynamics_debug.lib;LinearMath_debug.lib;FreeImaged.lib;freetype253_D.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\SDK\SDL\lib\x86;D:\SDK\ASSIMP\lib\x86;D:\SDK\BULLET\lib;D:\SDK\FREEIMAGE\Dist;D:\SDK\FREETYPE\objs\win32\vc2010;D:\SDK\AWESONIUM\1.7.4.2\build\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;opengl32.lib;assimp.lib;BulletCollision_debug.lib;BulletDynamics_debug.lib;LinearMath_debug.lib;FreeImaged.lib;freetype253_D.lib;awesomium.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -75,15 +75,16 @@
     <ClInclude Include="CollisionObject.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="EventFunction.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GameResource.h" />
     <ClInclude Include="GLDebugDrawer.h" />
     <ClInclude Include="GLDebugFont.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="ListenerReciver.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="MemberFunctionSlot.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MovableObject.h" />
     <ClInclude Include="PhysicsManager.h" />
@@ -96,30 +97,32 @@
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="SlotResolver.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="UIButton.h" />
+    <ClInclude Include="UICallbackListener.h" />
     <ClInclude Include="UIDisplayer.h" />
-    <ClInclude Include="UILabel.h" />
+    <ClInclude Include="UIDrawer.h" />
     <ClInclude Include="UIManager.h" />
-    <ClInclude Include="UIObject.h" />
     <ClInclude Include="UIWindow.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="WorldEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CollisionObject.cpp" />
     <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="EventFunction.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GameResource.cpp" />
     <ClCompile Include="GLDebugDrawer.cpp" />
     <ClCompile Include="GLDebugFont.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="ListenerReciver.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Math.cpp" />
+    <ClCompile Include="MemberFunctionSlot.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MovableObject.cpp" />
     <ClCompile Include="PhysicsManager.cpp" />
@@ -131,15 +134,16 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SlotResolver.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UICallbackListener.cpp" />
     <ClCompile Include="UIDisplayer.cpp" />
-    <ClCompile Include="UILabel.cpp" />
+    <ClCompile Include="UIDrawer.cpp" />
     <ClCompile Include="UIManager.cpp" />
-    <ClCompile Include="UIObject.cpp" />
     <ClCompile Include="UIWindow.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WorldEditor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

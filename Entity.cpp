@@ -116,6 +116,7 @@ void Entity::render(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix)
 
 		}
 
+		//After rendering the object
 		if (drawAABB)
 		{
 			mSceneManager->bindShader(mSceneManager->createShader("AABBshader", "AABB"));
@@ -177,11 +178,6 @@ void Entity::setWireFrame(bool wire)
 void Entity::setModelMatrix(glm::mat4 matrix)
 {
 	mModelMatrix = matrix;
-}
-
-void Entity::showAABB(bool show)
-{
-	drawAABB = show;
 }
 
 void Entity::makeRigidBody(SceneNode* node)

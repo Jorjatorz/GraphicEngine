@@ -13,9 +13,10 @@
 #include "Math.h"
 #include "InputManager.h"
 #include "Window.h"
+#include "Root.h"
 #include "UIDisplayer.h"
 #include "UIManager.h"
-#include "Root.h"
+#include "WorldEditor.h"
 
 SceneManager::SceneManager(Renderer* mCurrentRenderer)
 {
@@ -25,7 +26,10 @@ SceneManager::SceneManager(Renderer* mCurrentRenderer)
 	//Init pointers
 	mCurrentCamera = NULL;
 	mCurrentShader = NULL;
-	mCurrentUIDisplayer = NULL;
+	mCurrentDisplayer = NULL;
+	mWorldEditor = new WorldEditor(this);
+
+	editorModeOn_ = true;
 
 	//Create a screenQuad for FBOS
 	ResourceManager::getSingletonPtr()->createScreenQuad();
@@ -66,6 +70,8 @@ SceneManager::~SceneManager(void)
 		delete fboIterator->second;
 	}
 	mFrameBufferMap.clear();
+
+	delete mWorldEditor;
 }
 
 
@@ -602,66 +608,49 @@ glm::vec3 SceneManager::getMousePosition_WorldSpace()
 	return dir_wor;
 }
 
-void SceneManager::renderUI()
-{
-	if (mCurrentUIDisplayer != NULL)
-	{
-		Shader* shad = createShader("UIShader", "UIShader");
-		bindShader(shad);
-		mCurrentUIDisplayer->drawDisplayer(shad); //Will change this so can use other shaders
-	}
-}
-UIDisplayer* SceneManager::createUIDisplayer(std::string name)
-{
-	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
-	if (it != mUiDisplayersMap.end())
-	{
-		UIManager* manager = Root::getSingletonPtr()->mUIManager;
-		mCurrentUIDisplayer = it->second; //Set current
-		manager->setCurrentDisplayer(mCurrentUIDisplayer);
-		return it->second;
-	}
 
-	UIManager* manager = Root::getSingletonPtr()->mUIManager;
-	UIDisplayer* newUiDisplayer = manager->createDisplayer(name, this);
-	mCurrentUIDisplayer = newUiDisplayer;
+glm::vec2 SceneManager::getMousePosition_WindowSDL()
+{
+	//Return the mouse position in SDL coords
+	int mouseX, mouseY;
+	InputManager::getSingletonPtr()->getMousePosition(mouseX, mouseY);
 
-	mUiDisplayersMap.insert(std::pair<std::string, UIDisplayer*>(name, newUiDisplayer));
-	return newUiDisplayer;
-}
-void SceneManager::deleteUIDisplayer(std::string name)
-{
-	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
-	if (it != mUiDisplayersMap.end())
-	{
-		if (it->second == mCurrentUIDisplayer)
-		{
-			mCurrentUIDisplayer = NULL;
-		}
-		delete it->second;
-		mUiDisplayersMap.erase(it);
-	}
-}
-UIDisplayer* SceneManager::getUIDisplayer(std::string name)
-{
-	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
-	if (it != mUiDisplayersMap.end())
-	{
-		return it->second;
-	}
-	else
-	{
-		return NULL;
-	}
+	return glm::vec2(mouseX, mouseY);
 }
 
-void SceneManager::setCurrentUIDisplayer(std::string name)
+UIDisplayer* SceneManager::createDisplayer(std::string name)
 {
-	tUIDisplayersMap::iterator it = mUiDisplayersMap.find(name);
-	if (it != mUiDisplayersMap.end())
-	{
-		mCurrentUIDisplayer = it->second; //Set current
-		UIManager* manager = Root::getSingletonPtr()->mUIManager;
-		manager->setCurrentDisplayer(mCurrentUIDisplayer);
-	}
+	return Root::getSingletonPtr()->mUIManager->createDisplayer(name, this);
+}
+void SceneManager::deleteDisplayer(std::string name)
+{
+	Root::getSingletonPtr()->mUIManager->deleteDisplayer(name);
+}
+UIDisplayer* SceneManager::getDisplayer(std::string name)
+{
+	return Root::getSingletonPtr()->mUIManager->getDisplayer(name);
+}
+
+void SceneManager::setCurrentDisplayer(std::string name)
+{
+	mCurrentDisplayer = getDisplayer(name);
+
+	Root::getSingletonPtr()->mUIManager->setCurrentDisplayer(mCurrentDisplayer);
+}
+
+glm::vec2 SceneManager::getWindowDimensions()
+{
+	Window* wind = getRenderer()->getCurrentWindow();
+
+	return glm::vec2(wind->getWidth(), wind->getHeight());
+}
+
+void SceneManager::injectMouseDown_WorldEditor()
+{
+	mWorldEditor->selectObject_RayCast(mCurrentCamera->getPosition(), getMousePosition_WorldSpace());
+}
+
+void SceneManager::processWorldEditor()
+{
+	mWorldEditor->processWorldEditor();
 }

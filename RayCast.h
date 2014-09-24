@@ -9,20 +9,28 @@ public:
 	RayCast();
 	~RayCast();
 
+	//For raycast from camera using mouse pass as parameter -> start = cameraPos, end = mouseWorldPos * X big number
 	void executeRaySelectionCast(glm::vec3 start, glm::vec3 end); //End can be used as direction multiplaying the direction by a high number
 
 	//Return the closes hit object
-	Entity* getHitObject()
+	MovableObject* getHitObject()
 	{
 		return mHitObject;
 	}
+	bool hasHits()
+	{
+		return bHits;
+	}
 
-	bool hasHits;
+
 
 private:
 	btDiscreteDynamicsWorld* mCurrentDynamicWolrd;
 
-	Entity* mHitObject;
+	MovableObject* mHitObject;
+
+	//True if  we have hits
+	bool bHits;
 };
 
 #endif

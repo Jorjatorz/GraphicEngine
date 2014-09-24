@@ -16,8 +16,8 @@ public:
 	void getFrameInput(bool &running);
 
 	//return if the key is pressed or not (scanCode)(mouse_button_)
-	bool isKeyDown(short int keyCode);
-	bool isKeyUp(short int keyCode);
+	bool isKeyDown(short int scanCode);
+	bool isKeyUp(short int scanCode);
 	bool isMouseButtonDown(short int buttonCode);
 	bool isMouseButtonUp(short int buttonCode);
 
@@ -28,6 +28,7 @@ public:
 	}
 	void setMousePosition(int x, int y);
 	void getMousePosition(int &x, int &y);
+	void getMousePosition(glm::vec2& mousePos);
 	glm::vec2 getMousePosition_NDC();
 
 private:

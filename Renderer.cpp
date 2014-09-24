@@ -31,6 +31,8 @@ Renderer::~Renderer(void)
 #include "RigidBody.h"
 #include "PhysicsManager.h"
 #include "RayCast.h"
+#include "UIDisplayer.h"
+#include "UIWindow.h"
 
 void Renderer::createRenderer(std::string windowName, int width, int height, bool fullscreen)
 {
@@ -82,12 +84,22 @@ void Renderer::initOpenGL()
 	glEnable(GL_DEPTH_TEST);
 }
 
-#include "UIWindow.h"
-#include "UIDisplayer.h"
-#include "UIButton.h"
-
 int gh = 0;
-#include "EventFunction.h"
+
+void Renderer::a()
+{
+	Camera* mCam = mSceneManager->createCamera("camera1");
+	Entity* ent = mSceneManager->createEntity("as" + std::to_string(gh), "box.obj");
+	SceneNode* nodes = mSceneManager->getRootSceneNode()->createChildSceneNode("nodes" + std::to_string(gh), mCam->getPosition());
+	nodes->setScale(glm::vec3(0.05, 0.05, 0.05));
+	nodes->attachObject(ent);
+	ent->getRigidBody()->setMass(10.0);
+	ent->getRigidBody()->setLinearVelocity(mCam->getOrientation() * 2.0f);
+
+	gh++;
+
+	std::cout << "gh: " << gh << std::endl;
+}
 
 void Renderer::renderFrame(real deltaTime)
 {
@@ -149,9 +161,9 @@ void Renderer::renderFrame(real deltaTime)
 	light3->setPosition(glm::vec3(0.0, 0.75, 0.0));
 	light3->setDirection(glm::vec3(0.0, -1.0, 0.0));
 
-	//mEnt2->getMaterial()->mBaseColorS.mBaseColorV = glm::vec3(1.0, 1.0, 1.0);
-	UIWindow* wind = mSceneManager->createUIDisplayer("ui")->createWindow("lala");
-	wind->createLabel("lalal");
+	mSceneManager->createDisplayer("aaa")->createUIWindow("b", 500, 500, "entitySelected.html");
+	mSceneManager->setCurrentDisplayer("aaa");
+
 	if(InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_RIGHT))
 	{
 		mCam->setControler(Camera::DEFAULT);
@@ -161,7 +173,7 @@ void Renderer::renderFrame(real deltaTime)
 		mCam->setControler(Camera::NOCONTROLER);
 	}
 
-	if(InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
+	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_G))
 	{
 		Entity* ent = mSceneManager->createEntity("as" + std::to_string(gh), "box.obj");
 		SceneNode* nodes = mSceneManager->getRootSceneNode()->createChildSceneNode("nodes" + std::to_string(gh), mCam->getPosition());
@@ -177,15 +189,9 @@ void Renderer::renderFrame(real deltaTime)
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
-		/*int x, y;
-		InputManager::getSingletonPtr()->getMousePosition(x, y);
-		wind->setPosition(mSceneManager->getMousePosition_ScreenSpace());
-		wind->setSize(glm::vec2(0.25, 1.5));
-		wind->setTexture(mSceneManager->createTexture("ulvida", false, GL_RGBA, "Ulvida.jpg"));
-
-		std::cout << wind->getPosition().x << " " << wind->getPosition().y << std::endl;*/
-
-		wind->setTexture(mSceneManager->createTexture("a", true, GL_RGBA, "Ulvida.jpg"));
+		glm::vec2 a;
+		InputManager::getSingletonPtr()->getMousePosition(a);
+		mSceneManager->getDisplayer("aaa")->setMouseMove(glm::vec2(a));
 	}
 
 	/*
@@ -228,6 +234,7 @@ void Renderer::renderFrame(real deltaTime)
 
 	//glEnable(GL_DEPTH_TEST);
 
+	mSceneManager->processWorldEditor();
 	//Process all the sceneNodes and renders all their attached objects
 	mSceneManager->getRootSceneNode()->processRootSceneNode();
 	//PHYSICS DEBUG DRAWER
@@ -239,7 +246,7 @@ void Renderer::renderFrame(real deltaTime)
 	mSceneManager->processLights();
 
 
-	//Render the UI and the combined buffer
+	//Render the combined buffer
 	fbo = mSceneManager->getFrameBuffer("finalFBO");
 	fbo->bindForRendering();
 
@@ -247,7 +254,7 @@ void Renderer::renderFrame(real deltaTime)
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	mSceneManager->renderUI();
+	mSceneManager->getDisplayer("aaa")->renderDisplayer();
 	glEnable(GL_DEPTH_TEST);
 
 	//swap the buffers

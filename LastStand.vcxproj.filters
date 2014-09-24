@@ -105,16 +105,22 @@
     <ClInclude Include="UIWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIObject.h">
+    <ClInclude Include="UICallbackListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIButton.h">
+    <ClInclude Include="MemberFunctionSlot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EventFunction.h">
+    <ClInclude Include="ListenerReciver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UILabel.h">
+    <ClInclude Include="SlotResolver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -206,16 +212,22 @@
     <ClCompile Include="UIWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UIObject.cpp">
+    <ClCompile Include="UICallbackListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UIButton.cpp">
+    <ClCompile Include="MemberFunctionSlot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EventFunction.cpp">
+    <ClCompile Include="ListenerReciver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UILabel.cpp">
+    <ClCompile Include="SlotResolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

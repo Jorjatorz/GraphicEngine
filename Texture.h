@@ -15,6 +15,7 @@ public:
 
 	void loadTexture(std::string filePath, bool mipmap, GLint format);
 	void generateTexture(int width, int height, GLint format, bool mipmap, const GLvoid* pixels);
+	void updateTexture(int width, int height, GLint format, bool mipmap, const GLvoid* pixels);
 
 
 	//is mipmap

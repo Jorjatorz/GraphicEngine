@@ -15,36 +15,6 @@ subject to the following restrictions:
 
 #include "GLDebugFont.h"
 
-
-#ifdef _WIN32//for glut.h
-#include <windows.h>
-#endif
-
-//think different
-#if defined(__APPLE__) && !defined (VMDMESA)
-#include <TargetConditionals.h>
-#if (defined (TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || (defined (TARGET_IPHONE_SIMULATOR) && TARGET_IPHONE_SIMULATOR)
-#import <OpenGLES/ES1/gl.h>
-#define glOrtho glOrthof
-#else
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
-#endif
-#else
-
-
-
-#ifdef _WINDOWS
-#include <windows.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glut.h>
-#endif
-#endif
-
 #include <stdio.h>
 #include <string.h> //for memset
 
