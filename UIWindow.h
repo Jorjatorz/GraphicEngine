@@ -13,7 +13,15 @@ public:
 	UIWindow(std::string name, real Width, real Height, std::string uiFilePath, SceneManager* manager);
 	~UIWindow();
 
+	void load(std::string uiFilePath);
 	void render(Shader* uiShad);
+
+	//Transformations
+	void setPosition_NDC(glm::vec2 pos);
+	void setSize_Screen(glm::vec2 widthHeight); //Sets the width and height
+
+	//Set if the window is visible or not
+	void setVisible(bool visi);
 
 	//Called by the UI, swaps the resize mode ot on-off
 	void resize();
@@ -47,6 +55,7 @@ private:
 	real mWidth, mHeight;
 	glm::vec2 mPosition;
 	glm::vec2 mSize; //From '1 to 1
+	bool mVisible;
 	SceneManager* mCurrentSceneManager;
 
 	//Resize & move mode

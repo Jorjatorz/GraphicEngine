@@ -26,6 +26,7 @@ public:
 	Awesomium::JSValue getPropertyFromWindow(std::string windowName, std::string elementName, std::string jsPropertyName);
 	void setPropertyToWindow(std::string windowName, std::string elementName, std::string jsPropertyName, real value);
 	void setPropertyToWindow(std::string windowName, std::string elementName, std::string jsPropertyName, std::string value);
+	void setPropertyToWindow(std::string windowName, std::string elementName, std::string jsPropertyName, bool value);
 
 	//Input
 	void setMouseMove(glm::vec2 newPos);

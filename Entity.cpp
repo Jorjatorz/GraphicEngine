@@ -22,6 +22,8 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	mMaterial = NULL;
 	mSceneManager = newSceneManager;
 	meshAttached = false;
+
+	mAffectedByPhysics = true;
 	
 	wireFrame = false;
 	drawAABB = false;
@@ -38,6 +40,7 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 	mMaterial = NULL;
 	mRigidBody = NULL;
 
+	mAffectedByPhysics = true;
 
 	mTypeOfMovableObject = tTypeEnum::Entity;
 
@@ -62,6 +65,41 @@ void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, 
 	if (visible)
 	{
 		render(perspectiveViewSceneNodeM, viewMatrix);
+	}
+}
+
+glm::vec3 Entity::getPosition()
+{
+	if (mParentSceneNode != NULL)
+	{
+		return mParentSceneNode->getDerivedPosition();
+	}
+	else
+	{
+		return glm::vec3(-9999999.9);
+	}
+}
+glm::vec3 Entity::getOrientation_Euler()
+{
+	if (mParentSceneNode != NULL)
+	{
+		return glm::eulerAngles(mParentSceneNode->getDerivedOrientation());
+	}
+	else
+	{
+		return glm::vec3(-9999999.9);
+	}
+}
+
+glm::vec3 Entity::getScale()
+{
+	if (mParentSceneNode != NULL)
+	{
+		return mParentSceneNode->getDerivedScale();
+	}
+	else
+	{
+		return glm::vec3(-9999999.9);
 	}
 }
 
@@ -167,6 +205,7 @@ void Entity::deAttachMesh()
 
 void Entity::attachMaterial(std::string materialName)
 {
+	//Creates o return a material with that name
 	mMaterial = mSceneManager->createMaterial(materialName, materialName);
 }
 
@@ -189,8 +228,27 @@ void Entity::setRigidBodyTransforms(SceneNode* node)
 {
 	mRigidBody->setTransforms(node);
 }
-/*
-void Entity::makeCollisionObject(SceneNode* node)
+
+real Entity::getMass()
 {
-	mCollisionObject = PhysicsManager::getSingletonPtr()->createCollisionObject(mName, node, this);
-}*/
+	return mRigidBody->getMass();
+}
+
+void Entity::setMass(real mass, bool setStatic)
+{
+	mRigidBody->setMass(mass, setStatic);
+}
+
+void Entity::setPhysicsOn(bool mod)
+{
+	mAffectedByPhysics = mod;
+
+	if (mAffectedByPhysics)
+	{
+		mRigidBody->addRigidBodyToWorld();
+	}
+	else
+	{
+		mRigidBody->removeRigidBodyFromWorld();
+	}
+}

@@ -100,7 +100,7 @@ void PhysicsManager::processPhysicsWorld(real deltaTime)
 	//Simulate the world
 	mBulletDynamicWorld->stepSimulation(deltaTime, 10.0);
 
-
+	//Update scenenode positions
 	tRigidBodiesMap::iterator it;
 	for (it = mRigidBodiesMap.begin(); it != mRigidBodiesMap.end(); ++it)
 	{

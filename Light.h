@@ -27,10 +27,8 @@ public:
 	void setAttenuationRadius(real nRadius);
 	//Set orientation, color, size...
 
-	glm::vec3 getPosition()
-	{
-		return mPosition;
-	}
+	glm::vec3 getPosition();
+
 	glm::vec3 getColor()
 	{
 		return mColor;

@@ -38,6 +38,7 @@ public:
 	//transformations functions
 	void translate(glm::vec3 trans);
 	void rotate(glm::vec3 axis, real angle);
+	void scale(glm::vec3 axis);
 	void setPosition(glm::vec3 newPos);
 	void setOrientation(glm::quat newOrientation);
 	void setScale(glm::vec3 newScale);

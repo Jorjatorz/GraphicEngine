@@ -71,6 +71,18 @@ void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, g
 	//send uniforms
 }
 
+glm::vec3 Light::getPosition()
+{
+	if (mParentSceneNode == mSceneManager->getRootSceneNode())
+	{
+		return mPosition;
+	}
+	else
+	{
+		return mParentSceneNode->getDerivedPosition();
+	}
+}
+
 void Light::setPosition(glm::vec3 newPos)
 {
 	mPosition = newPos;

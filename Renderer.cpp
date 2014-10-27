@@ -119,17 +119,18 @@ void Renderer::renderFrame(real deltaTime)
 	mSceneManager->setCurrentShader(mShader);
 
 	Entity* mEnt2 = mSceneManager->createEntity("ent2", "plane.obj");
-	SceneNode* node2 = mSceneManager->getRootSceneNode()->createChildSceneNode("nod2");
-	//node2->rotate(glm::vec3(0.0, 1.0, 0.0), 1.0);
-	node2->setPosition(glm::vec3(-1.0, -0.25, 0.0));
+	SceneNode* node2 = mSceneManager->getRootSceneNode()->createChildSceneNode("nod2", glm::vec3(-1.0, -0.25, 0.0));
 	node2->setScale(glm::vec3(2.0, 2.0, 2.0));
 	node2->attachObject(mEnt2);
 	//mEnt2->getRigidBody()->setMass(0.0, true);
 	//mEnt2->makeRigidBody();
 	//mEnt2->getRigidBody()->setCollisionShape_Box(mEnt2->getMesh()->getAABBsize() * 2.0f);
 	//mEnt2->getRigidBody()->setUpRigidBody(0.0, node2, mEnt2);
+
+	//node->setScale(glm::vec3(0.2, 0.2, 0.2));;
 	node->attachObject(mEnt);
-	mEnt->setModelMatrix(glm::translate(glm::mat4(1.0), glm::vec3(0.0, -0.76, 0.0)));
+	mEnt->setMass(0.0, false);
+	//mEnt->setModelMatrix(glm::translate(glm::mat4(1.0), glm::vec3(0.0, -0.76, 0.0)));
 	//Ent->makeRigidBody();
 	//mEnt->getRigidBody()->setCollisionShape_Box((mEnt->getMesh()->getAABBsize() / 5.0f));
 	//mEnt->getRigidBody()->setUpRigidBody(1.0, node, mEnt);
@@ -142,27 +143,21 @@ void Renderer::renderFrame(real deltaTime)
 	node3->attachObject(mEnt3);
 	//mEnt3->getRigidBody()->setUpRigidBody(1.0, node3, mEnt3);
 
-
-	node->setScale(glm::vec3(0.2, 0.2, 0.2));;
-
 	mEnt->attachMaterial("gold.mat");
-	mEnt2->attachMaterial("pruebas");
 
 	Light* light1 = mSceneManager->createLight("light1");
 	light1->setType(Light::DIRECTIONALLIGHT);
 	light1->setDirection(glm::vec3(0.0, -0.5, -1.0));
 	light1->setColor(glm::vec3(1.0, 1.0, 1.0));
 	Light* light2 = mSceneManager->createLight("light2");
-	light2->setPosition(glm::vec3(0.0, 0.1, -2.0));
+	//light2->setPosition(glm::vec3(0.0, 0.1, -2.0));
 	light2->setColor(glm::vec3(0.98, 1.0, 0.0));
+	node3->attachObject(light2);
 	Light* light3 = mSceneManager->createLight("light3");
 	light3->setColor(glm::vec3(0.0, 0.98, 1.0));
 	light3->setType(Light::SPOTLIGHT);
 	light3->setPosition(glm::vec3(0.0, 0.75, 0.0));
 	light3->setDirection(glm::vec3(0.0, -1.0, 0.0));
-
-	mSceneManager->createDisplayer("aaa")->createUIWindow("b", 500, 500, "entitySelected.html");
-	mSceneManager->setCurrentDisplayer("aaa");
 
 	if(InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_RIGHT))
 	{
@@ -189,9 +184,8 @@ void Renderer::renderFrame(real deltaTime)
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
-		glm::vec2 a;
-		InputManager::getSingletonPtr()->getMousePosition(a);
-		mSceneManager->getDisplayer("aaa")->setMouseMove(glm::vec2(a));
+		mEnt3->getRigidBody()->setMass(10.0);
+		mEnt3->getRigidBody()->setLinearVelocity(mCam->getOrientation() * 2.0f);
 	}
 
 	/*
@@ -254,7 +248,7 @@ void Renderer::renderFrame(real deltaTime)
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	mSceneManager->getDisplayer("aaa")->renderDisplayer();
+	mSceneManager->getDisplayer("worldEditorDisplayer")->renderDisplayer();
 	glEnable(GL_DEPTH_TEST);
 
 	//swap the buffers

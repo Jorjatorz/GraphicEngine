@@ -56,6 +56,7 @@ Awesomium::JSValue UICallbackListener::OnMethodCallWithReturnValue(Awesomium::We
 
 Awesomium::JSValue UICallbackListener::getJSValue(std::string elementNane, std::string jsPropertyName)
 {
+	//Care with performance!!!
 	//In documentation it checks if value is a object but we skipt that
 	std::string command = "document.getElementById('" + elementNane + "')";
 	Awesomium::JSValue result = mAttachedView->ExecuteJavascriptWithResult(Awesomium::WSLit(command.c_str()), Awesomium::WSLit(""));
@@ -69,20 +70,35 @@ Awesomium::JSValue UICallbackListener::getJSValue(std::string elementNane, std::
 
 void UICallbackListener::setJSValue(std::string elementNane, std::string jsPropertyName, std::string newValue)
 {
+	//Build up the command
+	std::string command = "document.getElementById('" + elementNane + "')." + jsPropertyName + " = '" + newValue + "';";
+	mAttachedView->ExecuteJavascript(Awesomium::WSLit(command.c_str()), Awesomium::WSLit(""));
+	//VERY SLOW PERFORMANCE
+	/*
 	std::string command = "document.getElementById('" + elementNane + "')";
 	Awesomium::JSValue result = mAttachedView->ExecuteJavascriptWithResult(Awesomium::WSLit(command.c_str()), Awesomium::WSLit(""));
 	if (result.IsObject())
 	{
 		result.ToObject().SetProperty(Awesomium::WSLit(jsPropertyName.c_str()), Awesomium::WSLit(newValue.c_str()));
-	}
+	}*/
 }
 
 void UICallbackListener::setJSValue(std::string elementNane, std::string jsPropertyName, real newValue)
 {
+	std::string command = "document.getElementById('" + elementNane + "')." + jsPropertyName + " = '" + std::to_string(newValue) + "';";
+	mAttachedView->ExecuteJavascript(Awesomium::WSLit(command.c_str()), Awesomium::WSLit(""));
+	//VERY SLOW PERFORMANCE
+	/*
 	std::string command = "document.getElementById('" + elementNane + "')";
 	Awesomium::JSValue result = mAttachedView->ExecuteJavascriptWithResult(Awesomium::WSLit(command.c_str()), Awesomium::WSLit(""));
 	if (result.IsObject())
 	{
 		result.ToObject().SetProperty(Awesomium::WSLit(jsPropertyName.c_str()), Awesomium::JSValue(newValue));
-	}
+	}*/
+}
+void UICallbackListener::setJSValue(std::string elementNane, std::string jsPropertyName, bool newValue)
+{
+	//Same as other but without "
+	std::string command = "document.getElementById('" + elementNane + "')." + jsPropertyName + " = " + std::to_string(newValue) + ";";
+	mAttachedView->ExecuteJavascript(Awesomium::WSLit(command.c_str()), Awesomium::WSLit(""));
 }

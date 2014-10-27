@@ -8,11 +8,14 @@
 RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 {
 	mName = name;
+	mEntity = ent;
+
+	mInPhysicsWorld = false;
 
 	//Bullet collision shape, default shape -> Box
 	glm::vec3 AABBsize = ent->getMesh()->getAABBsize();
-	AABBsize /= 2.0f; //Bullet halfsize
-	mBulletCollisionShape = new btBoxShape(btVector3(AABBsize.x, AABBsize.y, AABBsize.z));
+
+	mBulletCollisionShape = new btBoxShape(btVector3(AABBsize.x / 2.0f, AABBsize.y / 2.0f, AABBsize.z / 2.0f)); //Bullet needs halfsize
 	mRigidBodyShape = BOX_SHAPE_;
 
 	//Bullet motion state
@@ -23,7 +26,7 @@ RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 	btTransform trans;
 
 	trans.setIdentity();
-	trans.setOrigin(btVector3(position.x, position.y, position.z));
+	trans.setOrigin(btVector3(position.x, position.y , position.z));
 	trans.setRotation(btQuaternion(orientation.x, orientation.y, orientation.z, orientation.w));
 	
 	mBulletMotionState = new btDefaultMotionState(trans);
@@ -43,13 +46,13 @@ RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 
 	//Add the rigid body to the world
 	mDynamicWorld = PhysicsManager::getSingletonPtr()->getDynamicWorld();
-	mDynamicWorld->addRigidBody(mBulletRigidBody);
+	addRigidBodyToWorld();
 }
 
 
 RigidBody::~RigidBody()
 {
-	mDynamicWorld->removeRigidBody(mBulletRigidBody);
+	removeRigidBodyFromWorld();
 	delete mBulletRigidBody;
 	delete mBulletMotionState;
 	delete mBulletCollisionShape;
@@ -80,48 +83,64 @@ void RigidBody::setType_Static()
 }
 void RigidBody::setTransforms(SceneNode* node)
 {
-	glm::vec3 position = node->getDerivedPosition();
-	glm::quat orientation = node->getOrientation();
-	glm::vec3 scale = node->getDerivedScale();
+	if (mRigidBodyType == KINETIC)
+	{
+		glm::vec3 position = node->getDerivedPosition();
+		glm::quat orientation = node->getOrientation();
+		glm::vec3 scale = node->getDerivedScale();
 
-	btTransform trans;
+		btTransform trans;
+		trans.setIdentity();
+		trans.setOrigin(btVector3(position.x, position.y, position.z));
+		trans.setRotation(btQuaternion(orientation.x, orientation.y, orientation.z, orientation.w));
+		mBulletMotionState->setWorldTransform(trans);
 
-	trans.setIdentity();
-	trans.setOrigin(btVector3(position.x, position.y, position.z));
-	trans.setRotation(btQuaternion(orientation.x, orientation.y, orientation.z, orientation.w));
-	mBulletMotionState->setWorldTransform(trans);
-
-	mBulletCollisionShape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
+		mBulletCollisionShape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
+	}
 }
 void RigidBody::setMass(real mass, bool setStatic)
 {
 	if (mass != 0.0)
 	{
-		mDynamicWorld->removeRigidBody(mBulletRigidBody);
-		
+		removeRigidBodyFromWorld();
 		btVector3 inertia;
 		mBulletCollisionShape->calculateLocalInertia(mass, inertia);
 		mBulletRigidBody->setMassProps(mass, inertia);
 		setType_Dynamic();
-
-		mDynamicWorld->addRigidBody(mBulletRigidBody);
+		addRigidBodyToWorld();
 	}
 	else
 	{
 		if (setStatic)
 		{
-			mDynamicWorld->removeRigidBody(mBulletRigidBody);
+			removeRigidBodyFromWorld();
 			mBulletRigidBody->setMassProps(0.0, btVector3(0.0, 0.0, 0.0));
 			setType_Static();
-			mDynamicWorld->addRigidBody(mBulletRigidBody);
+			addRigidBodyToWorld();
 		}
 		else
 		{
-			mDynamicWorld->removeRigidBody(mBulletRigidBody);
+			removeRigidBodyFromWorld();
 			mBulletRigidBody->setMassProps(0.0, btVector3(0.0, 0.0, 0.0));
 			setType_Kinetic();
-			mDynamicWorld->addRigidBody(mBulletRigidBody);
+			addRigidBodyToWorld();
 		}
+	}
+}
+void RigidBody::setMass(real mass, tRigidBodyType type)
+{
+	if (type == KINETIC)
+	{
+		setMass(0.0, false);
+	}
+	else if (type == STATIC)
+	{
+		setMass(0.0, true);
+	}
+	else
+	{
+		assert(mass > 0);
+		setMass(mass);
 	}
 }
 real RigidBody::getMass()
@@ -168,4 +187,21 @@ void RigidBody::setShape_Sphere(real radius)
 	}
 
 	mBulletRigidBody->setCollisionShape(mBulletCollisionShape);
+}
+void RigidBody::addRigidBodyToWorld()
+{
+	if (!mInPhysicsWorld)
+	{
+		mDynamicWorld->addRigidBody(mBulletRigidBody);
+		mInPhysicsWorld = true;
+	}
+}
+
+void RigidBody::removeRigidBodyFromWorld()
+{
+	if (mInPhysicsWorld)
+	{
+		mDynamicWorld->removeRigidBody(mBulletRigidBody);
+		mInPhysicsWorld = false;
+	}
 }

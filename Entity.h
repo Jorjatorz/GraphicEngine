@@ -15,6 +15,11 @@ public:
 
 	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos = glm::vec3(0.0), glm::quat parentOrient = glm::quat()); //inheritated
 
+	//Directly from entity - It returns the scenenode derived position
+	glm::vec3 getPosition();
+	glm::vec3 getOrientation_Euler();
+	glm::vec3 getScale();
+
 	//Mesh
 	void attachMesh(std::string meshName);
 	void deAttachMesh();
@@ -31,6 +36,10 @@ public:
 	{
 		return mRigidBody;
 	}
+	real getMass(); //From rigidbody
+	void setMass(real mass, bool setStatic);
+	void setPhysicsOn(bool mod);
+
 	/*CollisionObject* getCollisionObject()
 	{
 		return mCollisionObject;
@@ -64,7 +73,7 @@ private:
 	Material* mMaterial; //Material attached to this entity
 	//Physics
 	RigidBody* mRigidBody; //RigidBody pointer
-	//CollisionObject* mCollisionObject; //Collision object pointer
+	bool mAffectedByPhysics;
 
 	bool meshAttached; //is any mesh attached?
 

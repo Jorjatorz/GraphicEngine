@@ -9,9 +9,8 @@ CollisionObject::CollisionObject(std::string name, SceneNode* node, Entity* ent)
 {
 	mName = name;
 
-	glm::vec3 AABBsize = ent->getMesh()->getAABBsize();
-	AABBsize /= 2.0f; //Bullet halfsize
-	mBulletCollisionShape = new btBoxShape(btVector3(AABBsize.x, AABBsize.y, AABBsize.z));
+	glm::vec3 AABBsize = ent->getMesh()->getAABBsize(); //Bullet halfsize
+	mBulletCollisionShape = new btBoxShape(btVector3(AABBsize.x / 2.0f, AABBsize.y / 2.0f, AABBsize.z / 2.0f));
 	mBulletCollisionObject = new btCollisionObject();
 	mBulletCollisionObject->setCollisionShape(mBulletCollisionShape);
 
@@ -23,7 +22,7 @@ CollisionObject::CollisionObject(std::string name, SceneNode* node, Entity* ent)
 
 	trans.setIdentity();
 	trans.setOrigin(btVector3(position.x, position.y, position.z));
-	trans.setRotation(btQuaternion(orientation.x, orientation.y, orientation.z, orientation.w));
+	trans.setRotation(btQuaternion(orientation.x, orientation.y + (AABBsize.y * scale.y) / 2.0f, orientation.z, orientation.w));
 	mBulletCollisionObject->setWorldTransform(trans);
 
 	mBulletCollisionShape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));

@@ -6,6 +6,7 @@
 #include "SceneManager.h"
 #include "Texture.h"
 #include "UIDrawer.h"
+#include "InputManager.h"
 
 
 UIWindow::UIWindow(std::string name, real Width, real Height, std::string uiFilePath, SceneManager* manager)
@@ -14,6 +15,7 @@ UIWindow::UIWindow(std::string name, real Width, real Height, std::string uiFile
 	mWidth = Width;
 	mHeight = Height;
 	mCurrentSceneManager = manager;
+	mVisible = true;
 
 	mPosition = glm::vec2(0.0);
 	glm::vec2 windowSize = mCurrentSceneManager->getWindowDimensions();
@@ -26,25 +28,14 @@ UIWindow::UIWindow(std::string name, real Width, real Height, std::string uiFile
 	//Create the quad
 	createQuad();
 
-	//Load a URL, window will delete it when delete the window
 	mAwesomiumCore = Root::getSingletonPtr()->mUIManager->getUICore();
-
 	mAwesomiumView = mAwesomiumCore->CreateWebView(mWidth, mHeight, 0, Awesomium::kWebViewType_Offscreen); //Offscreen
-	Awesomium::WebURL url(Awesomium::WSLit(("file:///Data/UI/" + uiFilePath).c_str()));
-	std::cout << "Loading UI: " << "Data\\UI\\" + uiFilePath << std::endl;
-	mAwesomiumView->LoadURL(url);
-	mAwesomiumView->SetTransparent(true);
 
-	mCallbackListener.bind(mAwesomiumView);
-	//Add resize callback by default
-	mCallbackListener.addFunctionCallback("checkForResize", &UIWindow::checkForResize, this);
-	mCallbackListener.addFunctionCallback("checkForMove", &UIWindow::checkForMove, this);;
+	//Load the URL and set the default callbacks
+	load(uiFilePath);
+	
 
-	while (mAwesomiumView->IsLoading())
-	{
-		mAwesomiumCore->Update();
-	}
-
+	//Just for debugging
 	Awesomium::BitmapSurface* surface = (Awesomium::BitmapSurface*)mAwesomiumView->surface();
 	if (surface == 0)
 	{
@@ -58,6 +49,29 @@ UIWindow::~UIWindow()
 	mAwesomiumView->Destroy();
 	glDeleteBuffers(1, &VBO_);
 	glDeleteVertexArrays(1, &VAO_);
+}
+
+void UIWindow::load(std::string uiFilePath)
+{
+	if (Awesomium::WSLit(uiFilePath .c_str()) != mAwesomiumView->url().filename())
+	{
+		Awesomium::WebURL url(Awesomium::WSLit(("file:///Data/UI/" + uiFilePath).c_str()));
+		std::cout << "Loading UI: " << "Data\\UI\\" + uiFilePath << std::endl;
+		mAwesomiumView->LoadURL(url);
+
+		//Enable alpha testing
+		mAwesomiumView->SetTransparent(true);
+
+		mCallbackListener.bind(mAwesomiumView);
+		//Add resize callback by default
+		mCallbackListener.addFunctionCallback("checkForResize", &UIWindow::checkForResize, this);
+		mCallbackListener.addFunctionCallback("checkForMove", &UIWindow::checkForMove, this);;
+
+		while (mAwesomiumView->IsLoading())
+		{
+			mAwesomiumCore->Update();
+		}
+	}
 }
 
 void UIWindow::createQuad()
@@ -91,27 +105,27 @@ void UIWindow::createQuad()
 
 void UIWindow::render(Shader* uiShad)
 {
-	//Check if we have to resize or move
-	resize();
-	moveWindow();
+	if (mVisible)
+	{
+		//Check if we have to resize or move
+		resize();
+		moveWindow();
 
-	glm::mat4 transMat = glm::mat4(1.0);
-	transMat = glm::translate(transMat, glm::vec3(mPosition, 0.0));	
-	transMat = glm::scale(transMat, glm::vec3(mSize, 0.0));
+		glm::mat4 transMat = glm::mat4(1.0);
+		transMat = glm::translate(transMat, glm::vec3(mPosition, 0.0));
+		transMat = glm::scale(transMat, glm::vec3(mSize, 0.0));
 
-	//update awesomium texture - Just when the page change
-	//updateAwesomiumTexture();
+		//Send uniforms
+		uiShad->UniformMatrix("modelM", transMat);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, static_cast<UIDrawer*>(mAwesomiumView->surface())->GetTexture()); //GetTexture updates the texture
+		uiShad->UniformTexture("uiTexture", 0);
 
-	//Send uniforms
-	uiShad->UniformMatrix("modelM", transMat);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, static_cast<UIDrawer*>(mAwesomiumView->surface())->GetTexture()); //GetTexture updates the texture
-	uiShad->UniformTexture("uiTexture", 0);
-
-	//Render the quad
-	glBindVertexArray(VAO_);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
+		//Render the quad
+		glBindVertexArray(VAO_);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+	}
 }
 
 bool UIWindow::rayTestToQuad(glm::vec2 pointPos)
@@ -136,36 +150,44 @@ bool UIWindow::rayTestToQuad(glm::vec2 pointPos)
 
 void UIWindow::setMouseMove(glm::vec2 mousePos)
 {
-	glm::vec2 screenDimensions = mCurrentSceneManager->getWindowDimensions();
-	glm::vec2 mWorldPosition;
+	if (mVisible)
+	{
+		glm::vec2 screenDimensions = mCurrentSceneManager->getWindowDimensions();
+		glm::vec2 mWorldPosition;
 
-	//Viewport formula - From NDC to normal device coords. i.e mPosition.y is negative because opengl has origin at bottom left corner, SDL_getMousePosition at top right corner
-	mWorldPosition.x = (mPosition.x + 1) * screenDimensions.x * 0.5;
-	mWorldPosition.y = (-mPosition.y + 1) * screenDimensions.y * 0.5;
-	//Get the top left corner of the quad
-	mWorldPosition.x -= mWidth / 2.0f;
-	mWorldPosition.y -= mHeight / 2.0f;
-	//Calculate the diference
-	mWorldPosition -= mousePos;
-	//Make it positive
-	mWorldPosition = glm::abs(mWorldPosition);
+		//Viewport formula - From NDC to normal device coords. i.e mPosition.y is negative because opengl has origin at bottom left corner, SDL_getMousePosition at top right corner
+		mWorldPosition.x = (mPosition.x + 1) * screenDimensions.x * 0.5;
+		mWorldPosition.y = (-mPosition.y + 1) * screenDimensions.y * 0.5;
+		//Get the top left corner of the quad
+		mWorldPosition.x -= mWidth / 2.0f;
+		mWorldPosition.y -= mHeight / 2.0f;
+		//Calculate the diference
+		mWorldPosition -= mousePos;
+		//Make it positive
+		mWorldPosition = glm::abs(mWorldPosition);
 
 
-	mAwesomiumView->Focus();
-	mAwesomiumView->InjectMouseMove(mWorldPosition.x, mWorldPosition.y);
+		mAwesomiumView->Focus();
+		mAwesomiumView->InjectMouseMove(mWorldPosition.x, mWorldPosition.y);
+	}
 }
 
 void UIWindow::setMouseButtonDown()
 {
-	mAwesomiumView->InjectMouseDown(Awesomium::kMouseButton_Left);
+	if (mVisible)
+	{
+		mAwesomiumView->InjectMouseDown(Awesomium::kMouseButton_Left);
+	}
 }
 
 void UIWindow::setMouseButtonUp()
 {
-	mAwesomiumView->InjectMouseUp(Awesomium::kMouseButton_Left);
+	if (mVisible)
+	{
+		mAwesomiumView->InjectMouseUp(Awesomium::kMouseButton_Left);
+	}
 }
 
-#include "InputManager.h"
 void UIWindow::resize()
 {
 	if (bResize && InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_LEFT))
@@ -174,6 +196,7 @@ void UIWindow::resize()
 		{
 			mLastMousePosition = mCurrentSceneManager->getMousePosition_WindowSDL();
 		}
+
 		glm::vec2 screenDimensions = mCurrentSceneManager->getWindowDimensions();
 
 		glm::vec2 mousePos = mCurrentSceneManager->getMousePosition_WindowSDL();
@@ -189,7 +212,7 @@ void UIWindow::resize()
 
 		mAwesomiumView->Resize(mWidth, mHeight);
 	}
-	else if (!bMove)
+	else if (!bMove) //If we are not moving reset the mouse position
 	{
 		bResize = false;
 		mLastMousePosition = glm::vec2(-1.0);
@@ -227,9 +250,25 @@ void UIWindow::moveWindow()
 
 		mLastMousePosition = mousePos;
 	}
-	else if (!bResize)
+	else if (!bResize) //If we are not resizing reset the mouse position
 	{
 		bMove = false;
 		mLastMousePosition = glm::vec2(-1.0);
 	}
+}
+
+void UIWindow::setVisible(bool visi)
+{
+	mVisible = visi;
+}
+
+void UIWindow::setPosition_NDC(glm::vec2 pos)
+{
+	mPosition = pos;
+}
+
+void UIWindow::setSize_Screen(glm::vec2 widthHeight)
+{
+	mWidth = widthHeight.x;
+	mHeight = widthHeight.y;
 }

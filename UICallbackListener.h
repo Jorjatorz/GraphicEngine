@@ -37,6 +37,7 @@ public:
 	Awesomium::JSValue getJSValue(std::string elementNane, std::string jsPropertyName);
 	void setJSValue(std::string elementNane, std::string jsPropertyName, std::string newValue);
 	void setJSValue(std::string elementNane, std::string jsPropertyName, real newValue);
+	void setJSValue(std::string elementNane, std::string jsPropertyName, bool newValue);
 
 
 	virtual void OnMethodCall(Awesomium::WebView* caller, unsigned int remote_object_id, const Awesomium::WebString& method_name, const Awesomium::JSArray& args);

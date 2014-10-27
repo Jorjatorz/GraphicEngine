@@ -129,6 +129,16 @@ void UIDisplayer::setPropertyToWindow(std::string windowName, std::string elemen
 	}
 }
 
+void UIDisplayer::setPropertyToWindow(std::string windowName, std::string elementName, std::string jsPropertyName, bool value)
+{
+	UIWindow* wind = getWindow(windowName);
+
+	if (wind != NULL)
+	{
+		wind->getCallBackListener()->setJSValue(elementName, jsPropertyName, value);
+	}
+}
+
 Awesomium::JSValue UIDisplayer::getPropertyFromWindow(std::string windowName, std::string elementName, std::string jsPropertyName)
 {
 	UIWindow* wind = getWindow(windowName);

@@ -92,7 +92,7 @@ SceneNode* SceneNode::createChildSceneNode(std::string name, glm::vec3 newPositi
 	//else
 	SceneNode* newSceneNode = new SceneNode(name, this, mSceneManager);
 
-	newSceneNode->mPosition = newPosition;
+	newSceneNode->setPosition(newPosition);
 
 	mChildNodes.insert(std::pair<std::string, SceneNode*>(name, newSceneNode));
 
@@ -131,7 +131,11 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 	//if the object is also attached
 	if(mNewObject->mParentSceneNode == this)
 	{
-		//its already attached to this node, dont do nothing
+		//its already attached to this node, set new tranforms just for kinetic objects
+		if (mNewObject->getType() == MovableObject::Entity)
+		{
+			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
+		}
 	}
 	else if(mNewObject->isAttachedToNode())
 	{
@@ -142,7 +146,7 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 		mObjectsMap.insert(std::pair<std::string, MovableObject*>(mNewObject->getName(), mNewObject));
 		mNewObject->setAttached(true, this);
 
-		//Update the transforms with the new node
+		//Update the transforms with the new node (Just for kinetic objects)
 		if (mNewObject->getType() == MovableObject::Entity)
 		{
 			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
@@ -321,6 +325,14 @@ void SceneNode::rotate(glm::vec3 axis, real angle)
 
 	hasChanged = true;
 }
+
+void SceneNode::scale(glm::vec3 axis)
+{
+	mScale += axis;
+
+	hasChanged = true;
+}
+
 void SceneNode::lookAt(glm::vec3 lookAtPoint, glm::vec3 objectFacing)
 {
 	/*glm::vec3 lookVector = lookAtPoint;
