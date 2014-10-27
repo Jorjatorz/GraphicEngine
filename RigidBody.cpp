@@ -145,7 +145,15 @@ void RigidBody::setMass(real mass, tRigidBodyType type)
 }
 real RigidBody::getMass()
 {
-	return mBulletRigidBody->getInvMass();
+	real invMass = mBulletRigidBody->getInvMass();
+	if (invMass != 0)
+	{
+		return 1 / invMass;
+	}
+	else
+	{
+		return 0;
+	}
 }
 Entity* RigidBody::getUserPointer()
 {
@@ -204,4 +212,9 @@ void RigidBody::removeRigidBodyFromWorld()
 		mDynamicWorld->removeRigidBody(mBulletRigidBody);
 		mInPhysicsWorld = false;
 	}
+}
+
+void RigidBody::makeRigidBodyWithNoCollisions()
+{
+	mBulletRigidBody->setCollisionFlags(-1);
 }

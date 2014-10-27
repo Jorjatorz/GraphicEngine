@@ -36,6 +36,7 @@ public:
 	void setLinearVelocity(glm::vec3& vel);
 	void addRigidBodyToWorld();
 	void removeRigidBodyFromWorld();
+	void makeRigidBodyWithNoCollisions();
 	//Shape change WARNING: Change it before applying mass (cant acoid this inse the function with code and setMass)
 	void setShape_Box(glm::vec3& boxDimensions);
 	void setShape_Sphere(real radius);

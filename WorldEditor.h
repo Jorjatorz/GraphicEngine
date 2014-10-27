@@ -39,8 +39,8 @@ private:
 	typedef std::vector<MovableObject*> tSelectedObjects;
 	tSelectedObjects mSelectedObjects;
 		//Save the physics props, so we can move all object in 
-	RigidBody::tRigidBodyType physicsSavedType;
-	int physicsSavedMass;
+	RigidBody::tRigidBodyType mPhysicsSavedType;
+	real mPhysicsSavedMass;
 
 	//Axis staff
 	glm::vec2 mLastMousePos;

@@ -20,7 +20,7 @@ WorldEditor::WorldEditor(SceneManager* manager)
 	mSceneManager->setCurrentDisplayer("worldEditorDisplayer");
 	mLastMousePos = glm::vec2(-99999.9);
 	mDraggingAxis_X = mDraggingAxis_Y = mDraggingAxis_Z = false;
-	mTransformationMode = SCALE;
+	mTransformationMode = TRANSLATION;
 }
 
 
@@ -58,6 +58,11 @@ void WorldEditor::processWorldEditor()
 		checkForAxisDrag();
 		//DrawAxis
 		drawAxis(static_cast<Entity*>(mSelectedObjects.at(0)));
+	}
+	else
+	{
+		//Dont draw DrawAxis
+		drawAxis(NULL);
 	}
 }
 
@@ -99,8 +104,8 @@ void WorldEditor::selectObject_RayCast(glm::vec3 cameraPos, glm::vec3 mouseDir_W
 				mSelectedObjects.push_back(mRay.getHitObject());
 
 				//Save physics type and make it kinetic so we can move it
-				physicsSavedType = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getType();
-				physicsSavedMass = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getMass();
+				mPhysicsSavedType = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getType();
+				mPhysicsSavedMass = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getMass();
 				static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->setMass(0.0, false);
 			}
 		}
@@ -113,8 +118,11 @@ void WorldEditor::selectObject_RayCast(glm::vec3 cameraPos, glm::vec3 mouseDir_W
 			mSelectedObjects.at(i)->showAABB(false);
 		}
 
-		//Reset to the old physics props
-		static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->setMass(physicsSavedMass, physicsSavedType);
+		if (!mSelectedObjects.empty())
+		{
+			//Reset to the old physics props
+			static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->setMass(mPhysicsSavedMass, mPhysicsSavedType);
+		}
 
 		mSelectedObjects.clear();
 	}
@@ -155,59 +163,74 @@ void WorldEditor::entityEditor(Entity* ent)
 	mEditorDisplayer->setPropertyToWindow("entityWindow", "textS2", "value", scale.y);
 	mEditorDisplayer->setPropertyToWindow("entityWindow", "textS3", "value", scale.z);
 	//Physics
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textMass", "value", ent->getMass());
+	mEditorDisplayer->setPropertyToWindow("entityWindow", "textMass", "value", mPhysicsSavedMass); //old mass, because now is 0 (kinetic)
 }
 
 void WorldEditor::drawAxis(Entity* firstEntity)
 {
-	SceneNode* Xnod = mSceneManager->getRootSceneNode()->createChildSceneNode("Xnod");
-	SceneNode* Ynod = mSceneManager->getRootSceneNode()->createChildSceneNode("Ynod");
-	SceneNode* Znod = mSceneManager->getRootSceneNode()->createChildSceneNode("Znod");
 	//axis
 	Entity* Xent = mSceneManager->createEntity("Xaxis_WorldEditor");
 	Entity* Yent = mSceneManager->createEntity("Yaxis_WorldEditor");
 	Entity* Zent = mSceneManager->createEntity("Zaxis_WorldEditor");
 
-	if (mTransformationMode == tTransformationModeEnum::TRANSLATION)
+	if (firstEntity != NULL)
 	{
-		Xent->attachMesh("axis_translation.obj");
-		Yent->attachMesh("axis_translation.obj");
-		Zent->attachMesh("axis_translation.obj");
+
+		if (mTransformationMode == tTransformationModeEnum::TRANSLATION)
+		{
+			Xent->attachMesh("axis_translation.obj");
+			Yent->attachMesh("axis_translation.obj");
+			Zent->attachMesh("axis_translation.obj");
+		}
+		else
+		{
+			Xent->attachMesh("axis_scale.obj");
+			Yent->attachMesh("axis_scale.obj");
+			Zent->attachMesh("axis_scale.obj");
+		}
+
+
+		SceneNode* Xnod = mSceneManager->getRootSceneNode()->createChildSceneNode("Xnod");
+		SceneNode* Ynod = mSceneManager->getRootSceneNode()->createChildSceneNode("Ynod");
+		SceneNode* Znod = mSceneManager->getRootSceneNode()->createChildSceneNode("Znod");
+
+		//Set nodes positions
+		glm::vec3 entPos = firstEntity->getPosition();
+		Xnod->setPosition(entPos + glm::vec3(0.5, 0.0, 0.0));
+		Xnod->rotate(glm::vec3(0.0, 0.0, 1.0), -90.0);
+		Ynod->setPosition(entPos + glm::vec3(0.0, 0.5, 0.0));
+		Znod->setPosition(entPos + glm::vec3(0.0, 0.0, 0.5));
+		Znod->rotate(glm::vec3(1.0, 0.0, 0.0), 90.0);
+
+		Xnod->attachObject(Xent);
+		Ynod->attachObject(Yent);
+		Znod->attachObject(Zent);
+
+
+		//Set materials and kinematic atributtes
+		//Translation
+		Xent->setVisible(true);
+		Xent->setMass(0.0, false);
+		Xent->attachMaterial("XaxisMat");
+		Xent->getMaterial()->setBaseColorV(glm::vec3(1.0, 0.0, 0.0));
+		Xent->getRigidBody()->makeRigidBodyWithNoCollisions();
+		Yent->setVisible(true);
+		Yent->setMass(0.0, false);
+		Yent->attachMaterial("YaxisMat");
+		Yent->getMaterial()->setBaseColorV(glm::vec3(0.0, 0.0, 1.0));
+		Yent->getRigidBody()->makeRigidBodyWithNoCollisions();
+		Zent->setVisible(true);
+		Zent->setMass(0.0, false);
+		Zent->attachMaterial("ZaxisMat");
+		Zent->getMaterial()->setBaseColorV(glm::vec3(0.0, 1.0, 0.0));
+		Zent->getRigidBody()->makeRigidBodyWithNoCollisions();
 	}
 	else
 	{
-		Xent->attachMesh("axis_scale.obj");
-		Yent->attachMesh("axis_scale.obj");
-		Zent->attachMesh("axis_scale.obj");
+		Xent->setVisible(false);
+		Yent->setVisible(false);
+		Zent->setVisible(false);
 	}
-
-
-
-	//Set nodes positions
-	glm::vec3 entPos = firstEntity->getPosition();
-	Xnod->setPosition(entPos + glm::vec3(0.5, 0.0, 0.0));
-	Xnod->rotate(glm::vec3(0.0, 0.0, 1.0), -90.0);
-	Ynod->setPosition(entPos + glm::vec3(0.0, 0.5, 0.0));
-	Znod->setPosition(entPos + glm::vec3(0.0, 0.0, 0.5));
-	Znod->rotate(glm::vec3(1.0, 0.0, 0.0), 90.0);
-
-	Xnod->attachObject(Xent);
-	Ynod->attachObject(Yent);
-	Znod->attachObject(Zent);
-
-
-	//Set materials and kinematic atributtes
-	//Translation
-	Xent->setMass(0.0, false);
-	Xent->attachMaterial("XaxisMat");
-	Xent->getMaterial()->setBaseColorV(glm::vec3(1.0, 0.0, 0.0));
-	Yent->setMass(0.0, false);
-	Yent->attachMaterial("YaxisMat");
-	Yent->getMaterial()->setBaseColorV(glm::vec3(0.0, 0.0, 1.0));
-	Zent->setMass(0.0, false);
-	Zent->attachMaterial("ZaxisMat");
-	Zent->getMaterial()->setBaseColorV(glm::vec3(0.0, 1.0, 0.0));
-	
 }
 
 void WorldEditor::checkForAxisDrag()
