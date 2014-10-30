@@ -292,3 +292,14 @@ void Material::setShader(Shader* newShader)
 {
 	mMaterialShader = newShader;
 }
+
+void Material::setAmbientColorV(glm::vec3 newAmbientColor)
+{
+	mAmbientColorV = newAmbientColor;
+}
+
+void Material::setEmissiveColorV(glm::vec3 newEmissiveColor)
+{
+	mEmissiveColorS.mEmissiveColorV = newEmissiveColor;
+	mEmissiveColorS.emissiveTextured = false;
+}

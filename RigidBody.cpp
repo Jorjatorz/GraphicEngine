@@ -39,14 +39,16 @@ RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 	mBulletRigidBody->setCcdMotionThreshold(1);
 	mBulletRigidBody->setCcdSweptSphereRadius(0.8);
 	//----
-	setType_Static(); //Default state
 
 	//Set user pointer
-	mBulletRigidBody->setUserPointer(ent);
+	setRayCastReturnPointer(ent);
 
 	//Add the rigid body to the world
 	mDynamicWorld = PhysicsManager::getSingletonPtr()->getDynamicWorld();
 	addRigidBodyToWorld();
+
+	//Static by default
+	setMass(0.0, true); //static by default
 }
 
 
@@ -214,7 +216,19 @@ void RigidBody::removeRigidBodyFromWorld()
 	}
 }
 
-void RigidBody::makeRigidBodyWithNoCollisions()
+void RigidBody::makeRigidBodyWithNoCollisions(bool noColl)
 {
-	mBulletRigidBody->setCollisionFlags(-1);
+	if (noColl)
+	{
+		mBulletRigidBody->setCollisionFlags(-1);
+	}
+	else
+	{
+		mBulletRigidBody->setCollisionFlags(3);
+	}
+}
+
+void RigidBody::setRayCastReturnPointer(void *toPoint)
+{
+	mBulletRigidBody->setUserPointer(toPoint);
 }

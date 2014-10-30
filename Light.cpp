@@ -3,6 +3,7 @@
 #include "SceneNode.h"
 #include "SceneManager.h"
 #include "Shader.h"
+#include "Entity.h"
 
 Light::Light(std::string name, SceneManager* newSceneManager)
 {
@@ -22,7 +23,15 @@ Light::Light(std::string name, SceneManager* newSceneManager)
 	castShadows = true;
 	drawAABB = false;
 
-	mTypeOfMovableObject = tTypeEnum::Light;
+	mTypeOfMovableObject = tTypeEnum::LIGHT;
+
+	mDrawNode = mSceneManager->getRootSceneNode()->createChildSceneNode(name + "light_draw_node");
+	mDrawNode->setScale(glm::vec3(0.05));
+	mDrawEntity = mSceneManager->createEntity(name + "light_draw_entity", "sphere.obj");
+	mDrawNode->attachObject(mDrawEntity);
+	mDrawEntity->setVisible(false);
+	mDrawEntity->setPhysicsOn(false);
+	mDrawEntity->setRayCastReturnPointer(this);
 }
 
 Light::~Light(void)
@@ -68,7 +77,19 @@ void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, g
 			break;
 		}
 	}
-	//send uniforms
+	
+	if (mSceneManager->isEditorModeOn())
+	{
+		mDrawEntity->setVisible(true);
+		mDrawNode->setPosition(getPosition());
+		mDrawEntity->attachMaterial(mName + "_light_drawentity_mat");
+		mDrawEntity->setColor(mColor);
+
+	}
+	else
+	{
+		mDrawEntity->setVisible(false);
+	}
 }
 
 glm::vec3 Light::getPosition()

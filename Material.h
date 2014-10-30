@@ -10,24 +10,6 @@
 
 class Material
 {
-public:
-	Material(void);
-	Material(std::string materialName);
-	Material(std::string materialName, std::string shaderName);
-	~Material(void);
-
-	//read the materials propertyes from a file
-	void readMaterialFromFile(std::string matFile);
-
-	//Set properties
-	void setShader(Shader* newShader);
-
-	void setBaseColorV(glm::vec3 newBaseColor);
-	void setBaseColorRGB(glm::vec3 newBaseColor); //Parameter value is pass in a range from 0-255
-	void setBaseColorTexture(Texture* texture);
-
-	//Sends material information (uniforms) to the shader
-	void applyMaterial();
 
 private:
 	typedef struct
@@ -43,14 +25,14 @@ private:
 		Texture* mRoughnessT;
 		bool roughnessTextured;
 	} tRoughness;
-	
+
 	typedef struct
 	{
 		glm::vec3 mEmissiveColorV;
 		Texture* mEmissiveColorT;
 		bool emissiveTextured;
 	} tEmissiveColor;
-	
+
 	typedef struct
 	{
 		real mOpacityR;
@@ -64,7 +46,6 @@ private:
 		bool normalTextured;
 	} tNormal;
 
-public:
 	//Material properties
 	tBaseColor mBaseColorS;
 	tRoughness mRoughNessS;
@@ -75,6 +56,28 @@ public:
 	tNormal mNormalS;
 	real mRefractionR; //any value (default 1 (air))
 	glm::vec3 mAmbientColorV; //Can be a texture if passed a skyblock?? (maybe compute the mean color)
+
+public:
+	Material(void);
+	Material(std::string materialName);
+	Material(std::string materialName, std::string shaderName);
+	~Material(void);
+
+	//read the materials propertyes from a file
+	void readMaterialFromFile(std::string matFile);
+
+	//Set properties
+	void setShader(Shader* newShader);
+
+	void setBaseColorV(glm::vec3 newBaseColor);
+	void setBaseColorRGB(glm::vec3 newBaseColor); //Parameter value is pass in a range from 0-255
+	void setBaseColorTexture(Texture* texture);
+	void setAmbientColorV(glm::vec3 newAmbientColor);
+	void setEmissiveColorV(glm::vec3 newEmissiveColor);
+
+	//Sends material information (uniforms) to the shader
+	void applyMaterial();
+
 
 	Shader* getShader()
 	{

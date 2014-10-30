@@ -39,6 +39,7 @@ public:
 	real getMass(); //From rigidbody
 	void setMass(real mass, bool setStatic);
 	void setPhysicsOn(bool mod);
+	void setRayCastReturnPointer(void *returnPointer);
 
 	/*CollisionObject* getCollisionObject()
 	{
@@ -48,6 +49,7 @@ public:
 	//Material
 	void attachMaterial(std::string materialName);
 	void setWireFrame(bool wire);
+	void setColor(glm::vec3 col); //Shortcut to set the base color to the mat
 
 	//Others
 	void setModelMatrix(glm::mat4 matrix);

@@ -26,6 +26,7 @@ WorldEditor::WorldEditor(SceneManager* manager)
 
 WorldEditor::~WorldEditor()
 {
+	mPhysicsSavedProperties.clear();
 }
 
 void WorldEditor::processWorldEditor()
@@ -36,16 +37,16 @@ void WorldEditor::processWorldEditor()
 
 		switch (mSelectedObjects.at(i)->getType())
 		{
-		case MovableObject::Entity:
+		case MovableObject::ENTITY:
 		{
 										entityEditor(static_cast<Entity*>(mSelectedObjects.at(i)));
 										break;
 		}
-		case MovableObject::Light:
+		case MovableObject::LIGHT:
 		{
 										break;
 		}
-		case MovableObject::Camera:
+		case MovableObject::CAMERA:
 		{
 										break;
 		}
@@ -89,7 +90,23 @@ void WorldEditor::selectObject_RayCast(glm::vec3 cameraPos, glm::vec3 mouseDir_W
 		{
 			if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_LCTRL))
 			{
-				mSelectedObjects.push_back(mRay.getHitObject());
+				//Check if we have already selected that object
+				tSelectedObjects::iterator it = std::find(mSelectedObjects.begin(), mSelectedObjects.end(), mRay.getHitObject());
+				if (it == mSelectedObjects.end())
+				{
+					if (mRay.getHitObject()->getType() == MovableObject::ENTITY)
+					{
+						Entity* ent = static_cast<Entity*>(mRay.getHitObject());
+						tPhysicsPropsSaverStruct newPhysicsProps;
+						newPhysicsProps.mRigidBodyType = ent->getRigidBody()->getType();
+						newPhysicsProps.mRigidBodyMass = ent->getRigidBody()->getMass();
+						ent->setMass(0.0, false);
+
+						mPhysicsSavedProperties.push_back(newPhysicsProps);
+					}
+
+					mSelectedObjects.push_back(mRay.getHitObject());
+				}
 			}
 			else //Just one selection
 			{
@@ -103,28 +120,53 @@ void WorldEditor::selectObject_RayCast(glm::vec3 cameraPos, glm::vec3 mouseDir_W
 
 				mSelectedObjects.push_back(mRay.getHitObject());
 
-				//Save physics type and make it kinetic so we can move it
-				mPhysicsSavedType = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getType();
-				mPhysicsSavedMass = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getMass();
-				static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->setMass(0.0, false);
+				mPhysicsSavedProperties.clear();
+				if (mSelectedObjects.at(0)->getType() == MovableObject::ENTITY)
+				{
+					tPhysicsPropsSaverStruct newPhysicsProps;
+					newPhysicsProps.mRigidBodyType = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getType();
+					newPhysicsProps.mRigidBodyMass = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getMass();
+					static_cast<Entity*>(mSelectedObjects.at(0))->setMass(0.0, false);
+
+					mPhysicsSavedProperties.push_back(newPhysicsProps);
+				}
+
+				/*if (mSelectedObjects.at(0)->getType() == MovableObject::ENTITY)
+				{
+					//Save physics type and make it kinetic so we can move it
+					mPhysicsSavedType = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getType();
+					mPhysicsSavedMass = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getMass();
+					static_cast<Entity*>(mSelectedObjects.at(0))->setMass(0.0, false);
+				}*/
 			}
+
 		}
 	}
 	else
 	{
-		//Remove AABB
-		for (int i = 0; i < mSelectedObjects.size(); ++i)
+		//If control is not preset reset selections (this prevents the reset of all selections if the user misses a click while slection multiple objects)
+		if (InputManager::getSingletonPtr()->isKeyUp(SDL_SCANCODE_LCTRL))
 		{
-			mSelectedObjects.at(i)->showAABB(false);
-		}
+			//Remove AABB
+			for (int i = 0; i < mSelectedObjects.size(); ++i)
+			{
+				mSelectedObjects.at(i)->showAABB(false);
+			}
 
-		if (!mSelectedObjects.empty())
-		{
-			//Reset to the old physics props
-			static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->setMass(mPhysicsSavedMass, mPhysicsSavedType);
-		}
+			if (!mSelectedObjects.empty())
+			{
+				//Reset to the old physics props
+				for (int i = 0; i < mSelectedObjects.size(); ++i)
+				{
+					if (mSelectedObjects.at(i)->getType() == MovableObject::ENTITY)
+					{
+						static_cast<Entity*>(mSelectedObjects.at(i))->getRigidBody()->setMass(mPhysicsSavedProperties.at(i).mRigidBodyMass, mPhysicsSavedProperties.at(i).mRigidBodyType);
+					}
+				}
+			}
 
-		mSelectedObjects.clear();
+			mSelectedObjects.clear();
+		}
 	}
 }
 
@@ -163,7 +205,7 @@ void WorldEditor::entityEditor(Entity* ent)
 	mEditorDisplayer->setPropertyToWindow("entityWindow", "textS2", "value", scale.y);
 	mEditorDisplayer->setPropertyToWindow("entityWindow", "textS3", "value", scale.z);
 	//Physics
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textMass", "value", mPhysicsSavedMass); //old mass, because now is 0 (kinetic)
+	mEditorDisplayer->setPropertyToWindow("entityWindow", "textMass", "value", mPhysicsSavedProperties.at(0).mRigidBodyMass); //old mass, because now is 0 (kinetic), of the first object
 }
 
 void WorldEditor::drawAxis(Entity* firstEntity)
@@ -213,17 +255,19 @@ void WorldEditor::drawAxis(Entity* firstEntity)
 		Xent->setMass(0.0, false);
 		Xent->attachMaterial("XaxisMat");
 		Xent->getMaterial()->setBaseColorV(glm::vec3(1.0, 0.0, 0.0));
-		Xent->getRigidBody()->makeRigidBodyWithNoCollisions();
+		Xent->setPhysicsOn(false);
+
 		Yent->setVisible(true);
 		Yent->setMass(0.0, false);
 		Yent->attachMaterial("YaxisMat");
 		Yent->getMaterial()->setBaseColorV(glm::vec3(0.0, 0.0, 1.0));
-		Yent->getRigidBody()->makeRigidBodyWithNoCollisions();
+		Yent->setPhysicsOn(false);
+
 		Zent->setVisible(true);
 		Zent->setMass(0.0, false);
 		Zent->attachMaterial("ZaxisMat");
 		Zent->getMaterial()->setBaseColorV(glm::vec3(0.0, 1.0, 0.0));
-		Zent->getRigidBody()->makeRigidBodyWithNoCollisions();
+		Zent->setPhysicsOn(false);
 	}
 	else
 	{
@@ -258,17 +302,27 @@ void WorldEditor::checkForAxisDrag()
 		InputManager::getSingletonPtr()->getMousePosition(mouse);
 		if (mTransformationMode == tTransformationModeEnum::TRANSLATION)
 		{
-			mSelectedObjects.at(0)->mParentSceneNode->translate(glm::vec3((mouse.x - mLastMousePos.x) / 10.0, 0.0, 0.0)); //The selected object is the axis so translate it
+			//Move all the selected objects
+			for (int i = 0; i < mSelectedObjects.size(); ++i)
+			{
+				mSelectedObjects.at(i)->mParentSceneNode->translate(glm::vec3((mouse.x - mLastMousePos.x) / 10.0, 0.0, 0.0)); //The selected object is the axis so translate it
+			}
 		}
 		else
 		{
 			if (uniformScaling)
 			{
-				mSelectedObjects.at(0)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+				for (int i = 0; i < mSelectedObjects.size(); ++i)
+				{
+					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+				}
 			}
 			else
 			{
-				mSelectedObjects.at(0)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0, 0.0, 0.0)); //The selected object is the axis so scale it
+				for (int i = 0; i < mSelectedObjects.size(); ++i)
+				{
+					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0, 0.0, 0.0)); //The selected object is the axis so scale it
+				}
 			}
 		}
 		mLastMousePos = mouse;
@@ -284,17 +338,26 @@ void WorldEditor::checkForAxisDrag()
 		InputManager::getSingletonPtr()->getMousePosition(mouse);
 		if (mTransformationMode == tTransformationModeEnum::TRANSLATION)
 		{
-			mSelectedObjects.at(0)->mParentSceneNode->translate(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 10.0, 0.0)); //The selected object is the axis so translate it
+			for (int i = 0; i < mSelectedObjects.size(); ++i)
+			{
+				mSelectedObjects.at(i)->mParentSceneNode->translate(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 10.0, 0.0)); //The selected object is the axis so translate it
+			}
 		}
 		else
 		{
 			if (uniformScaling)
 			{
-				mSelectedObjects.at(0)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+				for (int i = 0; i < mSelectedObjects.size(); ++i)
+				{
+					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+				}
 			}
 			else
 			{
-				mSelectedObjects.at(0)->mParentSceneNode->scale(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 100.0, 0.0)); //The selected object is the axis so scale it
+				for (int i = 0; i < mSelectedObjects.size(); ++i)
+				{
+					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 100.0, 0.0)); //The selected object is the axis so scale it
+				}
 			}
 		}
 		mLastMousePos = mouse;
@@ -310,17 +373,26 @@ void WorldEditor::checkForAxisDrag()
 		InputManager::getSingletonPtr()->getMousePosition(mouse);
 		if (mTransformationMode == tTransformationModeEnum::TRANSLATION)
 		{
-			mSelectedObjects.at(0)->mParentSceneNode->translate(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 10.0)); //The selected object is the axis so translate it
+			for (int i = 0; i < mSelectedObjects.size(); ++i)
+			{
+				mSelectedObjects.at(i)->mParentSceneNode->translate(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 10.0)); //The selected object is the axis so translate it
+			}
 		}
 		else
 		{
 			if (uniformScaling)
 			{
-				mSelectedObjects.at(0)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+				for (int i = 0; i < mSelectedObjects.size(); ++i)
+				{
+					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+				}
 			}
 			else
 			{
-				mSelectedObjects.at(0)->mParentSceneNode->scale(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 100.0)); //The selected object is the axis so scale it
+				for (int i = 0; i < mSelectedObjects.size(); ++i)
+				{
+					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 100.0)); //The selected object is the axis so scale it
+				}
 			}
 		}
 		mLastMousePos = mouse;

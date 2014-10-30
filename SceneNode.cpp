@@ -132,7 +132,7 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 	if(mNewObject->mParentSceneNode == this)
 	{
 		//its already attached to this node, set new tranforms just for kinetic objects
-		if (mNewObject->getType() == MovableObject::Entity)
+		if (mNewObject->getType() == MovableObject::ENTITY)
 		{
 			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
 		}
@@ -147,7 +147,7 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 		mNewObject->setAttached(true, this);
 
 		//Update the transforms with the new node (Just for kinetic objects)
-		if (mNewObject->getType() == MovableObject::Entity)
+		if (mNewObject->getType() == MovableObject::ENTITY)
 		{
 			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
 		}
@@ -158,7 +158,7 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 		mNewObject->setAttached(true, this);
 
 		//First time, create collision object
-		if (mNewObject->getType() == MovableObject::Entity)
+		if (mNewObject->getType() == MovableObject::ENTITY)
 		{
 			static_cast<Entity*>(mNewObject)->makeRigidBody(this);
 		}

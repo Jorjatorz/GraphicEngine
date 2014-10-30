@@ -63,6 +63,10 @@ private:
 	real mOuterAngle; //Spotlight
 	real mAttenuationRadius;
 
+	//Editor mode
+	SceneNode* mDrawNode; //Will hold the draw entity
+	Entity* mDrawEntity; //Draw entity. (The one that can be seen in the editor)
+
 	/*
 	//inheritated
 	std::string mName;

@@ -378,7 +378,7 @@ void SceneManager::processLights()
 		{
 			lightVolume->attachMaterial("lightVolumeMaterial");
 			lightVolume->getMaterial()->setShader(lightShader);
-			lightVolume->getMaterial()->mBaseColorS.mBaseColorV = it->second->getColor();
+			lightVolume->getMaterial()->setBaseColorV(it->second->getColor());
 			lightVolume->process(PVS, V);
 		}
 		else

@@ -163,33 +163,28 @@ void Mesh::loadMesh(std::string meshPath)
 			aiString texturePath;
 			if (aiMat->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
 			{
-				newMesh.meshMaterial->mBaseColorS.mBaseColorT = mCurrentSceneManager->createTexture(texturePath.data, false, GL_RGB, texturePath.data);
-				newMesh.meshMaterial->mBaseColorS.baseColorTextured = true;
-			}
-			else
-			{
-				newMesh.meshMaterial->mBaseColorS.baseColorTextured = false;
+				newMesh.meshMaterial->setBaseColorTexture(mCurrentSceneManager->createTexture(texturePath.data, false, GL_RGB, texturePath.data));
 			}
 
 			//Diffuse Color
 			aiColor4D diffuse;
 			if (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &diffuse) == AI_SUCCESS)
 			{
-				newMesh.meshMaterial->mBaseColorS.mBaseColorV = glm::vec3(diffuse.r, diffuse.g, diffuse.b);
+				newMesh.meshMaterial->setBaseColorV(glm::vec3(diffuse.r, diffuse.g, diffuse.b));
 			}
 
 			//Ambien color
 			aiColor4D ambient;
 			if (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_AMBIENT, &ambient) == AI_SUCCESS)
 			{
-				newMesh.meshMaterial->mAmbientColorV = glm::vec3(ambient.r, ambient.g, ambient.b);
+				newMesh.meshMaterial->setAmbientColorV(glm::vec3(ambient.r, ambient.g, ambient.b));
 			}
 
 			//Emissive Color
 			aiColor4D emissive;
 			if (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_EMISSIVE, &emissive) == AI_SUCCESS)
 			{
-				newMesh.meshMaterial->mEmissiveColorS.mEmissiveColorV = glm::vec3(emissive.r, emissive.g, emissive.b);
+				newMesh.meshMaterial->setEmissiveColorV(glm::vec3(emissive.r, emissive.g, emissive.b));
 			}
 
 			//Save the new mesh

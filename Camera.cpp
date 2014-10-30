@@ -24,7 +24,7 @@ Camera::Camera(SceneManager* newSceneManager)
 	camPitch = 3.1415;
 	camYaw = 0;
 
-	mTypeOfMovableObject = tTypeEnum::Camera;
+	mTypeOfMovableObject = tTypeEnum::CAMERA;
 }
 
 Camera::Camera(std::string& name, SceneManager* newSceneManager)
@@ -44,7 +44,7 @@ Camera::Camera(std::string& name, SceneManager* newSceneManager)
 	camPitch = 3.1415;
 	camYaw = 0;
 
-	mTypeOfMovableObject = tTypeEnum::Camera;
+	mTypeOfMovableObject = tTypeEnum::CAMERA;
 }
 
 Camera::~Camera(void)

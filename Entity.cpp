@@ -28,7 +28,7 @@ Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 	wireFrame = false;
 	drawAABB = false;
 
-	mTypeOfMovableObject = tTypeEnum::Entity;
+	mTypeOfMovableObject = tTypeEnum::ENTITY;
 }
 
 Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newSceneManager)
@@ -42,7 +42,7 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 
 	mAffectedByPhysics = true;
 
-	mTypeOfMovableObject = tTypeEnum::Entity;
+	mTypeOfMovableObject = tTypeEnum::ENTITY;
 
 	attachMesh(meshName); //load mesh
 }
@@ -245,10 +245,23 @@ void Entity::setPhysicsOn(bool mod)
 
 	if (mAffectedByPhysics)
 	{
-		mRigidBody->addRigidBodyToWorld();
+		mRigidBody->makeRigidBodyWithNoCollisions(false);
 	}
 	else
 	{
-		mRigidBody->removeRigidBodyFromWorld();
+		mRigidBody->makeRigidBodyWithNoCollisions(true);
+	}
+}
+
+void Entity::setRayCastReturnPointer(void *returnPointer)
+{
+	mRigidBody->setRayCastReturnPointer(returnPointer);
+}
+
+void Entity::setColor(glm::vec3 col)
+{
+	if (mMaterial != NULL)
+	{
+		mMaterial->setBaseColorV(col);
 	}
 }

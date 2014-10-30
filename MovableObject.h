@@ -14,9 +14,9 @@ public:
 	//type enumeration for detecting what inherit class it is
 	typedef enum
 	{
-		Entity,
-		Light,
-		Camera
+		ENTITY,
+		LIGHT,
+		CAMERA
 	} tTypeEnum;
 
 	std::string getName()
