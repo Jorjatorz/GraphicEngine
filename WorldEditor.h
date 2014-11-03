@@ -38,14 +38,15 @@ private:
 	//Selected objects
 	typedef std::vector<MovableObject*> tSelectedObjects;
 	tSelectedObjects mSelectedObjects;
+	MovableObject* mPreviousSelectedObject; //Save the previous selected object so we check if it has changed, if yes, render again the information to the ui
 		//Save the physics props, so we can move all object in
-	typedef struct
-	{
-		RigidBody::tRigidBodyType mRigidBodyType;
-		real mRigidBodyMass;
-	} tPhysicsPropsSaverStruct;
-	typedef std::vector<tPhysicsPropsSaverStruct> tPhysicsSavedVector;
-	tPhysicsSavedVector mPhysicsSavedProperties;
+		typedef struct
+		{
+			RigidBody::tRigidBodyType mRigidBodyType;
+			real mRigidBodyMass;
+		} tPhysicsPropsSaverStruct;
+		typedef std::vector<tPhysicsPropsSaverStruct> tPhysicsSavedVector;
+		tPhysicsSavedVector mPhysicsSavedProperties;
 
 	//Axis staff
 	glm::vec2 mLastMousePos;

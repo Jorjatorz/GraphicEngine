@@ -32,13 +32,16 @@ RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 	mBulletMotionState = new btDefaultMotionState(trans);
 	mBulletCollisionShape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 
-	//Create knitec body
+	//Create knitec body - Default mass: 0.0
 	btRigidBody::btRigidBodyConstructionInfo btConstructionInfo(0.0, mBulletMotionState, mBulletCollisionShape, btVector3(0.0, 0.0, 0.0));
 	mBulletRigidBody = new btRigidBody(btConstructionInfo);
 	//Trying---- Continuos collision detection
 	mBulletRigidBody->setCcdMotionThreshold(1);
 	mBulletRigidBody->setCcdSweptSphereRadius(0.8);
 	//----
+	//Satic by default
+	setType_Static();
+
 
 	//Set user pointer
 	setRayCastReturnPointer(ent);
@@ -46,9 +49,6 @@ RigidBody::RigidBody(std::string name, SceneNode* node, Entity* ent)
 	//Add the rigid body to the world
 	mDynamicWorld = PhysicsManager::getSingletonPtr()->getDynamicWorld();
 	addRigidBodyToWorld();
-
-	//Static by default
-	setMass(0.0, true); //static by default
 }
 
 

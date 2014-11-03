@@ -21,6 +21,7 @@ WorldEditor::WorldEditor(SceneManager* manager)
 	mLastMousePos = glm::vec2(-99999.9);
 	mDraggingAxis_X = mDraggingAxis_Y = mDraggingAxis_Z = false;
 	mTransformationMode = TRANSLATION;
+	mPreviousSelectedObject = NULL;
 }
 
 
@@ -64,6 +65,11 @@ void WorldEditor::processWorldEditor()
 	{
 		//Dont draw DrawAxis
 		drawAxis(NULL);
+		//Dont draw the window
+		if (mEditorDisplayer->getWindow("entityWindow_WorldEditor") != NULL)
+		{
+			mEditorDisplayer->getWindow("entityWindow_WorldEditor")->setVisible(false);
+		}
 	}
 }
 
@@ -117,6 +123,7 @@ void WorldEditor::selectObject_RayCast(glm::vec3 cameraPos, glm::vec3 mouseDir_W
 				}
 
 				mSelectedObjects.clear();
+				mPreviousSelectedObject = NULL;
 
 				mSelectedObjects.push_back(mRay.getHitObject());
 
@@ -126,6 +133,7 @@ void WorldEditor::selectObject_RayCast(glm::vec3 cameraPos, glm::vec3 mouseDir_W
 					tPhysicsPropsSaverStruct newPhysicsProps;
 					newPhysicsProps.mRigidBodyType = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getType();
 					newPhysicsProps.mRigidBodyMass = static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->getMass();
+					//Set as kinetic object so we are able to move it
 					static_cast<Entity*>(mSelectedObjects.at(0))->setMass(0.0, false);
 
 					mPhysicsSavedProperties.push_back(newPhysicsProps);
@@ -182,30 +190,36 @@ void WorldEditor::entityEditor(Entity* ent)
 		mTransformationMode = SCALE;
 	}
 
+	//Update the propeties of the window if we select a new object or if we move the object
+	if ((ent != mPreviousSelectedObject) || (mDraggingAxis_X || mDraggingAxis_Y || mDraggingAxis_Z))
+	{
+		//Create the UI Window
+		mEditorDisplayer->createUIWindow("entityWindow_WorldEditor", 400, 400, "entitySelected.html")->setPosition_NDC(glm::vec2(-0.65, 0.45));
+		mEditorDisplayer->getWindow("entityWindow_WorldEditor")->setVisible(true);
 
-	//Create the UI Window
-	mEditorDisplayer->createUIWindow("entityWindow", 400, 400, "entitySelected.html")->setPosition_NDC(glm::vec2(-0.65, 0.45));
+		glm::vec3 position, orientation, scale;
+		position = ent->getPosition();
+		orientation = ent->getOrientation_Euler();
+		scale = ent->getScale();
+		//Name
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "entName", "innerHTML", ent->getName());
+		//Position
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textP1", "value", position.x);
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textP2", "value", position.y);
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textP3", "value", position.z);
+		//Orientation
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textO1", "value", orientation.x);
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textO2", "value", orientation.y);
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textO3", "value", orientation.z);
+		//Scale
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textS1", "value", scale.x);
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textS2", "value", scale.y);
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textS3", "value", scale.z);
+		//Physics
+		mEditorDisplayer->setPropertyToWindow("entityWindow_WorldEditor", "textMass", "value", mPhysicsSavedProperties.at(0).mRigidBodyMass); //old mass, because now is 0 (kinetic), of the first object
 
-	glm::vec3 position, orientation, scale;
-	position = ent->getPosition();
-	orientation = ent->getOrientation_Euler();
-	scale = ent->getScale();
-	//Name
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "entName", "innerHTML", ent->getName());
-	//Position
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textP1", "value", position.x);
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textP2", "value", position.y);
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textP3", "value", position.z);
-	//Orientation
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textO1", "value", orientation.x);
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textO2", "value", orientation.y);
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textO3", "value", orientation.z);
-	//Scale
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textS1", "value", scale.x);
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textS2", "value", scale.y);
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textS3", "value", scale.z);
-	//Physics
-	mEditorDisplayer->setPropertyToWindow("entityWindow", "textMass", "value", mPhysicsSavedProperties.at(0).mRigidBodyMass); //old mass, because now is 0 (kinetic), of the first object
+		mPreviousSelectedObject = ent;
+	}
 }
 
 void WorldEditor::drawAxis(Entity* firstEntity)
