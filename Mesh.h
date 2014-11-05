@@ -9,11 +9,6 @@
 
 class Mesh
 {
-public:
-	Mesh(void);
-	Mesh(std::string meshPath, SceneManager* manager);
-	~Mesh(void);
-
 private:
 	//uv, etc.
 	typedef struct
@@ -32,6 +27,10 @@ private:
 
 
 public:
+	Mesh(void);
+	Mesh(std::string meshPath, SceneManager* manager);
+	~Mesh(void);
+
 	//load mesh
 	void loadMesh(std::string meshPath); //load the mesh from a file
 

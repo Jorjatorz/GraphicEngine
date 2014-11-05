@@ -29,6 +29,11 @@ public:
 		return mAttachedToNode;
 	}
 
+	SceneNode* getAttachedSceneNode()
+	{
+		return mParentSceneNode;
+	}
+
 	bool isVisible()
 	{
 		return visible;
@@ -55,9 +60,6 @@ public:
 
 	virtual void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient) = 0;
 
-	SceneManager* mSceneManager;
-	SceneNode* mParentSceneNode;
-
 protected:
 	std::string mName;
 	bool visible;
@@ -66,6 +68,10 @@ protected:
 	bool drawAABB;
 
 	tTypeEnum mTypeOfMovableObject;
+
+
+	SceneManager* mSceneManager;
+	SceneNode* mParentSceneNode;
 };
 
 #endif

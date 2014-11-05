@@ -14,7 +14,6 @@
 
 Entity::Entity(std::string mNewName, SceneManager* newSceneManager)
 {
-	//apart from movableobject constructor
 	mName = mNewName;
 	mModelMatrix = glm::mat4(1.0); //identity
 	mMesh = NULL;
@@ -44,7 +43,8 @@ Entity::Entity(std::string mNewName, std::string meshName, SceneManager* newScen
 
 	mTypeOfMovableObject = tTypeEnum::ENTITY;
 
-	attachMesh(meshName); //load mesh
+	//Load the mesh
+	attachMesh(meshName);
 }
 
 
@@ -56,8 +56,8 @@ Entity::~Entity(void)
 
 void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)
 {
-	//If its a "real" entity (i.e not a light volume)
-	if (mParentSceneNode != NULL)
+	//If its has a rigidBody (i.e not a light volume) set the transformations (only if kinetic)
+	if (mRigidBody != NULL)
 	{
 		mRigidBody->setTransforms(mParentSceneNode);
 	}
@@ -76,6 +76,7 @@ glm::vec3 Entity::getPosition()
 	}
 	else
 	{
+		//We are not attached to a scenenode -> we dont have a position -> return error vector
 		return glm::vec3(-9999999.9);
 	}
 }
@@ -83,10 +84,12 @@ glm::vec3 Entity::getOrientation_Euler()
 {
 	if (mParentSceneNode != NULL)
 	{
+		//Transform the quaternion into euler angles
 		return glm::eulerAngles(mParentSceneNode->getDerivedOrientation());
 	}
 	else
 	{
+		//We are not attached to a scenenode -> we dont have a orientation -> return error vector
 		return glm::vec3(-9999999.9);
 	}
 }
@@ -99,38 +102,37 @@ glm::vec3 Entity::getScale()
 	}
 	else
 	{
+		//We are not attached to a scenenode -> we dont have a scale -> return error vector
 		return glm::vec3(-9999999.9);
 	}
 }
 
 void Entity::render(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix)
 {
+	//We render only if we have a mesh to render
 	if(meshAttached)
 	{
-
+		//Loop through all the submeshes of the mesh and render them
 		for(int i = 0; i < mMesh->mMeshComponentsVector.size(); ++i)
 		{
 
-			// apply shader. If we dont have a full entity material use each entity material
+			// Apply shader. If we dont have a full entity material use each entity material (created when loading the mesh)
 			Shader* materialShader;
 			if (mMaterial == NULL)
 			{
 				materialShader = mMesh->mMeshComponentsVector[i].meshMaterial->getShader();
-				mSceneManager->bindShader(materialShader);
 			}
 			else
 			{
 				materialShader = mMaterial->getShader();
-				mSceneManager->bindShader(materialShader);
 			}
+			mSceneManager->bindShader(materialShader);
 
-			//Send uniforms	
+			//Send all entity uniforms	
 			sendEntityUniforms(materialShader, perspectiveViewSceneNodeM, viewMatrix);
 
-			//render
 			mMesh->bindMeshArray(mMesh->mMeshComponentsVector[i]);
-
-			//Set the material for each mesh (can be optimice the else)
+			//Apply the material (i.e. Send material uniforms)
 			if (mMaterial == NULL)
 			{
 				mMesh->mMeshComponentsVector[i].meshMaterial->applyMaterial();
@@ -148,18 +150,22 @@ void Entity::render(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix)
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
+
 			glDrawElements(GL_TRIANGLES, mMesh->mMeshComponentsVector[i].mIndexVector.size(), GL_UNSIGNED_INT, 0);
 
 			mMesh->unbindMeshArray();
 
 		}
 
-		//After rendering the object
+		//After rendering the object we render the AABB
 		if (drawAABB)
 		{
 			mSceneManager->bindShader(mSceneManager->createShader("AABBshader", "AABB"));
 			mMesh->renderAABB(mModelMatrix, perspectiveViewSceneNodeM);
 		}
+
+		//Reactivate Fill mode to avoid problems
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }
 
@@ -167,7 +173,7 @@ void Entity::sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm:
 {
 	glm::mat4 finalMatrix = PVNMatrix * mModelMatrix; //final matrix composed of pers * view * node * model matrix
 
-	//IF we dont have node we cant multiply by the node matrix (i.e. deferred light volums
+	//Calculate the normal matrix (Inverse(Transpose(ModelMatrix))); If we dont have scenenode we cant multiply by the node matrix (i.e. deferred light volums)
 	glm::mat4 normalM;
 	if (mParentSceneNode != NULL)
 	{
@@ -177,6 +183,7 @@ void Entity::sendEntityUniforms(Shader* currentShader, glm::mat4 PVNMatrix, glm:
 	{
 		normalM = glm::inverseTranspose(mModelMatrix);
 	}
+
 	currentShader->UniformMatrix("MVP", finalMatrix);
 	currentShader->UniformMatrix("projectionM", mSceneManager->getProjectionMatrix());
 	currentShader->UniformMatrix("viewM", viewMatrix);
@@ -188,8 +195,9 @@ void Entity::attachMesh(std::string meshName)
 {
 	mMeshName = meshName;
 
-	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr(); //resourcemanager pointer
-	mMesh = mResourceManager->loadMesh(mMeshName, mMeshName, mSceneManager); //allocate new mesh
+	ResourceManager* mResourceManager = ResourceManager::getSingletonPtr();
+	//Load or get the Mesh pointer.
+	mMesh = mResourceManager->loadMesh(mMeshName, mMeshName, mSceneManager);
 
 	mModelMatrix = mMesh->meshMatrix;
 
@@ -205,7 +213,7 @@ void Entity::deAttachMesh()
 
 void Entity::attachMaterial(std::string materialName)
 {
-	//Creates o return a material with that name
+	//Creates or return a material with that name
 	mMaterial = mSceneManager->createMaterial(materialName, materialName);
 }
 
@@ -221,11 +229,13 @@ void Entity::setModelMatrix(glm::mat4 matrix)
 
 void Entity::makeRigidBody(SceneNode* node)
 {
+	//Will be deleted in the constructor. The rigigdBody uses the same name as the entity
 	mRigidBody = PhysicsManager::getSingletonPtr()->createRigidBody(mName, node, this);
 }
 
 void Entity::setRigidBodyTransforms(SceneNode* node)
 {
+	//Only if kinetic. Updates the new transforms in the rigidBody
 	mRigidBody->setTransforms(node);
 }
 
@@ -243,6 +253,7 @@ void Entity::setPhysicsOn(bool mod)
 {
 	mAffectedByPhysics = mod;
 
+	//Care, inverse bools!
 	if (mAffectedByPhysics)
 	{
 		mRigidBody->makeRigidBodyWithNoCollisions(false);

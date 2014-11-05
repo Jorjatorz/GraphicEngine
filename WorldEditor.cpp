@@ -319,7 +319,7 @@ void WorldEditor::checkForAxisDrag()
 			//Move all the selected objects
 			for (int i = 0; i < mSelectedObjects.size(); ++i)
 			{
-				mSelectedObjects.at(i)->mParentSceneNode->translate(glm::vec3((mouse.x - mLastMousePos.x) / 10.0, 0.0, 0.0)); //The selected object is the axis so translate it
+				mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3((mouse.x - mLastMousePos.x) / 10.0, 0.0, 0.0)); //The selected object is the axis so translate it
 			}
 		}
 		else
@@ -328,14 +328,14 @@ void WorldEditor::checkForAxisDrag()
 			{
 				for (int i = 0; i < mSelectedObjects.size(); ++i)
 				{
-					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+					mSelectedObjects.at(i)->getAttachedSceneNode()->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
 				}
 			}
 			else
 			{
 				for (int i = 0; i < mSelectedObjects.size(); ++i)
 				{
-					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0, 0.0, 0.0)); //The selected object is the axis so scale it
+					mSelectedObjects.at(i)->getAttachedSceneNode()->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0, 0.0, 0.0)); //The selected object is the axis so scale it
 				}
 			}
 		}
@@ -354,7 +354,7 @@ void WorldEditor::checkForAxisDrag()
 		{
 			for (int i = 0; i < mSelectedObjects.size(); ++i)
 			{
-				mSelectedObjects.at(i)->mParentSceneNode->translate(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 10.0, 0.0)); //The selected object is the axis so translate it
+				mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 10.0, 0.0)); //The selected object is the axis so translate it
 			}
 		}
 		else
@@ -363,14 +363,14 @@ void WorldEditor::checkForAxisDrag()
 			{
 				for (int i = 0; i < mSelectedObjects.size(); ++i)
 				{
-					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+					mSelectedObjects.at(i)->getAttachedSceneNode()->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
 				}
 			}
 			else
 			{
 				for (int i = 0; i < mSelectedObjects.size(); ++i)
 				{
-					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 100.0, 0.0)); //The selected object is the axis so scale it
+					mSelectedObjects.at(i)->getAttachedSceneNode()->scale(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 100.0, 0.0)); //The selected object is the axis so scale it
 				}
 			}
 		}
@@ -389,7 +389,7 @@ void WorldEditor::checkForAxisDrag()
 		{
 			for (int i = 0; i < mSelectedObjects.size(); ++i)
 			{
-				mSelectedObjects.at(i)->mParentSceneNode->translate(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 10.0)); //The selected object is the axis so translate it
+				mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 10.0)); //The selected object is the axis so translate it
 			}
 		}
 		else
@@ -398,19 +398,19 @@ void WorldEditor::checkForAxisDrag()
 			{
 				for (int i = 0; i < mSelectedObjects.size(); ++i)
 				{
-					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
+					mSelectedObjects.at(i)->getAttachedSceneNode()->scale(glm::vec3((mouse.x - mLastMousePos.x) / 100.0)); //The selected object in all axis
 				}
 			}
 			else
 			{
 				for (int i = 0; i < mSelectedObjects.size(); ++i)
 				{
-					mSelectedObjects.at(i)->mParentSceneNode->scale(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 100.0)); //The selected object is the axis so scale it
+					mSelectedObjects.at(i)->getAttachedSceneNode()->scale(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 100.0)); //The selected object is the axis so scale it
 				}
 			}
 		}
 		mLastMousePos = mouse;
 	}
 
-	static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->setTransforms(static_cast<Entity*>(mSelectedObjects.at(0))->mParentSceneNode);
+	static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->setTransforms(static_cast<Entity*>(mSelectedObjects.at(0))->getAttachedSceneNode());
 }

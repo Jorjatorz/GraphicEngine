@@ -9,11 +9,13 @@ CollisionObject::CollisionObject(std::string name, SceneNode* node, Entity* ent)
 {
 	mName = name;
 
+	//Create the collision shape
 	glm::vec3 AABBsize = ent->getMesh()->getAABBsize(); //Bullet halfsize
 	mBulletCollisionShape = new btBoxShape(btVector3(AABBsize.x / 2.0f, AABBsize.y / 2.0f, AABBsize.z / 2.0f));
 	mBulletCollisionObject = new btCollisionObject();
 	mBulletCollisionObject->setCollisionShape(mBulletCollisionShape);
 
+	//Apply transforms to it
 	glm::vec3 position = node->getDerivedPosition();
 	glm::quat orientation = node->getOrientation();
 	glm::vec3 scale = node->getDerivedScale();
@@ -27,8 +29,10 @@ CollisionObject::CollisionObject(std::string name, SceneNode* node, Entity* ent)
 
 	mBulletCollisionShape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 
+	//Set the user pointer to the entity
 	mBulletCollisionObject->setUserPointer(ent);
 
+	//Add collision object to the world
 	mDynamicWorld = PhysicsManager::getSingletonPtr()->getDynamicWorld();
 	mDynamicWorld->addCollisionObject(mBulletCollisionObject);
 }

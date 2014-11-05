@@ -78,6 +78,11 @@ public:
 		return mDerivedScale;
 	}
 
+
+	std::string getName()
+	{
+		return mName;
+	}
 private:
 	//scenenode model matrix (derived from parent)
 	glm::mat4 mSceneNodeMatrix;

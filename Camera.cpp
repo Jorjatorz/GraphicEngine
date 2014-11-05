@@ -5,28 +5,6 @@
 #include "Renderer.h"
 #include "Window.h"
 
-Camera::Camera(SceneManager* newSceneManager)
-{
-	mSceneManager = newSceneManager;
-
-	mPosition = glm::vec3(0.0);
-	mOrientation = glm::vec3(0.0, 0.0, -1.0);
-	mUpVector = glm::vec3(0.0, 1.0, 0.0);
-	mDerivedPosition = mPosition;
-	mDerivedOrientation = mOrientation;
-	mName = "Unnamed Camera";
-	mCurrentControlType = NOCONTROLER;
-	movementSpeed = 2.0;
-	mouseSpeed = 0.2;
-	drawAABB = false;
-
-	//Pointing to 0, 0, -1
-	camPitch = 3.1415;
-	camYaw = 0;
-
-	mTypeOfMovableObject = tTypeEnum::CAMERA;
-}
-
 Camera::Camera(std::string& name, SceneManager* newSceneManager)
 {
 	mSceneManager = newSceneManager;
@@ -68,16 +46,18 @@ void Camera::updateCamera()
 
 void Camera::updateFromInput()
 {
-	switch(mCurrentControlType)
+	switch (mCurrentControlType)
 	{
 	default:
 		break;
 	case NOCONTROLER:
+	{
 		//Set SDL Cursor mode off (show cursor)
 		SDL_ShowCursor(1);
 		mDerivedPosition += mPosition;
 		mUpVector = glm::vec3(0.0, 1.0, 0.0);
-		break; //no controler so we just skip
+		break;
+	}
 	case DEFAULT:
 		{
 			SDL_ShowCursor(0);
@@ -114,7 +94,7 @@ void Camera::setMovementSpeed(real newSpeed)
 	movementSpeed = newSpeed;
 }
 
-void Camera::handleMouseMove(InputManager* inputMInstance, int x, int y)
+void Camera::handleMouseMove(InputManager* inputMInstance, int mouseX, int mouseY)
 {
 	//If we are at default control type update camera view
 	if (mCurrentControlType == DEFAULT)
@@ -125,9 +105,8 @@ void Camera::handleMouseMove(InputManager* inputMInstance, int x, int y)
 		centerY = mSceneManager->getRenderer()->getCurrentWindow()->getHeight() / 2;
 
 		//difference from current mouse pos to the center
-
-		int diffX = centerX - x;
-		int diffY = centerY - y;
+		int diffX = centerX - mouseX;
+		int diffY = centerY - mouseY;
 
 		//calculate the new angle (radians)
 		camPitch += diffX * mouseSpeed;
@@ -141,10 +120,6 @@ void Camera::transformFromInput()
 {
 	InputManager* inputIns = InputManager::getSingletonPtr();
 
-	//COMPUTE ORIENTATION
-	//get the cursor position
-
-
 	//Just reset the angles, so we prevent huge numbers
 	if(camPitch > 2 * 3.1415)
 		camPitch = 0;
@@ -155,7 +130,7 @@ void Camera::transformFromInput()
 	else if(camYaw < -3.1415 / 2)
 		camYaw = -3.1415 / 2;
 
-	//Set the new orientation
+	//Calculate the new orientation
 	mOrientation.x = glm::cos(camYaw) * glm::sin(camPitch);
 	mOrientation.y = glm::sin(camYaw);
 	mOrientation.z = glm::cos(camYaw) * glm::cos(camPitch);
@@ -166,7 +141,7 @@ void Camera::transformFromInput()
 	//Compute the new up Vector
 	mUpVector = glm::cross(right, mOrientation);
 	
-	//COMPUTE MOVEMENT
+	//Change position depending on input
 	if(inputIns->isKeyDown(SDL_SCANCODE_W))
 	{
 		mPosition += mOrientation * mSceneManager->mDeltaTime * movementSpeed;
@@ -187,5 +162,6 @@ void Camera::transformFromInput()
 		mPosition -= right * mSceneManager->mDeltaTime * movementSpeed;
 	}
 
+	//Add local position to derivd position
 	mDerivedPosition += mPosition;
 }

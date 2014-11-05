@@ -128,8 +128,20 @@ void SceneNode::deleteAllChilds()
 
 void SceneNode::attachObject(MovableObject* mNewObject)
 {
-	//if the object is also attached
-	if(mNewObject->mParentSceneNode == this)
+	//If its not attached attach to this node
+	if (mNewObject->getAttachedSceneNode() == NULL)
+	{
+		mObjectsMap.insert(std::pair<std::string, MovableObject*>(mNewObject->getName(), mNewObject));
+		mNewObject->setAttached(true, this);
+
+		//First time, create collision object
+		if (mNewObject->getType() == MovableObject::ENTITY)
+		{
+			static_cast<Entity*>(mNewObject)->makeRigidBody(this);
+		}
+	}
+	//if the object is already attached to this node
+	else if (mNewObject->getAttachedSceneNode()->getName() == this->mName)
 	{
 		//its already attached to this node, set new tranforms just for kinetic objects
 		if (mNewObject->getType() == MovableObject::ENTITY)
@@ -137,10 +149,10 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
 		}
 	}
-	else if(mNewObject->isAttachedToNode())
+	else if(mNewObject->isAttachedToNode()) //If its attached to other node
 	{
 		//Detach object from old node
-		mNewObject->mParentSceneNode->detachObject(mNewObject);
+		mNewObject->getAttachedSceneNode()->detachObject(mNewObject);
 
 		//Attach object to new node
 		mObjectsMap.insert(std::pair<std::string, MovableObject*>(mNewObject->getName(), mNewObject));
@@ -150,17 +162,6 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 		if (mNewObject->getType() == MovableObject::ENTITY)
 		{
 			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
-		}
-	}
-	else
-	{
-		mObjectsMap.insert(std::pair<std::string, MovableObject*>(mNewObject->getName(), mNewObject));
-		mNewObject->setAttached(true, this);
-
-		//First time, create collision object
-		if (mNewObject->getType() == MovableObject::ENTITY)
-		{
-			static_cast<Entity*>(mNewObject)->makeRigidBody(this);
 		}
 	}
 }

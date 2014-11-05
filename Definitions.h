@@ -80,7 +80,3 @@ class UIManager;
 class UIWindow;
 class Window;
 class WorldEditor;
-
-//Not included
-//class Singleton
-//class GameResource;
