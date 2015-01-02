@@ -4,6 +4,7 @@
 #include "SceneManager.h"
 #include "Shader.h"
 #include "Entity.h"
+#include "RigidBody.h"
 
 Light::Light(std::string name, SceneManager* newSceneManager)
 {
@@ -27,11 +28,12 @@ Light::Light(std::string name, SceneManager* newSceneManager)
 
 	mDrawNode = mSceneManager->getRootSceneNode()->createChildSceneNode(name + "light_draw_node");
 	mDrawNode->setScale(glm::vec3(0.05));
-	mDrawEntity = mSceneManager->createEntity(name + "light_draw_entity", "sphere.obj");
+	mDrawEntity = mSceneManager->createEntity(name + "_light_draw_entity", "sphere.obj");
 	mDrawNode->attachObject(mDrawEntity);
 	mDrawEntity->setVisible(false);
-	mDrawEntity->setPhysicsOn(false);
+	//mDrawEntity->setPhysicsOn(false);
 	mDrawEntity->setRayCastReturnPointer(this);
+	mDrawEntity->setMass(0.0, false); //Set kinetic (so we can move it in the editor without problems)
 }
 
 Light::~Light(void)
@@ -84,6 +86,7 @@ void Light::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, g
 		mDrawNode->setPosition(getPosition());
 		mDrawEntity->attachMaterial(mName + "_light_drawentity_mat");
 		mDrawEntity->setColor(mColor);
+		mDrawEntity->getRigidBody()->setShape_Sphere(mRadius);
 
 	}
 	else
@@ -102,6 +105,11 @@ glm::vec3 Light::getPosition()
 	{
 		return mParentSceneNode->getDerivedPosition();
 	}
+}
+
+void Light::translate(glm::vec3 trans)
+{
+	mPosition += trans * mSceneManager->mDeltaTime;
 }
 
 void Light::setPosition(glm::vec3 newPos)

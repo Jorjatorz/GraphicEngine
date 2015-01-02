@@ -9,14 +9,13 @@
 class FrameBuffer
 {
 public:
-	FrameBuffer();
 	FrameBuffer(std::string name, int width, int height, SceneManager* manager);
 	~FrameBuffer();
 
 	void addTexture(int format);
 	void createGBuffer();
 	void bindForDrawing();
-	void bindForReading(int idStart = 0); //Idstart is the start of the active texture (i.e if u bind several buffers at the same time this prevents the textures to use the same location)
+	void bindForReading(int idStart = 0); //Idstart is the start of the active texture (i.e if u bind several buffers at the same time this prevents the active textures to use the same location)
 	void bindForRendering();
 	void unBind();
 

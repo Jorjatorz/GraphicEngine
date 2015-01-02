@@ -7,7 +7,7 @@
 #include "UIDisplayer.h"
 #include "Entity.h"
 #include "UIWindow.h"
-#include "Entity.h"
+#include "Light.h"
 #include "SceneNode.h"
 #include "Material.h"
 #include "RigidBody.h"
@@ -35,27 +35,30 @@ void WorldEditor::processWorldEditor()
 	for (int i = 0; i < mSelectedObjects.size(); ++i)
 	{
 		mSelectedObjects.at(i)->showAABB(true);
-
-		switch (mSelectedObjects.at(i)->getType())
-		{
-		case MovableObject::ENTITY:
-		{
-										entityEditor(static_cast<Entity*>(mSelectedObjects.at(i)));
-										break;
-		}
-		case MovableObject::LIGHT:
-		{
-										break;
-		}
-		case MovableObject::CAMERA:
-		{
-										break;
-		}
-		}
 	}
+
 
 	if (!mSelectedObjects.empty())
 	{
+		switch (mSelectedObjects.at(0)->getType())
+		{
+			case MovableObject::ENTITY:
+			{
+				entityEditor(static_cast<Entity*>(mSelectedObjects.at(0)));
+				break;
+			}
+			case MovableObject::LIGHT:
+			{
+				lightEditor(static_cast<Light*>(mSelectedObjects.at(0)));
+				 break;
+			}
+			case MovableObject::CAMERA:
+			{
+										  break;
+			}
+		}
+
+
 		//Move the axis
 		checkForAxisDrag();
 		//DrawAxis
@@ -69,6 +72,10 @@ void WorldEditor::processWorldEditor()
 		if (mEditorDisplayer->getWindow("entityWindow_WorldEditor") != NULL)
 		{
 			mEditorDisplayer->getWindow("entityWindow_WorldEditor")->setVisible(false);
+		}
+		else if (mEditorDisplayer->getWindow("lightWindow_WorldEditor") != NULL)
+		{
+			mEditorDisplayer->getWindow("lightWindow_WorldEditor")->setVisible(false);
 		}
 	}
 }
@@ -152,7 +159,7 @@ void WorldEditor::selectObject_RayCast(glm::vec3 cameraPos, glm::vec3 mouseDir_W
 	}
 	else
 	{
-		//If control is not preset reset selections (this prevents the reset of all selections if the user misses a click while slection multiple objects)
+		//If control is not preset reset selections (this prevents the reset of all selections if the user misses a click while selecting multiple objects)
 		if (InputManager::getSingletonPtr()->isKeyUp(SDL_SCANCODE_LCTRL))
 		{
 			//Remove AABB
@@ -191,7 +198,7 @@ void WorldEditor::entityEditor(Entity* ent)
 	}
 
 	//Update the propeties of the window if we select a new object or if we move the object
-	if ((ent != mPreviousSelectedObject) || (mDraggingAxis_X || mDraggingAxis_Y || mDraggingAxis_Z))
+	if ((mPreviousSelectedObject == NULL) || (ent->getName() != mPreviousSelectedObject->getName()) || (mDraggingAxis_X || mDraggingAxis_Y || mDraggingAxis_Z))
 	{
 		//Create the UI Window
 		mEditorDisplayer->createUIWindow("entityWindow_WorldEditor", 400, 400, "entitySelected.html")->setPosition_NDC(glm::vec2(-0.65, 0.45));
@@ -222,14 +229,54 @@ void WorldEditor::entityEditor(Entity* ent)
 	}
 }
 
-void WorldEditor::drawAxis(Entity* firstEntity)
+void WorldEditor::lightEditor(Light* light)
+{
+	//Handle the input for world trans -- Only allow translation and rotation for lights
+	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_W))
+	{
+		mTransformationMode = TRANSLATION;
+	}
+	else
+	{
+		mTransformationMode = TRANSLATION;
+	}
+	/*
+	else if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_E))
+	{
+		mTransformationMode = SCALE;
+	}*/
+
+	//Update the propeties of the window if we select a new object or if we move the object
+	if ((mPreviousSelectedObject == NULL) || (light->getName() != mPreviousSelectedObject->getName()) || (mDraggingAxis_X || mDraggingAxis_Y || mDraggingAxis_Z))
+	{
+		//Create the UI Window
+		mEditorDisplayer->createUIWindow("lightWindow_WorldEditor", 400, 400, "entitySelected.html")->setPosition_NDC(glm::vec2(-0.65, 0.45));
+		mEditorDisplayer->getWindow("lightWindow_WorldEditor")->setVisible(true);
+
+		glm::vec3 position, orientation, scale;
+		position = light->getPosition();
+		//orientation = light->getOrientation_Euler();
+		//scale = light->getScale();
+		//Name
+		mEditorDisplayer->setPropertyToWindow("lightWindow_WorldEditor", "entName", "innerHTML", light->getName());
+		//Position
+		mEditorDisplayer->setPropertyToWindow("lightWindow_WorldEditor", "textP1", "value", position.x);
+		mEditorDisplayer->setPropertyToWindow("lightWindow_WorldEditor", "textP2", "value", position.y);
+		mEditorDisplayer->setPropertyToWindow("lightWindow_WorldEditor", "textP3", "value", position.z);
+
+
+		mPreviousSelectedObject = light;
+	}
+}
+
+void WorldEditor::drawAxis(MovableObject* firstObject)
 {
 	//axis
 	Entity* Xent = mSceneManager->createEntity("Xaxis_WorldEditor");
 	Entity* Yent = mSceneManager->createEntity("Yaxis_WorldEditor");
 	Entity* Zent = mSceneManager->createEntity("Zaxis_WorldEditor");
 
-	if (firstEntity != NULL)
+	if (firstObject != NULL)
 	{
 
 		if (mTransformationMode == tTransformationModeEnum::TRANSLATION)
@@ -251,7 +298,7 @@ void WorldEditor::drawAxis(Entity* firstEntity)
 		SceneNode* Znod = mSceneManager->getRootSceneNode()->createChildSceneNode("Znod");
 
 		//Set nodes positions
-		glm::vec3 entPos = firstEntity->getPosition();
+		glm::vec3 entPos = firstObject->getPosition();
 		Xnod->setPosition(entPos + glm::vec3(0.5, 0.0, 0.0));
 		Xnod->rotate(glm::vec3(0.0, 0.0, 1.0), -90.0);
 		Ynod->setPosition(entPos + glm::vec3(0.0, 0.5, 0.0));
@@ -319,7 +366,14 @@ void WorldEditor::checkForAxisDrag()
 			//Move all the selected objects
 			for (int i = 0; i < mSelectedObjects.size(); ++i)
 			{
-				mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3((mouse.x - mLastMousePos.x) / 10.0, 0.0, 0.0)); //The selected object is the axis so translate it
+				if (mSelectedObjects.at(i)->getType() == MovableObject::ENTITY)
+				{
+					mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3((mouse.x - mLastMousePos.x) / 10.0, 0.0, 0.0)); //The selected object is the axis so translate it
+				}
+				else
+				{
+					static_cast<Light*>(mSelectedObjects.at(i))->translate(glm::vec3((mouse.x - mLastMousePos.x) / 10.0, 0.0, 0.0));
+				}
 			}
 		}
 		else
@@ -354,7 +408,14 @@ void WorldEditor::checkForAxisDrag()
 		{
 			for (int i = 0; i < mSelectedObjects.size(); ++i)
 			{
-				mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 10.0, 0.0)); //The selected object is the axis so translate it
+				if (mSelectedObjects.at(i)->getType() == MovableObject::ENTITY)
+				{
+					mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 10.0, 0.0)); //The selected object is the axis so translate it
+				}
+				else
+				{
+					static_cast<Light*>(mSelectedObjects.at(i))->translate(glm::vec3(0.0, -(mouse.y - mLastMousePos.y) / 10.0, 0.0));
+				}
 			}
 		}
 		else
@@ -389,7 +450,14 @@ void WorldEditor::checkForAxisDrag()
 		{
 			for (int i = 0; i < mSelectedObjects.size(); ++i)
 			{
-				mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 10.0)); //The selected object is the axis so translate it
+				if (mSelectedObjects.at(i)->getType() == MovableObject::ENTITY)
+				{
+					mSelectedObjects.at(i)->getAttachedSceneNode()->translate(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 10.0)); //The selected object is the axis so translate it
+				}
+				else
+				{
+					static_cast<Light*>(mSelectedObjects.at(i))->translate(glm::vec3(0.0, 0.0, -(mouse.x - mLastMousePos.x) / 10.0));
+				}
 			}
 		}
 		else
@@ -411,6 +479,4 @@ void WorldEditor::checkForAxisDrag()
 		}
 		mLastMousePos = mouse;
 	}
-
-	static_cast<Entity*>(mSelectedObjects.at(0))->getRigidBody()->setTransforms(static_cast<Entity*>(mSelectedObjects.at(0))->getAttachedSceneNode());
 }

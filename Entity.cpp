@@ -56,12 +56,6 @@ Entity::~Entity(void)
 
 void Entity::process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient)
 {
-	//If its has a rigidBody (i.e not a light volume) set the transformations (only if kinetic)
-	if (mRigidBody != NULL)
-	{
-		mRigidBody->setTransforms(mParentSceneNode);
-	}
-
 	if (visible)
 	{
 		render(perspectiveViewSceneNodeM, viewMatrix);

@@ -100,6 +100,27 @@ void RigidBody::setTransforms(SceneNode* node)
 		mBulletCollisionShape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
 	}
 }
+
+void RigidBody::setTransforms()
+{
+	if (mRigidBodyType == KINETIC)
+	{
+		SceneNode* node = mEntity->getAttachedSceneNode();
+
+		glm::vec3 position = node->getDerivedPosition();
+		glm::quat orientation = node->getOrientation();
+		glm::vec3 scale = node->getDerivedScale();
+
+		btTransform trans;
+		trans.setIdentity();
+		trans.setOrigin(btVector3(position.x, position.y, position.z));
+		trans.setRotation(btQuaternion(orientation.x, orientation.y, orientation.z, orientation.w));
+		mBulletMotionState->setWorldTransform(trans);
+
+		mBulletCollisionShape->setLocalScaling(btVector3(scale.x, scale.y, scale.z));
+	}
+}
+
 void RigidBody::setMass(real mass, bool setStatic)
 {
 	if (mass != 0.0)

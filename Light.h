@@ -19,6 +19,7 @@ public:
 
 	void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient);
 
+	void translate(glm::vec3 trans);
 	void setPosition(glm::vec3 newPos);
 	void setDirection(glm::vec3 newDir);
 	void setColor(glm::vec3 newColor);
@@ -67,14 +68,6 @@ private:
 	SceneNode* mDrawNode; //Will hold the draw entity
 	Entity* mDrawEntity; //Draw entity. (The one that can be seen in the editor)
 
-	/*
-	//inheritated
-	std::string mName;
-	SceneManager* mSceneManager;
-	SceneNode* mParentSceneNode;
-	bool visible;
-	bool castShadows;
-	bool mAttachedToNode;*/
 };
 
 #endif

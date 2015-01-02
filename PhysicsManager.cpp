@@ -104,7 +104,7 @@ void PhysicsManager::processPhysicsWorld(real deltaTime)
 	tRigidBodiesMap::iterator it;
 	for (it = mRigidBodiesMap.begin(); it != mRigidBodiesMap.end(); ++it)
 	{
-		if (it->second->getMass() != 0.0)
+		if (it->second->getType() == RigidBody::DYNAMIC)
 		{
 			btTransform worldTrans;
 			it->second->getTransforms(worldTrans);
@@ -113,7 +113,11 @@ void PhysicsManager::processPhysicsWorld(real deltaTime)
 
 			it->second->getUserPointer()->getAttachedSceneNode()->setPosition(glm::vec3(pos.x(), pos.y(), pos.z()));
 			it->second->getUserPointer()->getAttachedSceneNode()->setOrientation(glm::quat(rot.w(), rot.x(), rot.y(), rot.z()));
-		}		
+		}
+		else if (it->second->getType() == RigidBody::KINETIC)
+		{
+			it->second->setTransforms();
+		}
 	}
 }
 

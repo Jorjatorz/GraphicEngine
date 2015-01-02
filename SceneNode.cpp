@@ -140,15 +140,6 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 			static_cast<Entity*>(mNewObject)->makeRigidBody(this);
 		}
 	}
-	//if the object is already attached to this node
-	else if (mNewObject->getAttachedSceneNode()->getName() == this->mName)
-	{
-		//its already attached to this node, set new tranforms just for kinetic objects
-		if (mNewObject->getType() == MovableObject::ENTITY)
-		{
-			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
-		}
-	}
 	else if(mNewObject->isAttachedToNode()) //If its attached to other node
 	{
 		//Detach object from old node
@@ -164,6 +155,8 @@ void SceneNode::attachObject(MovableObject* mNewObject)
 			static_cast<Entity*>(mNewObject)->getRigidBody()->setTransforms(this);
 		}
 	}
+
+	//If its attached to the same node we dont do anything
 }
 
 void SceneNode::detachObject(std::string objName)

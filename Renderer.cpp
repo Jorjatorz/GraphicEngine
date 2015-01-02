@@ -156,7 +156,6 @@ void Renderer::renderFrame(real deltaTime)
 	Light* light3 = mSceneManager->createLight("light3");
 	light3->setColor(glm::vec3(0.0, 0.98, 1.0));
 	light3->setType(Light::SPOTLIGHT);
-	light3->setPosition(glm::vec3(0.0, 0.75, 0.0));
 	light3->setDirection(glm::vec3(0.0, -1.0, 0.0));
 
 	if(InputManager::getSingletonPtr()->isMouseButtonDown(SDL_BUTTON_RIGHT))
@@ -184,8 +183,7 @@ void Renderer::renderFrame(real deltaTime)
 
 	if (InputManager::getSingletonPtr()->isKeyDown(SDL_SCANCODE_H))
 	{
-		mEnt3->getRigidBody()->setMass(10.0);
-		mEnt3->getRigidBody()->setLinearVelocity(mCam->getOrientation() * 2.0f);
+		light3->setPosition(glm::vec3(0.0, 0.75, 0.0));
 	}
 
 	/*

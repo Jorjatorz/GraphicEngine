@@ -16,8 +16,9 @@ public:
 	//Executed every frame
 	void processWorldEditor();
 
-	void drawAxis(Entity* firstEntity); //First entity of the map
+	void drawAxis(MovableObject* firstObject); //First object of the selection map
 	void entityEditor(Entity* ent);
+	void lightEditor(Light* light);
 
 	//Select oobject
 	//Called by the inputmanager (through scenemanager)
@@ -39,6 +40,7 @@ private:
 	typedef std::vector<MovableObject*> tSelectedObjects;
 	tSelectedObjects mSelectedObjects;
 	MovableObject* mPreviousSelectedObject; //Save the previous selected object so we check if it has changed, if yes, render again the information to the ui
+
 		//Save the physics props, so we can move all object in
 		typedef struct
 		{

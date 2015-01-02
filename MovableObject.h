@@ -28,7 +28,6 @@ public:
 	{
 		return mAttachedToNode;
 	}
-
 	SceneNode* getAttachedSceneNode()
 	{
 		return mParentSceneNode;
@@ -38,15 +37,14 @@ public:
 	{
 		return visible;
 	}
+	void setVisible(bool vis)
+	{
+		visible = vis;
+	}
 
 	tTypeEnum getType()
 	{
 		return mTypeOfMovableObject;
-	}
-
-	void setVisible(bool vis)
-	{
-		visible = vis;
 	}
 
 	void showAABB(bool show);
@@ -55,10 +53,13 @@ public:
 		return drawAABB;
 	}
 
+	//Set if the object is attached to node
 	void setAttached(bool att);
 	void setAttached(bool att, SceneNode* newNode);
 
 	virtual void process(glm::mat4 perspectiveViewSceneNodeM, glm::mat4 viewMatrix, glm::vec3 parentPos, glm::quat parentOrient) = 0;
+
+	virtual glm::vec3 getPosition() = 0;
 
 protected:
 	std::string mName;

@@ -45,7 +45,8 @@ public:
 	void setShape_Sphere(real radius);
 
 	//Transforms
-	void setTransforms(SceneNode* node); //Just for kinetic objects, called when attached to a scenenode and when the entity is processed
+	void setTransforms(SceneNode* node); //Just for kinetic objects, called when attached to a scenenode
+	void setTransforms(); //Same as before but called by the physic manager (dont need to pass the scenenode)
 	void getTransforms(btTransform& trans)
 	{
 		mBulletMotionState->getWorldTransform(trans);

@@ -5,16 +5,6 @@
 #include "ResourceManager.h"
 #include "Texture.h"
 
-FrameBuffer::FrameBuffer()
-{
-	mName = "Unnamed FrameBuffer";
-	deferredFBO = false;
-	quadSet = false;
-	depthTexture = false;
-	//Create it in the constructor
-	glGenFramebuffers(1, &mFrameBufferId);
-}
-
 FrameBuffer::FrameBuffer(std::string name, int width, int height, SceneManager* manager)
 {
 	mName = name;
